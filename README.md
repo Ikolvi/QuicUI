@@ -129,6 +129,7 @@ class MyApp extends StatelessWidget {
 
 ### Examples & Patterns
 - **[Example Applications](./examples/)** - REST API and custom backend examples
+- **[Scaffold Counter App](./examples/scaffold_counter_app.dart)** - Complete counter app with Scaffold widget
 - **[Supabase Examples](https://pub.dev/packages/quicui_supabase)** - See the Supabase package for Supabase-specific examples
 - **[Testing Guide](./docs/TESTING.md)** - Mock backends and unit testing
 - **[Performance Guide](./docs/PERFORMANCE.md)** - Caching, optimization, and best practices
@@ -238,6 +239,94 @@ See `/example` folder for:
   }
 }
 ```
+
+### Counter App with Scaffold
+
+```json
+{
+  "type": "scaffold",
+  "appBar": {
+    "type": "appBar",
+    "title": "Counter App",
+    "backgroundColor": "#1976D2"
+  },
+  "body": {
+    "type": "center",
+    "child": {
+      "type": "column",
+      "mainAxisAlignment": "center",
+      "crossAxisAlignment": "center",
+      "children": [
+        {
+          "type": "text",
+          "properties": {
+            "text": "You have pushed the button this many times:",
+            "fontSize": 16
+          }
+        },
+        {
+          "type": "sizedBox",
+          "properties": {"height": 16}
+        },
+        {
+          "type": "container",
+          "properties": {
+            "padding": "24",
+            "decoration": {
+              "color": "#E3F2FD",
+              "borderRadius": "12"
+            }
+          },
+          "child": {
+            "type": "text",
+            "properties": {
+              "text": "42",
+              "fontSize": 72,
+              "fontWeight": "bold",
+              "color": "#1976D2"
+            }
+          }
+        },
+        {
+          "type": "sizedBox",
+          "properties": {"height": 32}
+        },
+        {
+          "type": "row",
+          "mainAxisAlignment": "center",
+          "children": [
+            {
+              "type": "elevatedButton",
+              "properties": {
+                "label": "−",
+                "backgroundColor": "#F44336"
+              }
+            },
+            {
+              "type": "sizedBox",
+              "properties": {"width": 16}
+            },
+            {
+              "type": "elevatedButton",
+              "properties": {
+                "label": "+",
+                "backgroundColor": "#4CAF50"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "floatingActionButton": {
+    "type": "floatingActionButton",
+    "icon": "Icons.add",
+    "tooltip": "Increment"
+  }
+}
+```
+
+See [Scaffold Counter App Example](./examples/scaffold_counter_app.dart) for complete implementation with state management.
 
 ### Form with Validation
 

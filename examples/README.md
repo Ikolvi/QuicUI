@@ -1,10 +1,82 @@
-# QuicUI DataSource Examples
+# QuicUI Examples
 
-This directory contains example implementations of custom `DataSource` backends for QuicUI.
+This directory contains example implementations and applications demonstrating QuicUI features.
 
 ## Available Examples
 
-### 1. REST API DataSource (`rest_api_datasource.dart`)
+### 1. Scaffold Counter App (`scaffold_counter_app.dart`)
+
+A complete, production-ready counter application demonstrating:
+
+- **Scaffold Widget:** Material Design layout with AppBar and FloatingActionButton
+- **Local State Management:** Using StatefulWidget for counter state
+- **JSON-Based UI:** Define UI structure in JSON format
+- **QuicUI Rendering:** Convert JSON to Flutter widgets
+- **Event Handling:** Button presses and state updates
+
+**Features:**
+- Scaffold with AppBar and FloatingActionButton
+- Center and Column layouts
+- Text display with dynamic binding
+- Material Design buttons
+- State management for counter
+
+**Usage:**
+```dart
+import 'package:quicui/quicui.dart';
+import 'examples/scaffold_counter_app.dart';
+
+void main() {
+  runApp(const ScaffoldCounterApp());
+}
+```
+
+**JSON Structure:**
+```json
+{
+  "type": "scaffold",
+  "appBar": {
+    "type": "appBar",
+    "title": "Counter App",
+    "backgroundColor": "#1976D2"
+  },
+  "body": {
+    "type": "center",
+    "child": {
+      "type": "column",
+      "mainAxisAlignment": "center",
+      "children": [
+        {"type": "text", "properties": {"text": "Count: 42"}},
+        {"type": "elevatedButton", "properties": {"label": "+"}}
+      ]
+    }
+  },
+  "floatingActionButton": {
+    "type": "floatingActionButton",
+    "icon": "Icons.add"
+  }
+}
+```
+
+**Key Components:**
+- **Scaffold:** Provides app structure with AppBar and FloatingActionButton
+- **AppBar:** Header with title and background color
+- **Center & Column:** Layout for centered counter display
+- **FloatingActionButton:** Increment button positioned at bottom-right
+- **Text:** Dynamic counter display
+
+**State Management:**
+```dart
+int _counter = 0;
+
+void incrementCounter() {
+  setState(() => _counter++);
+}
+```
+
+---
+
+### 2. REST API DataSource (`rest_api_datasource.dart`)
 
 A complete, production-ready implementation of a REST API backend using:
 

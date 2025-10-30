@@ -194,6 +194,13 @@ enum EventType { insert, update, delete }
 - `realtime_source_interface.dart` (150+ lines)
 - Model classes (300+ lines)
 
+**Git Commit & Push:**
+```bash
+git add lib/src/repositories/
+git commit -m "Phase 1: Define abstract DataSource and RealtimeSource interfaces"
+git push origin main
+```
+
 ---
 
 ### Phase 2: Refactor Core Repositories (4-5 days)
@@ -246,6 +253,14 @@ class ScreenRepository {
 - Updated error handling
 - 100+ tests
 
+**Git Commit & Push:**
+```bash
+git add lib/src/repositories/
+git add test/repositories/
+git commit -m "Phase 2: Refactor repositories to use DataSource interface"
+git push origin main
+```
+
 ---
 
 ### Phase 3: Create DataSourceProvider (2-3 days)
@@ -290,6 +305,14 @@ class DataSourceProvider {
 - `data_source_provider.dart`
 - Usage examples
 - Tests
+
+**Git Commit & Push:**
+```bash
+git add lib/src/services/data_source_provider.dart
+git add test/services/
+git commit -m "Phase 3: Create DataSourceProvider service locator"
+git push origin main
+```
 
 ---
 
@@ -351,6 +374,13 @@ extension QuicUISupabaseInit on QuicUI {
 - README with setup guide
 - 80+ tests
 
+**Git Commit & Push:**
+```bash
+git add quicui_supabase/
+git commit -m "Phase 4: Create quicui_supabase plugin with DataSource implementation"
+git push origin main
+```
+
 ---
 
 ### Phase 5: Update QuicUIService (2-3 days)
@@ -410,6 +440,13 @@ class QuicUI {
 - Migration guide for v1.x → v2.0
 - Deprecation notices
 
+**Git Commit & Push:**
+```bash
+git add lib/src/services/quicui_service.dart
+git commit -m "Phase 5: Update QuicUIService with generic initialization"
+git push origin main
+```
+
 ---
 
 ### Phase 6: Update Documentation & Examples (3-4 days)
@@ -452,6 +489,16 @@ class QuicUI {
 - 3+ examples
 - Migration guide (10+ pages)
 - Architecture documentation
+
+**Git Commit & Push:**
+```bash
+git add README.md
+git add docs/
+git add examples/
+git add quicui_supabase/README.md
+git commit -m "Phase 6: Update documentation and examples for v2.0.0"
+git push origin main
+```
 
 ---
 

@@ -32,3 +32,7 @@ DEVELOPMENT.md
 .github/
 analysis_options.yaml
 PHASE_*.md
+pub_publish*.log
+profile_output.txt
+version_update.txt
+analysis.txt

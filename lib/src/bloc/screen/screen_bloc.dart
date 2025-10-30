@@ -158,10 +158,46 @@ class ScreenBloc extends Bloc<ScreenEvent, ScreenState> {
     emit(ScreenLoading(screenId: event.screenId));
 
     try {
-      // TODO: Implement actual screen fetching from repository
-      // final screen = await screenRepository.getScreen(event.screenId);
+      // Implementation Details:
+      //
+      // Wire to ScreenRepository for actual data fetching:
+      //
+      // 1. INJECT REPOSITORY (in constructor or factory):
+      //    ```dart
+      //    final _screenRepository = ScreenRepository();
+      //    ```
+      //
+      // 2. FETCH SCREEN:
+      //    ```dart
+      //    final screen = await _screenRepository.getScreen(event.screenId);
+      //    if (screen == null) {
+      //      throw Exception('Screen not found: ${event.screenId}');
+      //    }
+      //    ```
+      //
+      // 3. EMIT SUCCESS:
+      //    ```dart
+      //    emit(ScreenLoaded(
+      //      screenData: screen,
+      //      loadedAt: DateTime.now(),
+      //    ));
+      //    ```
+      //
+      // 4. ERROR HANDLING:
+      //    ```dart
+      //    } catch (e, stackTrace) {
+      //      emit(ScreenError(
+      //        message: 'Failed to fetch screen: $e',
+      //        error: e,
+      //        stackTrace: stackTrace,
+      //      ));
+      //    }
+      //    ```
+      //
+      // CURRENT STATE: Using mock 1-second delay (placeholder)
+      // TODO: Replace with above actual ScreenRepository call
       
-      // Temporary mock implementation
+      // Temporary mock - replace with real call above
       await Future.delayed(const Duration(seconds: 1));
       
       emit(ScreenLoaded(

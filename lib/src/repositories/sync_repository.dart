@@ -171,8 +171,70 @@ class SyncRepository {
   /// - [getPendingItemsCount]: Check pending changes
   /// - [resolveConflict]: Handle conflicts
   Future<int> syncData() async {
-    // TODO: Implement sync logic
-    throw UnimplementedError('syncData not implemented');
+    // Implementation Details:
+    //
+    // Main sync orchestration logic:
+    //
+    // 1. CHECK CONNECTIVITY:
+    //    ```dart
+    //    final isOnline = await _connectivity.isConnected;
+    //    if (!isOnline) {
+    //      LoggerUtil.info('Offline - sync queued');
+    //      final pending = await getPendingItemsCount();
+    //      return pending; // Return queued count
+    //    }
+    //    ```
+    //
+    // 2. GET PENDING CHANGES:
+    //    ```dart
+    //    final pendingItems = await _cacheDataSource.getPendingItems();
+    //    if (pendingItems.isEmpty) {
+    //      LoggerUtil.debug('No changes to sync');
+    //      return 0;
+    //    }
+    //    ```
+    //
+    // 3. UPLOAD CHANGES:
+    //    ```dart
+    //    var syncedCount = 0;
+    //    for (final item in pendingItems) {
+    //      try {
+    //        await _remoteDataSource.uploadItem(item);
+    //        await _cacheDataSource.markSynced(item['id']);
+    //        syncedCount++;
+    //      } on Exception catch (e) {
+    //        LoggerUtil.error('Sync failed for ${item['id']}: $e');
+    //        // Continue with next item
+    //      }
+    //    }
+    //    ```
+    //
+    // 4. DETECT CONFLICTS:
+    //    ```dart
+    //    final conflicts = await _detectConflicts(pendingItems);
+    //    for (final conflict in conflicts) {
+    //      _pendingConflicts.add(conflict);
+    //      // Emit conflict event for UI
+    //      _conflictStream.add(conflict);
+    //    }
+    //    ```
+    //
+    // 5. DOWNLOAD REMOTE CHANGES:
+    //    ```dart
+    //    final remoteChanges = await _remoteDataSource.getChanges();
+    //    await _cacheDataSource.mergeRemoteChanges(remoteChanges);
+    //    ```
+    //
+    // 6. RETURN RESULT:
+    //    ```dart
+    //    LoggerUtil.info('Sync complete: $syncedCount items');
+    //    return syncedCount;
+    //    ```
+    //
+    // See also: [getPendingItemsCount], [resolveConflict]
+    throw UnimplementedError(
+      'syncData: Implement offline-first sync (pending → upload → detect conflicts → download → merge)',
+    );
   }
 
   /// Get count of pending synchronization items
@@ -226,8 +288,60 @@ class SyncRepository {
   /// - [syncData]: Perform synchronization
   /// - [resolveConflict]: Handle conflicts
   Future<int> getPendingItemsCount() async {
-    // TODO: Implement pending items count
-    throw UnimplementedError('getPendingItemsCount not implemented');
+    // Implementation Details:
+    //
+    // Quick count of pending changes:
+    //
+    // 1. QUERY PENDING FLAGS:
+    //    ```dart
+    //    final pendingItems = await _cacheDataSource.queryByType(
+    //      'pending',
+    //      where: '_synced = false',
+    //    );
+    //    ```
+    //
+    // 2. COUNT OPERATIONS:
+    //    ```dart
+    //    int count = 0;
+    //    for (final item in pendingItems) {
+    //      // Count each sync-required operation
+    //      if (item['_createPending'] == true) count++;
+    //      if (item['_updatePending'] == true) count++;
+    //      if (item['_deletePending'] == true) count++;
+    //    }
+    //    return count;
+    //    ```
+    //
+    // 3. OR SIMPLIFIED:
+    //    ```dart
+    //    final count = await _cacheDataSource.count(
+    //      where: '_synced = false OR _pending = true',
+    //    );
+    //    return count;
+    //    ```
+    //
+    // 4. CACHE FOR PERFORMANCE:
+    //    ```dart
+    //    _lastPendingCount = count;
+    //    _pendingCountUpdated.notify(); // Notify listeners
+    //    ```
+    //
+    // 5. ERROR HANDLING:
+    //    ```dart
+    //    try {
+    //      return await _queryPendingCount();
+    //    } catch (e) {
+    //      LoggerUtil.error('Failed to get pending count: $e');
+    //      return 0; // Default to 0 if error
+    //    }
+    //    ```
+    //
+    // Performance: Should be instant (<20ms) - just a local query
+    //
+    // See also: [syncData], [resolveConflict]
+    throw UnimplementedError(
+      'getPendingItemsCount: Query local cache for unsync items with _synced=false flag',
+    );
   }
 
   /// Resolve a synchronization conflict
@@ -308,7 +422,76 @@ class SyncRepository {
   /// - [syncData]: Triggers conflict detection
   /// - [getPendingItemsCount]: Track pending items
   Future<void> resolveConflict(String conflictId, Map<String, dynamic> resolution) async {
-    // TODO: Implement conflict resolution
-    throw UnimplementedError('resolveConflict not implemented');
+    // Implementation Details:
+    //
+    // Conflict resolution strategy engine:
+    //
+    // 1. VALIDATE INPUT:
+    //    ```dart
+    //    if (conflictId.isEmpty) {
+    //      throw ArgumentError('conflictId cannot be empty');
+    //    }
+    //    if (!resolution.containsKey('strategy')) {
+    //      throw ArgumentError('resolution must contain strategy key');
+    //    }
+    //    final strategy = resolution['strategy']; // 'local', 'remote', 'merge'
+    //    ```
+    //
+    // 2. FIND CONFLICT:
+    //    ```dart
+    //    final conflict = await _cacheDataSource.getConflict(conflictId);
+    //    if (conflict == null) {
+    //      throw Exception('Conflict not found: $conflictId');
+    //    }
+    //    ```
+    //
+    // 3. APPLY RESOLUTION:
+    //    ```dart
+    //    switch (strategy) {
+    //      case 'local':
+    //        // Keep local version
+    //        await _cacheDataSource.saveItem(conflict.localData);
+    //        break;
+    //      case 'remote':
+    //        // Accept remote version
+    //        await _cacheDataSource.saveItem(conflict.remoteData);
+    //        break;
+    //      case 'merge':
+    //        // Merge both versions
+    //        final merged = _mergeVersions(
+    //          conflict.localData,
+    //          conflict.remoteData,
+    //          resolution['mergedData'],
+    //        );
+    //        await _cacheDataSource.saveItem(merged);
+    //        break;
+    //      default:
+    //        throw ArgumentError('Unknown strategy: $strategy');
+    //    }
+    //    ```
+    //
+    // 4. MARK RESOLVED:
+    //    ```dart
+    //    await _cacheDataSource.deleteConflict(conflictId);
+    //    LoggerUtil.info('Conflict resolved ($strategy): $conflictId');
+    //    ```
+    //
+    // 5. UPDATE REMOTE IF NEEDED:
+    //    ```dart
+    //    if (strategy == 'local' || strategy == 'merge') {
+    //      try {
+    //        await _remoteDataSource.uploadItem(
+    //          conflict.localData ?? resolution['mergedData'],
+    //        );
+    //      } catch (e) {
+    //        LoggerUtil.warn('Failed to sync resolution: $e');
+    //      }
+    //    }
+    //    ```
+    //
+    // See also: [syncData], [getPendingItemsCount]
+    throw UnimplementedError(
+      'resolveConflict: Implement strategy engine (local|remote|merge) with local/remote update',
+    );
   }
 }

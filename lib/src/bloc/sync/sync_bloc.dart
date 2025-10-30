@@ -342,8 +342,50 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     emit(const SyncInProgress());
 
     try {
-      // TODO: Implement actual sync logic
-      // Temporary mock implementation
+      // Implementation Details:
+      //
+      // Wire to actual SyncRepository implementation:
+      //
+      // 1. INJECT REPOSITORY (in constructor or factory):
+      //    ```dart
+      //    final _syncRepository = SyncRepository();
+      //    ```
+      //
+      // 2. CALL SYNC:
+      //    ```dart
+      //    final stopwatch = Stopwatch()..start();
+      //    final syncedCount = await _syncRepository.syncData();
+      //    stopwatch.stop();
+      //    ```
+      //
+      // 3. EMIT SUCCESS:
+      //    ```dart
+      //    final syncedAt = DateTime.now();
+      //    _lastSyncAt = syncedAt;
+      //    _syncRetryCount = 0;
+      //
+      //    emit(SyncCompleted(
+      //      itemsCount: syncedCount,
+      //      syncedAt: syncedAt,
+      //      syncDuration: stopwatch.elapsed,
+      //    ));
+      //    ```
+      //
+      // 4. ERROR HANDLING:
+      //    ```dart
+      //    } catch (e, stackTrace) {
+      //      emit(SyncFailed(
+      //        errorMessage: 'Sync failed: $e',
+      //        error: e,
+      //        stackTrace: stackTrace,
+      //      ));
+      //    }
+      //    ```
+      //
+      // CURRENT STATE: Using mock 2-second delay (placeholder)
+      // TODO: Replace with above actual SyncRepository call
+      
+      // Temporary mock - replace with real call above
       await Future.delayed(const Duration(seconds: 2));
 
       final syncedAt = DateTime.now();
@@ -583,7 +625,58 @@ class SyncBloc extends Bloc<SyncEvent, SyncState> {
     Emitter<SyncState> emit,
   ) async {
     try {
-      // TODO: Implement conflict resolution logic
+      // Implementation Details:
+      //
+      // Wire to SyncRepository conflict resolution:
+      //
+      // 1. VALIDATE EVENT:
+      //    ```dart
+      //    if (event.conflictId.isEmpty || event.resolution.isEmpty) {
+      //      throw ArgumentError('conflictId and resolution required');
+      //    }
+      //    ```
+      //
+      // 2. INJECT REPOSITORY:
+      //    ```dart
+      //    final _syncRepository = SyncRepository();
+      //    ```
+      //
+      // 3. EMIT PROGRESS:
+      //    ```dart
+      //    emit(const SyncInProgress());
+      //    ```
+      //
+      // 4. PERFORM RESOLUTION:
+      //    ```dart
+      //    await _syncRepository.resolveConflict(
+      //      event.conflictId,
+      //      event.resolution,
+      //    );
+      //    ```
+      //
+      // 5. EMIT COMPLETION:
+      //    ```dart
+      //    add(SyncCompleteEvent(
+      //      itemsCount: 1, // One item resolved
+      //      syncedAt: DateTime.now(),
+      //    ));
+      //    ```
+      //
+      // 6. ERROR HANDLING:
+      //    ```dart
+      //    } catch (e, stackTrace) {
+      //      emit(SyncFailed(
+      //        errorMessage: 'Conflict resolution failed: $e',
+      //        error: e,
+      //        stackTrace: stackTrace,
+      //      ));
+      //    }
+      //    ```
+      //
+      // CURRENT STATE: Using mock 1-second delay (placeholder)
+      // TODO: Replace with above actual SyncRepository call
+      
+      // Temporary mock - replace with real call above
       emit(const SyncInProgress());
       await Future.delayed(const Duration(seconds: 1));
       add(SyncCompleteEvent(

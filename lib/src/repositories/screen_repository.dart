@@ -148,8 +148,63 @@ class ScreenRepository {
   /// - [listScreens]: List multiple screens
   /// - [saveScreen]: Update screen data
   Future<Map<String, dynamic>> getScreen(String screenId) async {
-    // TODO: Implement screen fetching from datasources
-    throw UnimplementedError('getScreen not implemented');
+    // Implementation Details:
+    //
+    // This method implements the repository pattern to fetch screens:
+    //
+    // 1. CHECK LOCAL CACHE FIRST:
+    //    ```dart
+    //    try {
+    //      final cached = await _cacheDataSource.getScreen(screenId);
+    //      if (cached != null) {
+    //        LoggerUtil.debug('Screen cache hit: $screenId');
+    //        return cached;
+    //      }
+    //    } catch (e) {
+    //      LoggerUtil.warn('Cache read failed: $e');
+    //    }
+    //    ```
+    //
+    // 2. FETCH FROM REMOTE (SUPABASE):
+    //    ```dart
+    //    final remote = await _remoteDataSource.fetchScreen(screenId);
+    //    if (remote == null) {
+    //      throw Exception('Screen not found: $screenId');
+    //    }
+    //    ```
+    //
+    // 3. CACHE THE RESULT:
+    //    ```dart
+    //    await _cacheDataSource.saveScreen(screenId, remote);
+    //    ```
+    //
+    // 4. RETURN TO CONSUMER:
+    //    ```dart
+    //    return remote;
+    //    ```
+    //
+    // 5. ERROR HANDLING:
+    //    ```dart
+    //    try {
+    //      // ... flow above
+    //    } on SocketException catch (e) {
+    //      throw SocketException('Network error: ${e.message}');
+    //    } on TimeoutException {
+    //      throw TimeoutException('Request timed out', duration: Duration(seconds: 30));
+    //    } catch (e) {
+    //      LoggerUtil.error('getScreen failed: $e');
+    //      rethrow;
+    //    }
+    //    ```
+    //
+    // 6. OFFLINE SUPPORT:
+    //    If network unavailable, return cached version
+    //    Mark as stale so next sync updates it
+    //
+    // See also: [CacheDataSource], [RemoteDataSource], [listScreens]
+    throw UnimplementedError(
+      'getScreen: Wire datasources (cache → remote fetch → cache update)',
+    );
   }
 
   /// List all available screens
@@ -197,8 +252,74 @@ class ScreenRepository {
   /// - [getScreen]: Get full screen details
   /// - [ScreenBloc]: Primary consumer
   Future<List<Map<String, dynamic>>> listScreens() async {
-    // TODO: Implement screen listing
-    throw UnimplementedError('listScreens not implemented');
+    // Implementation Details:
+    //
+    // Fetches list of screens with smart caching:
+    //
+    // 1. CHECK CACHE FIRST:
+    //    ```dart
+    //    const cacheKey = 'screens_list';
+    //    try {
+    //      final cached = await _cacheDataSource.get(cacheKey);
+    //      if (cached != null) {
+    //        final timestamp = DateTime.parse(cached['_cached_at'] ?? '');
+    //        final isStale = DateTime.now().difference(timestamp).inMinutes > 5;
+    //        if (!isStale) {
+    //          LoggerUtil.debug('Screens list cache hit');
+    //          return List<Map<String, dynamic>>.from(cached['screens'] ?? []);
+    //        }
+    //      }
+    //    } catch (e) {
+    //      LoggerUtil.warn('Cache read failed: $e');
+    //    }
+    //    ```
+    //
+    // 2. FETCH FROM REMOTE (SUPABASE):
+    //    ```dart
+    //    final screens = await _remoteDataSource.listScreens();
+    //    if (screens.isEmpty) {
+    //      LoggerUtil.info('No screens found for user');
+    //    }
+    //    ```
+    //
+    // 3. CACHE WITH TIMESTAMP:
+    //    ```dart
+    //    final toCache = {
+    //      'screens': screens,
+    //      '_cached_at': DateTime.now().toIso8601String(),
+    //    };
+    //    await _cacheDataSource.save(cacheKey, toCache);
+    //    ```
+    //
+    // 4. RETURN SORTED LIST:
+    //    ```dart
+    //    screens.sort((a, b) =>
+    //      (b['updatedAt'] as String).compareTo(a['updatedAt'] as String)
+    //    );
+    //    return screens;
+    //    ```
+    //
+    // 5. ERROR HANDLING:
+    //    On network error, return cached list if available (graceful degradation)
+    //    ```dart
+    //    try {
+    //      // ... fetch and cache
+    //    } catch (e) {
+    //      LoggerUtil.error('listScreens failed: $e');
+    //      // Try to return stale cache
+    //      final stale = await _cacheDataSource.get(cacheKey);
+    //      if (stale != null) {
+    //        LoggerUtil.info('Returning stale cache');
+    //        return List<Map<String, dynamic>>.from(stale['screens'] ?? []);
+    //      }
+    //      rethrow;
+    //    }
+    //    ```
+    //
+    // See also: [getScreen], [saveScreen]
+    throw UnimplementedError(
+      'listScreens: Wire datasources (cache → remote fetch with TTL)',
+    );
   }
 
   /// Save or update screen data
@@ -262,8 +383,58 @@ class ScreenRepository {
   /// - [deleteScreen]: Remove screen
   /// - [getScreen]: Retrieve current screen
   Future<void> saveScreen(String screenId, Map<String, dynamic> data) async {
-    // TODO: Implement screen saving
-    throw UnimplementedError('saveScreen not implemented');
+    // Implementation Details:
+    //
+    // Saves screen with offline-first architecture:
+    //
+    // 1. VALIDATE INPUT:
+    //    ```dart
+    //    if (screenId.isEmpty) {
+    //      throw ArgumentError('screenId cannot be empty');
+    //    }
+    //    if (data.isEmpty) {
+    //      throw ArgumentError('data cannot be empty');
+    //    }
+    //    ```
+    //
+    // 2. UPDATE LOCAL CACHE (OPTIMISTIC):
+    //    ```dart
+    //    data['id'] = screenId;
+    //    data['updatedAt'] = DateTime.now().toIso8601String();
+    //    await _cacheDataSource.saveScreen(screenId, data);
+    //    LoggerUtil.debug('Screen cached: $screenId');
+    //    ```
+    //
+    // 3. QUEUE FOR SYNC:
+    //    ```dart
+    //    await _syncRepository.queueScreenUpdate(screenId, data);
+    //    ```
+    //
+    // 4. ATTEMPT REMOTE SAVE (NON-BLOCKING):
+    //    ```dart
+    //    try {
+    //      await _remoteDataSource.uploadScreen(screenId, data);
+    //      LoggerUtil.info('Screen saved remotely: $screenId');
+    //      // Mark as synced in local DB
+    //      await _cacheDataSource.markSynced(screenId);
+    //    } on SocketException {
+    //      LoggerUtil.warn('Network unavailable, queued for sync: $screenId');
+    //      // Already queued in step 3
+    //    } catch (e) {
+    //      LoggerUtil.error('Remote save failed: $e');
+    //      // Local cache updated, will retry on next sync
+    //    }
+    //    ```
+    //
+    // 5. INVALIDATE RELATED CACHES:
+    //    ```dart
+    //    await _cacheDataSource.remove('screens_list'); // Invalidate list
+    //    ```
+    //
+    // See also: [getScreen], [deleteScreen], [SyncRepository]
+    throw UnimplementedError(
+      'saveScreen: Wire datasources (local cache → queue sync → remote)',
+    );
   }
 
   /// Delete a screen
@@ -319,7 +490,57 @@ class ScreenRepository {
   /// - [saveScreen]: Update screen
   /// - [getScreen]: Retrieve screen
   Future<void> deleteScreen(String screenId) async {
-    // TODO: Implement screen deletion
-    throw UnimplementedError('deleteScreen not implemented');
+    // Implementation Details:
+    //
+    // Deletes screen from all storage with cascading cleanup:
+    //
+    // 1. VALIDATE:
+    //    ```dart
+    //    if (screenId.isEmpty) {
+    //      throw ArgumentError('screenId cannot be empty');
+    //    }
+    //    ```
+    //
+    // 2. REMOVE FROM LOCAL CACHE:
+    //    ```dart
+    //    await _cacheDataSource.deleteScreen(screenId);
+    //    LoggerUtil.debug('Screen removed from cache: $screenId');
+    //    ```
+    //
+    // 3. QUEUE FOR REMOTE DELETION:
+    //    ```dart
+    //    await _syncRepository.queueScreenDeletion(screenId);
+    //    ```
+    //
+    // 4. ATTEMPT REMOTE DELETION (NON-BLOCKING):
+    //    ```dart
+    //    try {
+    //      await _remoteDataSource.deleteScreen(screenId);
+    //      LoggerUtil.info('Screen deleted remotely: $screenId');
+    //    } on SocketException {
+    //      LoggerUtil.warn('Network unavailable, queued for deletion: $screenId');
+    //      // Already queued in step 3
+    //    } catch (e) {
+    //      LoggerUtil.error('Remote deletion failed: $e');
+    //      // Local cache already removed, will retry on sync
+    //    }
+    //    ```
+    //
+    // 5. INVALIDATE RELATED CACHES:
+    //    ```dart
+    //    await _cacheDataSource.remove('screens_list'); // Invalidate list
+    //    await _cacheDataSource.remove('screen_$screenId'); // Remove specific
+    //    ```
+    //
+    // 6. CLEANUP DEPENDENCIES:
+    //    ```dart
+    //    // Remove any widgets or layouts associated with this screen
+    //    await _cacheDataSource.deleteByPattern('screen_$screenId:*');
+    //    ```
+    //
+    // See also: [saveScreen], [getScreen], [SyncRepository]
+    throw UnimplementedError(
+      'deleteScreen: Wire datasources (local removal → queue deletion → remote)',
+    );
   }
 }

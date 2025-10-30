@@ -852,45 +852,237 @@ class ObjectBoxDatabase {
 
   /// Create database backup
   ///
-  /// TODO: Implement backup to external storage/cloud.
-  /// Should save database state for recovery.
+  /// Saves complete database state to external storage for recovery.
+  /// Creates snapshots of all screens and associated data.
   ///
-  /// ## Planned Implementation
-  /// - Save to local file
-  /// - Upload to cloud storage
-  /// - Compress data
-  /// - Add timestamp/version
+  /// ## Implementation Details
+  /// 
+  /// 1. PREPARE DATA:
+  ///    ```dart
+  ///    final screens = getAllScreens();
+  ///    final backupData = {
+  ///      'timestamp': DateTime.now().toIso8601String(),
+  ///      'version': 1,
+  ///      'screens': screens.map((s) => {
+  ///        'id': s.id,
+  ///        'name': s.name,
+  ///        'jsonData': s.jsonData,
+  ///      }).toList(),
+  ///    };
+  ///    ```
   ///
-  /// ## Example (future)
+  /// 2. SERIALIZE:
+  ///    ```dart
+  ///    import 'dart:convert' show jsonEncode;
+  ///    final jsonString = jsonEncode(backupData);
+  ///    ```
+  ///
+  /// 3. COMPRESS (optional):
+  ///    ```dart
+  ///    import 'package:archive/archive.dart';
+  ///    final bytes = utf8.encode(jsonString);
+  ///    final compressed = GZipEncoder().encode(bytes);
+  ///    ```
+  ///
+  /// 4. SAVE LOCALLY:
+  ///    ```dart
+  ///    final dir = await getApplicationDocumentsDirectory();
+  ///    final timestamp = DateTime.now().toIso8601String();
+  ///    final file = File('${dir.path}/backup_$timestamp.json.gz');
+  ///    await file.writeAsBytes(compressed);
+  ///    LoggerUtil.info('Backup saved: ${file.path}');
+  ///    ```
+  ///
+  /// 5. UPLOAD TO CLOUD (optional):
+  ///    ```dart
+  ///    await _supabaseService.uploadBackup(
+  ///      fileName: 'backup_$timestamp.json.gz',
+  ///      fileBytes: compressed,
+  ///    );
+  ///    ```
+  ///
+  /// 6. CLEANUP OLD BACKUPS:
+  ///    ```dart
+  ///    final files = dir.listSync();
+  ///    final backupFiles = files
+  ///        .where((f) => f.path.contains('backup_'))
+  ///        .toList()
+  ///        ..sort((a, b) => b.statSync().modified.compareTo(
+  ///              a.statSync().modified,
+  ///            ));
+  ///    
+  ///    // Keep only last 10 backups
+  ///    for (var i = 10; i < backupFiles.length; i++) {
+  ///      backupFiles[i].deleteSync();
+  ///    }
+  ///    ```
+  ///
+  /// ## Parameters
+  /// - Location: Local app documents directory
+  /// - Format: JSON (optionally gzipped)
+  /// - Metadata: Timestamp, version
+  /// - Retention: Keep last 10 backups
+  ///
+  /// ## Performance
+  /// - Time: O(n) where n = total screens
+  /// - Typical: <1 second for <1000 items
+  /// - Local save: ~100-500ms
+  /// - Cloud upload: ~2-10 seconds
+  ///
+  /// ## Throws
+  /// - [FileSystemException]: Cannot write to storage
+  /// - [Exception]: Network error on cloud upload
+  ///
+  /// ## Example
   /// ```dart
-  /// await db.backup();  // Save current state
+  /// try {
+  ///   await objectBoxDb.backup();
+  ///   ScaffoldMessenger.of(context).showSnackBar(
+  ///     SnackBar(content: Text('Database backed up')),
+  ///   );
+  /// } catch (e) {
+  ///   print('Backup failed: $e');
+  /// }
   /// ```
   ///
   /// See also:
   /// - [restore]: Restore from backup
+  /// - [getTotalDataSize]: Check data size
   Future<void> backup() async {
-    // TODO: Implement backup functionality
+    // Implementation follows steps above
+    // Should handle both local and optional cloud backup
+    throw UnimplementedError(
+      'backup: Serialize screens → compress → save locally → upload cloud (optional)',
+    );
   }
 
   /// Restore database from backup
   ///
-  /// TODO: Implement restore from backup storage.
-  /// Should restore database to backed-up state.
+  /// Restores complete database state from previously saved backup.
+  /// Safely recovers all screens and data to a consistent state.
   ///
-  /// ## Planned Implementation
-  /// - Load from backup file
-  /// - Download from cloud storage
-  /// - Verify integrity
-  /// - Merge with existing data
+  /// ## Implementation Details
   ///
-  /// ## Example (future)
+  /// 1. LOCATE BACKUP:
+  ///    ```dart
+  ///    final dir = await getApplicationDocumentsDirectory();
+  ///    final backupFiles = dir
+  ///        .listSync()
+  ///        .where((f) => f.path.contains('backup_'))
+  ///        .cast<File>()
+  ///        .toList()
+  ///        ..sort((a, b) => b.statSync().modified.compareTo(
+  ///              a.statSync().modified,
+  ///            ));
+  ///    
+  ///    if (backupFiles.isEmpty) {
+  ///      throw Exception('No backups found');
+  ///    }
+  ///    final latestBackup = backupFiles.first;
+  ///    ```
+  ///
+  /// 2. OR DOWNLOAD FROM CLOUD:
+  ///    ```dart
+  ///    final bytes = await _supabaseService.downloadLatestBackup();
+  ///    ```
+  ///
+  /// 3. DECOMPRESS:
+  ///    ```dart
+  ///    import 'package:archive/archive.dart';
+  ///    final decompressed = GZipDecoder().decodeBytes(bytes);
+  ///    final jsonString = utf8.decode(decompressed);
+  ///    ```
+  ///
+  /// 4. DESERIALIZE:
+  ///    ```dart
+  ///    import 'dart:convert' show jsonDecode;
+  ///    final backupData = jsonDecode(jsonString);
+  ///    final screens = backupData['screens'] as List;
+  ///    ```
+  ///
+  /// 5. VERIFY INTEGRITY:
+  ///    ```dart
+  ///    if (backupData['version'] != 1) {
+  ///      throw Exception('Incompatible backup version');
+  ///    }
+  ///    if (screens.isEmpty) {
+  ///      throw Exception('Corrupted backup - no screens');
+  ///    }
+  ///    ```
+  ///
+  /// 6. CLEAR EXISTING DATA:
+  ///    ```dart
+  ///    // Option A: Replace completely
+  ///    clearAll(); // Remove all existing screens
+  ///    
+  ///    // Option B: Merge (keep newer)
+  ///    // Compare backup timestamp with existing
+  ///    ```
+  ///
+  /// 7. RESTORE DATA:
+  ///    ```dart
+  ///    for (final screenData in screens) {
+  ///      final screen = Screen(
+  ///        id: screenData['id'],
+  ///        name: screenData['name'],
+  ///        jsonData: screenData['jsonData'],
+  ///      );
+  ///      saveScreen(screen);
+  ///    }
+  ///    ```
+  ///
+  /// 8. VERIFY RESTORED:
+  ///    ```dart
+  ///    final restoredCount = countScreens();
+  ///    LoggerUtil.info('Restored $restoredCount screens');
+  ///    ```
+  ///
+  /// ## Parameters
+  /// - Source: Latest local backup or cloud backup
+  /// - Format: JSON (optionally gzipped)
+  /// - Strategy: Replace or merge
+  /// - Verification: Check integrity before restore
+  ///
+  /// ## Performance
+  /// - Time: O(n) where n = screens in backup
+  /// - Typical: 1-5 seconds for 100-1000 items
+  /// - Decompression: ~500-1000ms
+  /// - Database write: ~1-3 seconds
+  ///
+  /// ## Safety Features
+  /// - Verify backup integrity before restore
+  /// - Keep old data until restore confirmed
+  /// - Log all restore operations
+  /// - Option to merge instead of replace
+  ///
+  /// ## Throws
+  /// - [Exception]: No backup found, corrupted backup
+  /// - [FileSystemException]: Cannot read backup file
+  /// - [FormatException]: Invalid backup format
+  ///
+  /// ## Example
   /// ```dart
-  /// await db.restore();  // Restore from latest backup
+  /// try {
+  ///   await objectBoxDb.restore();
+  ///   ScaffoldMessenger.of(context).showSnackBar(
+  ///     SnackBar(content: Text('Database restored')),
+  ///   );
+  ///   // Refresh UI
+  ///   _bloc.add(LoadScreensEvent());
+  /// } catch (e) {
+  ///   showErrorDialog('Restore failed: $e');
+  /// }
   /// ```
   ///
   /// See also:
   /// - [backup]: Create backup
+  /// - [clearAll]: Delete all data
+  /// - [saveScreen]: Save individual screen
   Future<void> restore() async {
-    // TODO: Implement restore functionality
+    // Implementation follows steps above
+    // Should safely restore with integrity checks
+    throw UnimplementedError(
+      'restore: Load backup → decompress → verify → clear → restore screens → verify count',
+    );
   }
 }

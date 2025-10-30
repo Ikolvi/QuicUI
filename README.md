@@ -1,9 +1,10 @@
 # QuicUI - Server-Driven UI Framework for Flutter
 
-![Pub Version](https://img.shields.io/badge/pub-v1.0.0-blue)
+![Pub Version](https://img.shields.io/badge/pub-v1.0.1-blue)
 ![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Build Status](https://img.shields.io/badge/status-stable-brightgreen)
+![Cloud Backend](https://img.shields.io/badge/Cloud-Supabase-green)
 
 **QuicUI** is a powerful Server-Driven UI (SDUI) framework for Flutter that enables you to build, update, and deliver dynamic user interfaces without redeploying your app. Define your UI as **JSON** and render it natively at runtime.
 
@@ -22,11 +23,12 @@
 
 ## 📦 What's New
 
-**v1.0.0 (October 30, 2025) - Production Release** ✨
+**v1.0.1 (October 30, 2025) - Production Release** ✨
+- ✅ Cloud integration via Supabase only
 - ✅ 70+ pre-built widgets fully functional
 - ✅ BLoC state management complete
 - ✅ Offline-first architecture with sync
-- ✅ Supabase integration with real-time sync
+- ✅ Real-time UI sync with Supabase
 - ✅ ObjectBox local persistence
 - ✅ Comprehensive Supabase integration guide
 - ✅ 5 complete example applications

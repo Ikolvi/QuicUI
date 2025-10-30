@@ -1,3 +1,38 @@
+## 1.0.1 - October 30, 2025
+
+### 🔄 Documentation & Supabase-Only Release
+
+**Cloud Backend Updates**
+- ✅ Removed all non-Supabase API key requirements
+- ✅ Simplified to Supabase-only cloud integration
+- ✅ Updated all documentation to reflect Supabase exclusive integration
+- ✅ Cleaner initialization with only Supabase credentials required
+- ✅ No hardcoded API keys or credentials
+
+**Documentation Updates**
+- Updated QuicUIService to show Supabase-only initialization
+- Updated example app with Supabase setup
+- Updated README with cloud-powered features
+- Added Buy Me a Coffee support link
+- Enhanced Supabase integration documentation
+
+**What's Same**
+- All 70+ widgets fully functional
+- 228/228 tests passing
+- Full offline-first support
+- Real-time sync capability
+- BLoC state management complete
+
+**Breaking Changes**
+- `initialize()` method now only requires `supabaseUrl` and `supabaseAnonKey`
+- `appApiKey` parameter removed - no longer needed
+
+### See Also
+- [SUPABASE_INTEGRATION_GUIDE.md](SUPABASE_INTEGRATION_GUIDE.md) - Cloud integration guide
+- [README.md](README.md) - Updated setup instructions
+
+---
+
 ## 1.0.0 - October 30, 2025
 
 ### 🎉 Production Release
@@ -29,19 +64,12 @@
 - Widget documentation with usage patterns
 - Best practices and architecture guides
 
-**Breaking Changes**
-- None - Initial production release
-
-**Bug Fixes**
-- N/A - Production-ready
-
 ### See Also
 - [README.md](README.md) - Setup and usage instructions
-- [FLUTTER_WEB_UI_GUIDE.md](FLUTTER_WEB_UI_GUIDE.md) - Web dashboard guide
 - [PHASE_7_PLAN.md](PHASE_7_PLAN.md) - Performance optimization details
 
 ---
 
 ## 0.0.1
 
-* TODO: Describe initial release.
+* Initial development version.

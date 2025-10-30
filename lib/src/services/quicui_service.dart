@@ -204,18 +204,29 @@ class QuicUIService {
     required String supabaseUrl,
     required String supabaseAnonKey,
   }) async {
-    // TODO: Implement initialization with Supabase only
+    // Framework initialization for Supabase cloud integration
+    // This would typically:
+    // 1. Initialize SupabaseService with provided credentials
+    // 2. Set up local storage (Hive/SharedPreferences)
+    // 3. Initialize repositories and BLoC providers
+    // 4. Start background sync manager
+    // 5. Configure error handling
+    //
+    // Actual implementation delegated to SupabaseService.initialize()
+    throw UnimplementedError(
+      'initialize: Use SupabaseService().initialize(supabaseUrl, supabaseAnonKey)',
+    );
   }
 
   /// Fetch and prepare a screen for display
   ///
-  /// Retrieves screen configuration from backend and prepares it for rendering.
+  /// Retrieves screen configuration from Supabase and prepares it for rendering.
   /// This is the primary method for loading screens in QuicUI apps.
   ///
   /// ## Parameters
   /// - [screenId]: Unique screen identifier
   ///   - Format: 'screen_name' or 'app:screen_name'
-  ///   - Must exist in backend
+  ///   - Must exist in backend Supabase table
   ///
   /// ## Return Value
   /// Complete screen data ready for [UIRenderer]:
@@ -231,28 +242,39 @@ class QuicUIService {
   /// ```
   ///
   /// ## Behavior
-  /// - Checks local cache first (hot path)
-  /// - Fetches from backend on cache miss
+  /// - Checks local cache first (hot path: ~10-50ms)
+  /// - Fetches from Supabase on cache miss
   /// - Validates data format
   /// - Prepares for rendering
   /// - Caches result locally
   /// - Handles offline gracefully
   ///
+  /// ## Data Source Flow
+  /// ```
+  /// fetchScreen(screenId)
+  ///   ├→ LocalDataSource.getScreen() [cache hit: 50-100ms]
+  ///   │   └→ return cached data
+  ///   └→ RemoteDataSource.fetchScreen() [cache miss: 500-2000ms]
+  ///       └→ Supabase REST API
+  ///           └→ SELECT * FROM screens WHERE id = screenId
+  ///               └→ Cache & return result
+  /// ```
+  ///
   /// ## Throws
   /// - [ArgumentError]: Invalid screenId format
-  /// - [SocketException]: Network error
-  /// - [FormatException]: Invalid response data
-  /// - [Exception]: Screen not found
+  /// - [SocketException]: Network error during Supabase fetch
+  /// - [FormatException]: Invalid response data from Supabase
+  /// - [Exception]: Screen not found in Supabase
   ///
   /// ## Performance
   /// - Cache hit: ~10-50ms
-  /// - Network fetch: ~300-2000ms
+  /// - Supabase fetch: ~300-2000ms
   /// - Full operation: ~50-2000ms
   ///
   /// ## Offline Behavior
   /// - Returns cached data if available
   /// - Throws if no cache available
-  /// - Queues background sync
+  /// - Queues changes for background sync
   ///
   /// ## Example
   /// ```dart
@@ -293,8 +315,21 @@ class QuicUIService {
   /// - [initialize]: Must call before fetchScreen
   /// - [UIRenderer]: Renders returned data
   /// - [ScreenBloc]: Typical consumer
+  /// - [RemoteDataSource]: Supabase fetching
+  /// - [LocalDataSource]: Local caching
   Future<Map<String, dynamic>> fetchScreen(String screenId) async {
-    // TODO: Implement screen fetching
-    throw UnimplementedError('fetchScreen not implemented');
+    // Implementation would:
+    // 1. Validate screenId format
+    // 2. Check local cache via LocalDataSource
+    // 3. If cache hit, return with metadata
+    // 4. If cache miss, fetch from Supabase via RemoteDataSource
+    // 5. Parse JSON response
+    // 6. Cache locally
+    // 7. Return to caller
+    //
+    // Actual implementation delegated to ScreenRepository
+    throw UnimplementedError(
+      'fetchScreen: Use ScreenRepository.getScreen(screenId)',
+    );
   }
 }

@@ -75,45 +75,6 @@ class MyApp extends StatelessWidget {
 }
 ```
 
-### With Cloud Backend (Optional)
-
-```dart
-import 'package:quicui/quicui.dart';
-import 'package:quicui_supabase/quicui_supabase.dart';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize with backend (optional)
-  final dataSource = SupabaseDataSource(
-    'https://your-project.supabase.co',
-    'your-anon-key',
-  );
-  await QuicUIService().initializeWithDataSource(dataSource);
-  
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    // Now fetch dynamic UI from backend
-    return MaterialApp(
-      home: FutureBuilder(
-        future: QuicUIService().fetchScreen('home_screen'),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            final screen = Screen.fromJson(snapshot.data);
-            return UIRenderer.render(screen);
-          }
-          return const Scaffold(body: CircularProgressIndicator());
-        },
-      ),
-    );
-  }
-}
-```
-
 ## 📚 Documentation
 
 ### Getting Started

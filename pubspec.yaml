@@ -31,25 +31,25 @@ dependencies:
   http: ^1.2.0
   
   # Local Database (Primary: ObjectBox for performance)
-  objectbox: ^4.1.1
-  objectbox_flutter_libs: ^4.1.1
+  objectbox: ^5.0.1
+  objectbox_flutter_libs: ^5.0.1
   
   # Alternative: Hive (lightweight option)
   hive: ^2.2.3
   hive_flutter: ^1.1.0
   
   # Serialization
-  json_annotation: ^4.8.1
+  json_annotation: ^4.9.0
   
   # Backend Integration
   supabase_flutter: ^2.10.3
   
   # Utilities
-  uuid: ^4.2.1
-  intl: ^0.20.0
-  cached_network_image: ^3.3.1
-  device_info_plus: ^11.1.1
-  shared_preferences: ^2.2.3
+  uuid: ^4.5.1
+  intl: ^0.20.2
+  cached_network_image: ^3.4.1
+  device_info_plus: ^12.2.0
+  shared_preferences: ^2.5.3
   
   # Logging
   logger: ^2.3.0
@@ -61,7 +61,7 @@ dev_dependencies:
   
   # Code Generation
   build_runner: ^2.4.6
-  objectbox_generator: ^4.3.1
+  objectbox_generator: ^5.0.1
   
   # Testing
   mocktail: ^1.0.0

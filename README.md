@@ -97,6 +97,16 @@ class MyApp extends StatelessWidget {
 - **[Supabase Integration Guide](./SUPABASE_INTEGRATION_GUIDE.md)** - Complete guide for cloud data, real-time sync, and authentication
 - **[Supabase Examples](./SUPABASE_EXAMPLES.md)** - Ready-to-use code examples (Todo App, Product Catalog, User Profiles)
 
+### Real-Time Updates (v1.1.0+)
+- **[Real-Time Updates Plan](./REALTIME_PLAN.md)** - Complete 4-week implementation roadmap with timeline, risks, and success criteria
+- **[Real-Time Architecture](./REALTIME_ARCHITECTURE.md)** - Detailed system diagrams, event flows, and data synchronization patterns
+- **Real-Time Features (Coming Soon):**
+  - PostgreSQL real-time subscriptions via Supabase
+  - Live UI updates with <500ms latency
+  - Automatic conflict resolution
+  - Offline-to-online sync coordination
+  - Connection auto-recovery with exponential backoff
+
 ### Example Applications
 See `/example` folder for:
 - Counter App - Simple state management

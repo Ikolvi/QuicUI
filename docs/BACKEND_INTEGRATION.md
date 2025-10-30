@@ -1,1037 +1,651 @@
-# Backend Integration Guide
+# Backend Integration Guide - QuicUI v1.0.3+
 
-Complete guide to creating custom `DataSource` implementations for integrating QuicUI with any backend service.
+Complete guide to integrating QuicUI with cloud backends. **Backends are completely optional** - this guide covers how to add them.
 
-## Overview
+**What you'll learn:**
+- 🔌 Optional backend architecture
+- 🔑 Implementing the DataSource interface
+- 📡 Building custom backends
+- 🔄 Real-time synchronization
+- 🌐 Offline-first strategy
 
-This guide teaches you how to:
-
-✅ Create a custom DataSource implementation  
-✅ Implement all 15 required methods  
-✅ Handle real-time subscriptions  
-✅ Implement offline synchronization  
-✅ Package as a reusable plugin  
-✅ Write comprehensive tests  
-
-**Time Required:** 4-8 hours (depending on backend complexity)  
-**Experience Level:** Intermediate Flutter/Dart developer  
-**Prerequisites:** Understanding of futures, streams, and async/await
+**Time required:** 30-45 minutes
 
 ---
 
-## Architecture Overview
+## Overview: Optional Backends
 
+QuicUI works in two modes:
+
+### 1. Standalone (No Backend)
+- Use local JSON data
+- No internet required
+- Perfect for offline apps
+
+### 2. With Backend Plugin (Optional)
+- Fetch screens from cloud
+- Real-time updates
+- Multi-device sync
+
+This guide covers **Option 2** - adding optional backend support.
+
+---
+
+## Architecture
+
+### Core Abstraction: DataSource Interface
+
+All backends implement the `DataSource` interface:
+
+```dart
+abstract class DataSource {
+  // Screen Management
+  Future<Screen> fetchScreen(String screenId);
+  Future<List<Screen>> fetchScreens({int limit = 20, int offset = 0});
+  Future<Screen> saveScreen(String screenId, Screen screen);
+  Future<void> deleteScreen(String screenId);
+  Future<List<Screen>> searchScreens(String query);
+  Future<int> getScreenCount();
+  
+  // Real-Time (Optional)
+  Stream<RealtimeEvent> subscribeToScreen(String screenId);
+  Future<void> unsubscribe(String screenId);
+  
+  // Sync (Optional)
+  Future<SyncResult> syncData(List<SyncItem> items);
+  Future<List<SyncItem>> getPendingItems();
+  
+  // Connection
+  Future<void> connect();
+  Future<void> disconnect();
+  bool isConnected();
+}
 ```
-Your Backend Service
-        ↓
-   Network Layer
-   (HTTP, WebSocket, SDK)
-        ↓
-   Your DataSource Implementation
-   (Convert data to QuicUI models)
-        ↓
-   QuicUI Framework
-   (Use through QuicUIService)
+
+### Official Plugins
+
+- **Supabase** (`quicui_supabase`) - Recommended
+  - Real-time WebSocket updates
+  - PostgreSQL backend
+  - Built-in authentication
+  - Version: ^2.0.2
+
+- **Firebase** (future)
+- **REST API** (future)
+
+---
+
+## Using Official Plugins
+
+### Supabase Backend
+
+#### 1. Install
+
+```bash
+flutter pub add quicui_supabase
+flutter pub add supabase_flutter
 ```
 
-## Step 1: Create Your DataSource Class
+#### 2. Initialize in main()
 
-### Basic Structure
+```dart
+import 'package:quicui/quicui.dart';
+import 'package:quicui_supabase/quicui_supabase.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  final dataSource = SupabaseDataSource(
+    'https://your-project.supabase.co',
+    'your-anon-key',
+  );
+  
+  await dataSource.connect();
+  DataSourceProvider.instance.register(dataSource);
+  
+  runApp(const MyApp());
+}
+```
+
+#### 3. Use in Your App
+
+```dart
+class MyScreen extends StatefulWidget {
+  @override
+  State<MyScreen> createState() => _MyScreenState();
+}
+
+class _MyScreenState extends State<MyScreen> {
+  late Future<Screen> screenFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    final dataSource = DataSourceProvider.instance.get();
+    screenFuture = dataSource.fetchScreen('home_screen');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Screen>(
+      future: screenFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+        
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
+        
+        return UIRenderer().renderScreen(snapshot.data!);
+      },
+    );
+  }
+}
+```
+
+#### 4. Setup Database Schema
+
+On Supabase, create these tables:
+
+```sql
+-- Main screens table
+create table screens (
+  id text primary key,
+  name text not null,
+  version integer default 1,
+  root_widget jsonb not null,
+  metadata jsonb,
+  config jsonb,
+  is_active boolean default true,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);
+
+-- For real-time updates
+alter table screens replica identity full;
+
+-- Enable real-time replication
+create publication supabase_realtime for table screens;
+```
+
+See [QuicUI Supabase Plugin](https://pub.dev/packages/quicui_supabase) for complete setup.
+
+---
+
+## Building Custom Backends
+
+### Step 1: Create a New Package
+
+```bash
+flutter pub new my_backend
+cd my_backend
+```
+
+### Step 2: Implement DataSource
 
 ```dart
 import 'package:quicui/quicui.dart';
 
-class MyCustomDataSource implements DataSource {
-  // Configuration
-  final String apiUrl;
-  final String apiKey;
+class MyDataSource extends DataSource {
+  final String baseUrl;
   
-  // Optional: networking client
-  late final http.Client _httpClient;
-  
-  // Optional: streaming management
-  late final Map<String, StreamController> _streamControllers = {};
-  
-  MyCustomDataSource({
-    required this.apiUrl,
-    required this.apiKey,
-  }) {
-    _httpClient = http.Client();
-    _initializeConnections();
-  }
-  
-  void _initializeConnections() {
-    // Setup real-time connections, authentication, etc.
-  }
-  
-  // TODO: Implement all 15 required methods
+  MyDataSource(this.baseUrl);
   
   @override
-  void dispose() {
-    // Clean up resources
-    _httpClient.close();
-    for (final controller in _streamControllers.values) {
-      controller.close();
-    }
-  }
-}
-```
-
----
-
-## Step 2: Implement Screen Management Methods
-
-### fetchScreen(String screenId)
-
-```dart
-@override
-Future<Screen> fetchScreen(String screenId) async {
-  if (screenId.isEmpty) {
-    throw ValidationException('screenId cannot be empty');
-  }
-  
-  try {
-    final response = await _httpClient.get(
-      Uri.parse('$apiUrl/screens/$screenId'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-    ).timeout(const Duration(seconds: 30));
-    
-    if (response.statusCode == 404) {
-      throw ScreenNotFoundException('Screen not found: $screenId');
-    }
+  Future<Screen> fetchScreen(String screenId) async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/screens/$screenId'),
+    );
     
     if (response.statusCode != 200) {
-      throw DataSourceException(
-        message: 'Failed to fetch screen',
-        code: 'FETCH_SCREEN_ERROR',
-      );
+      throw DataSourceException('Failed to fetch screen');
     }
     
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    final json = jsonDecode(response.body);
     return Screen.fromJson(json);
-    
-  } on SocketException catch (e) {
-    throw NetworkException('Network error: ${e.message}');
-  } on TimeoutException {
-    throw NetworkException('Request timeout');
-  } catch (e) {
-    throw DataSourceException(
-      message: 'Unexpected error: ${e.toString()}',
-      code: 'UNKNOWN_ERROR',
-    );
   }
+  
+  @override
+  Future<void> connect() async {
+    // Initialize your backend connection
+  }
+  
+  @override
+  Future<void> disconnect() async {
+    // Cleanup
+  }
+  
+  @override
+  bool isConnected() => true;
+  
+  // Implement other methods...
+  @override
+  Future<List<Screen>> fetchScreens({int limit = 20, int offset = 0}) async {
+    // ...
+  }
+  
+  @override
+  Future<Screen> saveScreen(String screenId, Screen screen) async {
+    // ...
+  }
+  
+  // ... implement remaining abstract methods
 }
 ```
 
-### fetchScreensByTag(String tag)
+### Step 3: Register with QuicUI
 
 ```dart
-@override
-Future<List<Screen>> fetchScreensByTag(String tag) async {
-  if (tag.isEmpty) {
-    throw ValidationException('tag cannot be empty');
-  }
-  
-  try {
-    final response = await _httpClient.get(
-      Uri.parse('$apiUrl/screens?tag=$tag'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-    ).timeout(const Duration(seconds: 30));
-    
-    if (response.statusCode != 200) {
-      throw DataSourceException(
-        message: 'Failed to fetch screens by tag',
-        code: 'FETCH_SCREENS_TAG_ERROR',
-      );
-    }
-    
-    final json = jsonDecode(response.body) as List<dynamic>;
-    return json
-        .map((item) => Screen.fromJson(item as Map<String, dynamic>))
-        .toList();
-        
-  } on SocketException catch (e) {
-    throw NetworkException('Network error: ${e.message}');
-  } catch (e) {
-    throw DataSourceException(
-      message: 'Error fetching screens: ${e.toString()}',
-      code: 'UNKNOWN_ERROR',
-    );
-  }
-}
+final myDataSource = MyDataSource('https://api.example.com');
+await myDataSource.connect();
+DataSourceProvider.instance.register(myDataSource);
+```
+
+### Step 4: Use in Your App
+
+```dart
+final dataSource = DataSourceProvider.instance.get();
+final screen = await dataSource.fetchScreen('home_screen');
 ```
 
 ---
 
-## Step 3: Implement User Management Methods
+## Common Backend Patterns
 
-### fetchUser(String userId)
-
-```dart
-@override
-Future<User> fetchUser(String userId) async {
-  if (userId.isEmpty) {
-    throw ValidationException('userId cannot be empty');
-  }
-  
-  try {
-    final response = await _httpClient.get(
-      Uri.parse('$apiUrl/users/$userId'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-    ).timeout(const Duration(seconds: 30));
-    
-    if (response.statusCode == 404) {
-      throw UserNotFoundException('User not found: $userId');
-    }
-    
-    if (response.statusCode != 200) {
-      throw DataSourceException(
-        message: 'Failed to fetch user',
-        code: 'FETCH_USER_ERROR',
-      );
-    }
-    
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-    return User.fromJson(json);
-    
-  } on SocketException catch (e) {
-    throw NetworkException('Network error: ${e.message}');
-  } catch (e) {
-    throw DataSourceException(
-      message: 'Error fetching user: ${e.toString()}',
-      code: 'UNKNOWN_ERROR',
-    );
-  }
-}
-```
-
-### fetchUsers()
+### REST API Backend
 
 ```dart
-@override
-Future<List<User>> fetchUsers() async {
-  try {
-    final response = await _httpClient.get(
-      Uri.parse('$apiUrl/users'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-    ).timeout(const Duration(seconds: 30));
-    
-    if (response.statusCode == 403) {
-      throw PermissionException('Not authorized to fetch users');
-    }
-    
-    if (response.statusCode != 200) {
-      throw DataSourceException(
-        message: 'Failed to fetch users',
-        code: 'FETCH_USERS_ERROR',
-      );
-    }
-    
-    final json = jsonDecode(response.body) as List<dynamic>;
-    return json
-        .map((item) => User.fromJson(item as Map<String, dynamic>))
-        .toList();
-        
-  } on SocketException catch (e) {
-    throw NetworkException('Network error: ${e.message}');
-  } catch (e) {
-    throw DataSourceException(
-      message: 'Error fetching users: ${e.toString()}',
-      code: 'UNKNOWN_ERROR',
-    );
-  }
-}
-```
-
----
-
-## Step 4: Implement Component Management Methods
-
-### fetchComponent(String componentId) & fetchComponents()
-
-```dart
-@override
-Future<Component> fetchComponent(String componentId) async {
-  if (componentId.isEmpty) {
-    throw ValidationException('componentId cannot be empty');
-  }
+class RestDataSource extends DataSource {
+  final String baseUrl;
+  final http.Client client;
   
-  try {
-    final response = await _httpClient.get(
-      Uri.parse('$apiUrl/components/$componentId'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-    ).timeout(const Duration(seconds: 30));
-    
-    if (response.statusCode == 404) {
-      throw ComponentNotFoundException('Component not found: $componentId');
-    }
-    
-    if (response.statusCode != 200) {
-      throw DataSourceException(
-        message: 'Failed to fetch component',
-        code: 'FETCH_COMPONENT_ERROR',
-      );
-    }
-    
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-    return Component.fromJson(json);
-    
-  } on SocketException catch (e) {
-    throw NetworkException('Network error: ${e.message}');
-  } catch (e) {
-    throw DataSourceException(
-      message: 'Error fetching component: ${e.toString()}',
-      code: 'UNKNOWN_ERROR',
-    );
-  }
-}
-
-@override
-Future<List<Component>> fetchComponents() async {
-  try {
-    final response = await _httpClient.get(
-      Uri.parse('$apiUrl/components'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-    ).timeout(const Duration(seconds: 30));
-    
-    if (response.statusCode != 200) {
-      throw DataSourceException(
-        message: 'Failed to fetch components',
-        code: 'FETCH_COMPONENTS_ERROR',
-      );
-    }
-    
-    final json = jsonDecode(response.body) as List<dynamic>;
-    return json
-        .map((item) => Component.fromJson(item as Map<String, dynamic>))
-        .toList();
-        
-  } on SocketException catch (e) {
-    throw NetworkException('Network error: ${e.message}');
-  } catch (e) {
-    throw DataSourceException(
-      message: 'Error fetching components: ${e.toString()}',
-      code: 'UNKNOWN_ERROR',
-    );
-  }
-}
-```
-
----
-
-## Step 5: Implement Real-Time Subscriptions
-
-### Using WebSockets (Recommended)
-
-```dart
-// Helper method to create or reuse stream controller
-StreamController<T> _getStreamController<T>(String key) {
-  if (_streamControllers.containsKey(key)) {
-    return _streamControllers[key] as StreamController<T>;
-  }
+  RestDataSource(this.baseUrl, {http.Client? client})
+    : client = client ?? http.Client();
   
-  final controller = StreamController<T>.broadcast();
-  _streamControllers[key] = controller;
-  return controller;
-}
-
-@override
-Stream<Screen> subscribeToScreen(String screenId) async* {
-  final controller = _getStreamController<Screen>('screen_$screenId');
-  
-  try {
-    // Emit current state immediately
-    final current = await fetchScreen(screenId);
-    yield current;
-    
-    // Connect to WebSocket for updates
-    final channel = WebSocketChannel.connect(
-      Uri.parse('wss://${apiUrl.replaceFirst('https://', '')}/ws/screens/$screenId'),
-    );
-    
-    // Listen for messages
-    channel.stream.listen(
-      (message) {
-        try {
-          final json = jsonDecode(message) as Map<String, dynamic>;
-          final screen = Screen.fromJson(json);
-          controller.add(screen);
-        } catch (e) {
-          controller.addError(DataSourceException(
-            message: 'Failed to parse screen update',
-            code: 'PARSE_ERROR',
-          ));
-        }
-      },
-      onError: (error) {
-        controller.addError(NetworkException('WebSocket error: $error'));
-      },
-      onDone: () {
-        controller.close();
-        _streamControllers.remove('screen_$screenId');
-      },
-    );
-    
-    // Yield stream values
-    yield* controller.stream;
-    
-  } catch (e) {
-    yield* Stream.error(e);
-  }
-}
-
-@override
-Stream<User> subscribeToUser(String userId) async* {
-  final controller = _getStreamController<User>('user_$userId');
-  
-  try {
-    final current = await fetchUser(userId);
-    yield current;
-    
-    final channel = WebSocketChannel.connect(
-      Uri.parse('wss://${apiUrl.replaceFirst('https://', '')}/ws/users/$userId'),
-    );
-    
-    channel.stream.listen(
-      (message) {
-        try {
-          final json = jsonDecode(message) as Map<String, dynamic>;
-          final user = User.fromJson(json);
-          controller.add(user);
-        } catch (e) {
-          controller.addError(DataSourceException(
-            message: 'Failed to parse user update',
-            code: 'PARSE_ERROR',
-          ));
-        }
-      },
-      onError: (error) {
-        controller.addError(NetworkException('WebSocket error: $error'));
-      },
-    );
-    
-    yield* controller.stream;
-    
-  } catch (e) {
-    yield* Stream.error(e);
-  }
-}
-
-@override
-Stream<Component> subscribeToComponent(String componentId) async* {
-  final controller = _getStreamController<Component>('component_$componentId');
-  
-  try {
-    final current = await fetchComponent(componentId);
-    yield current;
-    
-    final channel = WebSocketChannel.connect(
-      Uri.parse('wss://${apiUrl.replaceFirst('https://', '')}/ws/components/$componentId'),
-    );
-    
-    channel.stream.listen(
-      (message) {
-        try {
-          final json = jsonDecode(message) as Map<String, dynamic>;
-          final component = Component.fromJson(json);
-          controller.add(component);
-        } catch (e) {
-          controller.addError(DataSourceException(
-            message: 'Failed to parse component update',
-            code: 'PARSE_ERROR',
-          ));
-        }
-      },
-      onError: (error) {
-        controller.addError(NetworkException('WebSocket error: $error'));
-      },
-    );
-    
-    yield* controller.stream;
-    
-  } catch (e) {
-    yield* Stream.error(e);
-  }
-}
-```
-
----
-
-## Step 6: Implement Mutations
-
-### updateScreen, updateUser, updateComponent
-
-```dart
-@override
-Future<Screen> updateScreen(String screenId, Map<String, dynamic> data) async {
-  if (screenId.isEmpty) {
-    throw ValidationException('screenId cannot be empty');
-  }
-  
-  try {
-    final response = await _httpClient.patch(
-      Uri.parse('$apiUrl/screens/$screenId'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(data),
-    ).timeout(const Duration(seconds: 30));
-    
-    if (response.statusCode == 404) {
-      throw ScreenNotFoundException('Screen not found: $screenId');
-    }
-    
-    if (response.statusCode == 400) {
-      throw ValidationException('Invalid screen data: ${response.body}');
-    }
-    
-    if (response.statusCode != 200) {
-      throw DataSourceException(
-        message: 'Failed to update screen',
-        code: 'UPDATE_SCREEN_ERROR',
-      );
-    }
-    
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-    return Screen.fromJson(json);
-    
-  } on SocketException catch (e) {
-    // Queue for offline sync
-    await _queueOfflineChange('update_screen', screenId, data);
-    throw SyncException('Offline - change queued');
-  } catch (e) {
-    throw DataSourceException(
-      message: 'Error updating screen: ${e.toString()}',
-      code: 'UNKNOWN_ERROR',
-    );
-  }
-}
-
-@override
-Future<User> updateUser(String userId, Map<String, dynamic> data) async {
-  if (userId.isEmpty) {
-    throw ValidationException('userId cannot be empty');
-  }
-  
-  try {
-    final response = await _httpClient.patch(
-      Uri.parse('$apiUrl/users/$userId'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(data),
-    ).timeout(const Duration(seconds: 30));
-    
-    if (response.statusCode == 403) {
-      throw PermissionException('Not authorized to update user');
-    }
-    
-    if (response.statusCode == 400) {
-      throw ValidationException('Invalid user data: ${response.body}');
-    }
-    
-    if (response.statusCode != 200) {
-      throw DataSourceException(
-        message: 'Failed to update user',
-        code: 'UPDATE_USER_ERROR',
-      );
-    }
-    
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-    return User.fromJson(json);
-    
-  } on SocketException catch (e) {
-    await _queueOfflineChange('update_user', userId, data);
-    throw SyncException('Offline - change queued');
-  } catch (e) {
-    throw DataSourceException(
-      message: 'Error updating user: ${e.toString()}',
-      code: 'UNKNOWN_ERROR',
-    );
-  }
-}
-
-@override
-Future<Component> updateComponent(
-  String componentId,
-  Map<String, dynamic> data,
-) async {
-  if (componentId.isEmpty) {
-    throw ValidationException('componentId cannot be empty');
-  }
-  
-  try {
-    final response = await _httpClient.patch(
-      Uri.parse('$apiUrl/components/$componentId'),
-      headers: {
-        'Authorization': 'Bearer $apiKey',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(data),
-    ).timeout(const Duration(seconds: 30));
-    
-    if (response.statusCode == 403) {
-      throw PermissionException('Not authorized to update components');
-    }
-    
-    if (response.statusCode == 400) {
-      throw ValidationException('Invalid component data: ${response.body}');
-    }
-    
-    if (response.statusCode != 200) {
-      throw DataSourceException(
-        message: 'Failed to update component',
-        code: 'UPDATE_COMPONENT_ERROR',
-      );
-    }
-    
-    final json = jsonDecode(response.body) as Map<String, dynamic>;
-    return Component.fromJson(json);
-    
-  } on SocketException catch (e) {
-    await _queueOfflineChange('update_component', componentId, data);
-    throw SyncException('Offline - change queued');
-  } catch (e) {
-    throw DataSourceException(
-      message: 'Error updating component: ${e.toString()}',
-      code: 'UNKNOWN_ERROR',
-    );
-  }
-}
-```
-
----
-
-## Step 7: Implement Offline Sync
-
-### Offline Queue Management
-
-```dart
-// Storage for offline queue (use local database like Hive, sqlite, etc.)
-final List<Map<String, dynamic>> _offlineQueue = [];
-
-Future<void> _queueOfflineChange(
-  String operation,
-  String entityId,
-  Map<String, dynamic> data,
-) async {
-  final change = {
-    'operation': operation,
-    'entityId': entityId,
-    'data': data,
-    'timestamp': DateTime.now().toIso8601String(),
-    'status': 'pending',
-  };
-  
-  _offlineQueue.add(change);
-  
-  // Persist to local storage (recommended)
-  await _persistQueueToStorage();
-}
-
-Future<void> _persistQueueToStorage() async {
-  // Use Hive, sqflite, or SharedPreferences
-  // Implementation depends on your storage choice
-}
-
-@override
-Future<void> syncOfflineChanges() async {
-  if (_offlineQueue.isEmpty) {
-    return;
-  }
-  
-  final failedItems = <int>[];
-  
-  for (int i = 0; i < _offlineQueue.length; i++) {
-    final item = _offlineQueue[i];
-    
+  @override
+  Future<Screen> fetchScreen(String screenId) async {
     try {
-      final operation = item['operation'] as String;
-      final entityId = item['entityId'] as String;
-      final data = item['data'] as Map<String, dynamic>;
+      final response = await client.get(
+        Uri.parse('$baseUrl/screens/$screenId'),
+      );
       
-      switch (operation) {
-        case 'update_screen':
-          await updateScreen(entityId, data);
-          break;
-        case 'update_user':
-          await updateUser(entityId, data);
-          break;
-        case 'update_component':
-          await updateComponent(entityId, data);
-          break;
-        default:
-          throw DataSourceException(
-            message: 'Unknown operation: $operation',
-            code: 'UNKNOWN_OPERATION',
-          );
+      if (response.statusCode == 404) {
+        throw ScreenNotFoundException('Screen not found');
       }
       
-      _offlineQueue[i]['status'] = 'synced';
+      if (response.statusCode != 200) {
+        throw DataSourceException('Server error');
+      }
       
-    } catch (e) {
-      failedItems.add(i);
-      _offlineQueue[i]['status'] = 'failed';
-      _offlineQueue[i]['error'] = e.toString();
+      return Screen.fromJson(
+        jsonDecode(response.body) as Map<String, dynamic>,
+      );
+    } on SocketException {
+      throw NetworkException('No internet connection');
     }
   }
   
-  // Remove successfully synced items
-  _offlineQueue.removeWhere((item) => item['status'] == 'synced');
+  @override
+  Future<List<Screen>> fetchScreens({int limit = 20, int offset = 0}) async {
+    final response = await client.get(
+      Uri.parse('$baseUrl/screens?limit=$limit&offset=$offset'),
+    );
+    
+    if (response.statusCode != 200) {
+      throw DataSourceException('Failed to fetch screens');
+    }
+    
+    final list = jsonDecode(response.body) as List;
+    return list
+      .map((item) => Screen.fromJson(item as Map<String, dynamic>))
+      .toList();
+  }
   
-  // Persist updated queue
-  await _persistQueueToStorage();
+  // ... implement other methods
+}
+```
+
+### Firebase Backend
+
+```dart
+class FirebaseDataSource extends DataSource {
+  final FirebaseFirestore firestore;
   
-  // Throw exception if any items failed
-  if (failedItems.isNotEmpty) {
-    throw SyncException(
-      message: 'Sync failed for ${failedItems.length} items',
-      failedItems: [
-        for (final i in failedItems) _offlineQueue[i],
-      ],
+  FirebaseDataSource(this.firestore);
+  
+  @override
+  Future<Screen> fetchScreen(String screenId) async {
+    try {
+      final doc = await firestore.collection('screens').doc(screenId).get();
+      
+      if (!doc.exists) {
+        throw ScreenNotFoundException('Screen not found');
+      }
+      
+      return Screen.fromJson(doc.data()!);
+    } catch (e) {
+      throw DataSourceException('Error fetching screen: $e');
+    }
+  }
+  
+  @override
+  Stream<RealtimeEvent> subscribeToScreen(String screenId) {
+    return firestore
+      .collection('screens')
+      .doc(screenId)
+      .snapshots()
+      .map((doc) => RealtimeEvent(
+        type: 'update',
+        data: Screen.fromJson(doc.data()!),
+        timestamp: DateTime.now(),
+      ));
+  }
+  
+  // ... implement other methods
+}
+```
+
+### Hybrid Approach (REST + Local Cache)
+
+```dart
+class CachedDataSource extends DataSource {
+  final DataSource remote;
+  final LocalDataSource local;
+  
+  CachedDataSource(this.remote, this.local);
+  
+  @override
+  Future<Screen> fetchScreen(String screenId) async {
+    try {
+      // Try remote first
+      final screen = await remote.fetchScreen(screenId);
+      
+      // Cache locally
+      await local.saveScreen(screenId, screen);
+      
+      return screen;
+    } catch (e) {
+      // Fall back to local cache
+      return local.fetchScreen(screenId);
+    }
+  }
+  
+  // ... implement other methods
+}
+```
+
+---
+
+## Real-Time Updates
+
+### With Supabase Plugin
+
+```dart
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late StreamSubscription screenSubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    final dataSource = DataSourceProvider.instance.get();
+    
+    // Subscribe to real-time updates
+    screenSubscription = dataSource
+      .subscribeToScreen('home_screen')
+      .listen((event) {
+        setState(() {
+          // Update UI with new screen data
+        });
+      });
+  }
+
+  @override
+  void dispose() {
+    screenSubscription.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Your UI
+  }
+}
+```
+
+---
+
+## Offline-First Strategy
+
+### Implementing Offline Sync
+
+```dart
+class OfflineDataSource extends DataSource {
+  final DataSource remote;
+  final LocalDataSource local;
+  final Connectivity connectivity;
+  
+  OfflineDataSource({
+    required this.remote,
+    required this.local,
+    required this.connectivity,
+  });
+  
+  @override
+  Future<Screen> fetchScreen(String screenId) async {
+    // Check if online
+    final connectionResult = await connectivity.checkConnectivity();
+    final isOnline = connectionResult != ConnectivityResult.none;
+    
+    if (isOnline) {
+      try {
+        // Fetch from remote
+        final screen = await remote.fetchScreen(screenId);
+        
+        // Cache locally
+        await local.saveScreen(screenId, screen);
+        
+        return screen;
+      } catch (e) {
+        // Fall back to cache
+        return local.fetchScreen(screenId);
+      }
+    } else {
+      // Offline - use cache
+      return local.fetchScreen(screenId);
+    }
+  }
+  
+  @override
+  Future<SyncResult> syncData(List<SyncItem> items) async {
+    final results = <String, bool>{};
+    final errors = <SyncError>[];
+    
+    for (final item in items) {
+      try {
+        await remote.saveScreen(item.screenId, item.screen);
+        results[item.screenId] = true;
+      } catch (e) {
+        results[item.screenId] = false;
+        errors.add(SyncError(
+          itemId: item.screenId,
+          error: e.toString(),
+        ));
+      }
+    }
+    
+    return SyncResult(
+      synced: results.values.where((v) => v).length,
+      failed: results.values.where((v) => !v).length,
+      errors: errors,
     );
   }
 }
-
-@override
-Future<List<Map<String, dynamic>>> getOfflineQueue() async {
-  return List.unmodifiable(_offlineQueue);
-}
 ```
 
 ---
 
-## Step 8: Error Handling
+## Error Handling
 
-### Defining Custom Exceptions
-
-```dart
-class MyCustomException extends DataSourceException {
-  MyCustomException({
-    required String message,
-    String code = 'CUSTOM_ERROR',
-    Exception? originalException,
-  }) : super(
-    message: message,
-    code: code,
-    originalException: originalException,
-  );
-}
-```
-
-### Consistent Error Responses
+### Custom Exceptions
 
 ```dart
-Future<T> _executeWithErrorHandling<T>(
-  Future<T> Function() operation,
-  String operationName,
-) async {
-  try {
-    return await operation();
-  } on DataSourceException {
-    rethrow; // Already properly formatted
-  } on SocketException catch (e) {
-    throw NetworkException('Network error during $operationName: ${e.message}');
-  } on TimeoutException {
-    throw NetworkException('Timeout during $operationName');
-  } on FormatException catch (e) {
-    throw DataSourceException(
-      message: 'Data format error: ${e.message}',
-      code: 'FORMAT_ERROR',
-    );
-  } catch (e) {
-    throw DataSourceException(
-      message: 'Unexpected error during $operationName: ${e.toString()}',
-      code: 'UNKNOWN_ERROR',
-      originalException: e as Exception?,
-    );
+class MyDataSource extends DataSource {
+  @override
+  Future<Screen> fetchScreen(String screenId) async {
+    if (screenId.isEmpty) {
+      throw ArgumentError('screenId cannot be empty');
+    }
+    
+    try {
+      // Fetch logic
+    } on SocketException {
+      throw NetworkException('Failed to connect to server');
+    } on TimeoutException {
+      throw DataSourceException('Request timeout');
+    } catch (e) {
+      throw DataSourceException('Unknown error: $e');
+    }
   }
 }
 ```
 
----
-
-## Step 9: Package as Plugin
-
-### Create Package Structure
-
-```
-my_custom_datasource/
-├── pubspec.yaml
-├── README.md
-├── lib/
-│   ├── src/
-│   │   └── my_custom_data_source.dart
-│   └── my_custom_datasource.dart
-└── test/
-    └── my_custom_data_source_test.dart
-```
-
-### pubspec.yaml
-
-```yaml
-name: my_custom_datasource
-description: Custom DataSource implementation for QuicUI
-version: 1.0.0
-
-dependencies:
-  flutter:
-    sdk: flutter
-  quicui: ^1.0.0
-  http: ^1.1.0
-  web_socket_channel: ^2.4.0
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  mocktail: ^1.0.0
-```
-
-### Export Public API
+### Exception Handling in UI
 
 ```dart
-// lib/my_custom_datasource.dart
-export 'src/my_custom_data_source.dart';
+FutureBuilder<Screen>(
+  future: screenFuture,
+  builder: (context, snapshot) {
+    if (snapshot.hasError) {
+      if (snapshot.error is ScreenNotFoundException) {
+        return Center(child: Text('Screen not found'));
+      } else if (snapshot.error is NetworkException) {
+        return Center(child: Text('No internet connection'));
+      } else {
+        return Center(child: Text('Error: ${snapshot.error}'));
+      }
+    }
+    
+    // ... handle other states
+  },
+)
 ```
 
 ---
 
-## Step 10: Write Tests
+## Testing Custom Backends
+
+### Mock Implementation
+
+```dart
+class MockDataSource extends DataSource {
+  final screens = <String, Screen>{};
+  
+  @override
+  Future<Screen> fetchScreen(String screenId) async {
+    await Future.delayed(Duration(milliseconds: 100));
+    
+    if (!screens.containsKey(screenId)) {
+      throw ScreenNotFoundException('Mock: Screen not found');
+    }
+    
+    return screens[screenId]!;
+  }
+  
+  @override
+  Future<Screen> saveScreen(String screenId, Screen screen) async {
+    screens[screenId] = screen;
+    return screen;
+  }
+  
+  // ... implement other methods
+}
+```
 
 ### Unit Tests
 
 ```dart
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:my_custom_datasource/my_custom_datasource.dart';
-
-void main() {
-  group('MyCustomDataSource', () {
-    late MyCustomDataSource dataSource;
-    
-    setUp(() {
-      dataSource = MyCustomDataSource(
-        apiUrl: 'https://api.example.com',
-        apiKey: 'test-key',
-      );
-    });
-    
-    tearDown(() {
-      dataSource.dispose();
-    });
-    
-    test('fetchScreen returns Screen object', () async {
-      final screen = await dataSource.fetchScreen('screen-1');
-      expect(screen, isNotNull);
-      expect(screen.id, equals('screen-1'));
-    });
-    
-    test('fetchScreen throws ScreenNotFoundException for missing screen', () async {
-      expect(
-        () => dataSource.fetchScreen('nonexistent'),
-        throwsA(isA<ScreenNotFoundException>()),
-      );
-    });
-    
-    test('updateScreen queues changes when offline', () async {
-      // Simulate offline condition
-      expect(
-        () => dataSource.updateScreen('screen-1', {'name': 'New Name'}),
-        throwsA(isA<SyncException>()),
-      );
-      
-      // Verify change is queued
-      final queue = await dataSource.getOfflineQueue();
-      expect(queue, isNotEmpty);
-    });
-    
-    test('subscribeToScreen yields current and future values', () async {
-      final screens = <Screen>[];
-      
-      final subscription = dataSource.subscribeToScreen('screen-1').listen(
-        (screen) => screens.add(screen),
-      );
-      
-      await Future.delayed(const Duration(milliseconds: 100));
-      expect(screens, isNotEmpty);
-      
-      subscription.cancel();
-    });
-  });
-}
+test('Fetch screen from custom backend', () async {
+  final dataSource = MockDataSource();
+  
+  dataSource.saveScreen('test', Screen(
+    id: 'test',
+    name: 'Test Screen',
+    version: 1,
+    rootWidget: WidgetData(type: 'text', properties: {}),
+    // ...
+  ));
+  
+  final screen = await dataSource.fetchScreen('test');
+  
+  expect(screen.id, equals('test'));
+  expect(screen.name, equals('Test Screen'));
+});
 ```
 
 ---
 
-## Implementation Checklist
+## Publishing Your Backend
 
-- [ ] Extend DataSource abstract class
-- [ ] Implement all 15 required methods
-- [ ] Implement fetchScreen()
-- [ ] Implement fetchScreensByTag()
-- [ ] Implement fetchUser()
-- [ ] Implement fetchUsers()
-- [ ] Implement fetchComponent()
-- [ ] Implement fetchComponents()
-- [ ] Implement subscribeToScreen()
-- [ ] Implement subscribeToUser()
-- [ ] Implement subscribeToComponent()
-- [ ] Implement updateScreen()
-- [ ] Implement updateUser()
-- [ ] Implement updateComponent()
-- [ ] Implement syncOfflineChanges()
-- [ ] Implement getOfflineQueue()
-- [ ] Handle all exception types
-- [ ] Implement error handling
-- [ ] Add logging/debugging
-- [ ] Create unit tests
-- [ ] Create integration tests
-- [ ] Write README documentation
-- [ ] Package as plugin (optional)
+### 1. Create Pub Package
 
----
-
-## Example: Complete Firebase DataSource
-
-See `examples/firebase_datasource.dart` for a complete, production-ready Firebase implementation.
-
----
-
-## Best Practices
-
-1. **Use Service Locators**
-   - Consider using GetIt for dependency management
-   - Makes testing and swapping implementations easier
-
-2. **Implement Caching**
-   - Cache frequently accessed data
-   - Implement TTL (time-to-live) for cache invalidation
-   - Use memory cache + persistent cache (Hive, sqflite)
-
-3. **Error Handling**
-   - Always throw appropriate exceptions
-   - Include context in error messages
-   - Log errors for debugging
-
-4. **Real-Time Updates**
-   - Use WebSockets for efficiency
-   - Implement connection recovery
-   - Gracefully handle connection losses
-
-5. **Offline Support**
-   - Queue mutations when offline
-   - Implement conflict resolution strategy
-   - Provide sync status to UI
-
-6. **Security**
-   - Never log sensitive data
-   - Validate all input
-   - Use HTTPS only
-   - Implement rate limiting
-
-7. **Performance**
-   - Batch requests when possible
-   - Implement pagination
-   - Use compression for large payloads
-   - Monitor response times
-
-8. **Testing**
-   - Mock external services
-   - Test error scenarios
-   - Test offline behavior
-   - Test concurrent operations
-
----
-
-## Common Patterns
-
-### Retry Logic
-
-```dart
-Future<T> _withRetry<T>(
-  Future<T> Function() operation, {
-  int maxRetries = 3,
-  Duration delay = const Duration(seconds: 1),
-}) async {
-  for (int i = 0; i < maxRetries; i++) {
-    try {
-      return await operation();
-    } catch (e) {
-      if (i == maxRetries - 1) rethrow;
-      await Future.delayed(delay * (i + 1)); // Exponential backoff
-    }
-  }
-  throw Exception('Max retries exceeded');
-}
+```bash
+flutter pub publish --dry-run
+flutter pub publish
 ```
 
-### Caching
+### 2. Update README
 
-```dart
-final Map<String, Screen> _screenCache = {};
-final Map<String, DateTime> _screenCacheTimes = {};
+Include:
+- Installation instructions
+- API key setup
+- Example usage
+- Link to main QuicUI package
 
-Future<Screen> fetchScreen(String screenId) async {
-  // Check cache
-  if (_screenCache.containsKey(screenId)) {
-    final cachedTime = _screenCacheTimes[screenId]!;
-    if (DateTime.now().difference(cachedTime).inMinutes < 5) {
-      return _screenCache[screenId]!;
-    }
-  }
-  
-  // Fetch from backend
-  final screen = await _fetchFromBackend(screenId);
-  
-  // Update cache
-  _screenCache[screenId] = screen;
-  _screenCacheTimes[screenId] = DateTime.now();
-  
-  return screen;
-}
+### 3. Example README Section
+
+```markdown
+# QuicUI Custom Backend
+
+Custom backend implementation for QuicUI.
+
+## Installation
+
+\`\`\`bash
+flutter pub add quicui_custom
+\`\`\`
+
+## Usage
+
+\`\`\`dart
+final dataSource = CustomDataSource('your-api-key');
+DataSourceProvider.instance.register(dataSource);
+\`\`\`
+
+See [QuicUI Documentation](https://pub.dev/packages/quicui) for complete setup.
 ```
+
+---
+
+## Next Steps
+
+- 📖 Read [API Reference](API_REFERENCE.md) for detailed method documentation
+- 🔌 Check [Plugin Architecture](PLUGIN_ARCHITECTURE.md) for design patterns
+- 🧪 See `examples/` directory for working backend implementations
+- 💬 Join Discord/GitHub for community support
 
 ---
 
 ## Resources
 
-- [Flutter HTTP Documentation](https://pub.dev/packages/http)
-- [WebSocket Channel](https://pub.dev/packages/web_socket_channel)
-- [Hive (Local Storage)](https://pub.dev/packages/hive)
-- [Mocktail (Testing)](https://pub.dev/packages/mocktail)
-
----
-
-## Summary
-
-Creating a custom DataSource:
-
-1. ✅ Extend `DataSource` abstract class
-2. ✅ Implement 15 required methods
-3. ✅ Handle all error scenarios
-4. ✅ Implement real-time subscriptions
-5. ✅ Support offline synchronization
-6. ✅ Write comprehensive tests
-7. ✅ Package and document
-
-You now have a reusable plugin for any backend service!
+- **QuicUI:** https://pub.dev/packages/quicui
+- **Supabase Plugin:** https://pub.dev/packages/quicui_supabase
+- **GitHub:** https://github.com/Ikolvi/QuicUI
+- **Issues:** https://github.com/Ikolvi/QuicUI/issues

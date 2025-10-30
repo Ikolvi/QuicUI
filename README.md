@@ -202,6 +202,30 @@ await QuicUIService().initializeWithDataSource(dataSource);
 
 ## 📝 JSON Schema Example
 
+### About the ID Field
+
+The `id` field in widgets is **completely optional**:
+
+- **When to use:** When you need to reference the widget from code (testing, state binding, or programmatic updates)
+- **When to skip:** For most widgets - just define `type` and `properties`
+
+```json
+{
+  "type": "text",
+  "properties": {"text": "Hello"}
+}
+```
+
+This minimal example works perfectly! Add `id` only if needed:
+
+```json
+{
+  "id": "greeting_text",
+  "type": "text",
+  "properties": {"text": "Hello"}
+}
+```
+
 ### Simple Screen
 
 ```json
@@ -226,17 +250,19 @@ await QuicUIService().initializeWithDataSource(dataSource);
       {
         "type": "button",
         "properties": {"label": "Click Me"},
-        "onPressed": {
-          "type": "api",
-          "method": "POST",
-          "url": "/api/action",
-          "onSuccess": {"type": "showSnackBar", "message": "Success!"}
+        "events": {
+          "onPressed": {
+            "action": "navigate",
+            "screen": "detail_screen"
+          }
         }
       }
     ]
   }
 }
 ```
+
+**Note:** All fields except `type` and `properties` are optional. The `id` field is optional and only needed if you want to reference the widget programmatically.
 
 ### Counter App with Scaffold
 

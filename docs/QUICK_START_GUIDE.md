@@ -1,61 +1,143 @@
-# Quick Start Guide: Initialize QuicUI with Backend Plugins
+# Quick Start Guide - QuicUI v1.0.3+
 
-Get QuicUI running in your Flutter app in 5 minutes. QuicUI uses a backend-agnostic plugin architecture - choose your backend and initialize.
+Get QuicUI running in your Flutter app in 5 minutes. **Backend is completely optional** - use QuicUI standalone with local JSON data, or add a backend plugin like Supabase.
 
 **What you'll learn:**
-- 🚀 Basic QuicUI initialization
-- 🔌 Choosing a backend plugin
+- 🚀 Standalone QuicUI (no backend required)
+- 🔌 Adding optional backend plugins
 - 📱 Fetching and displaying screens
-- 🧪 Testing with mock backends
+- 🧪 Testing workflows
 
 **Time required:** 5-10 minutes  
-**Prerequisites:** Flutter project, backend credentials (Supabase, Firebase, or custom)
+**Difficulty:** Beginner
 
 ---
 
 ## Installation
 
-### 1. Add QuicUI Core
+### Step 1: Add QuicUI Core
 
 ```bash
 flutter pub add quicui
 ```
 
-### 2. Choose Your Backend Plugin
+### Step 2 (Optional): Add Backend Plugin
 
-**Option A: Supabase Backend**
+QuicUI works **without any backend**. Add a backend plugin only if you need cloud integration:
+
+**For Supabase backend:**
 ```bash
 flutter pub add quicui_supabase
 ```
 
-**Option B: Firebase Backend**
+**For Firebase backend (future):**
 ```bash
 flutter pub add quicui_firebase
 ```
 
-**Option C: REST API Backend**
-```bash
-flutter pub add quicui_rest
-```
-
-**Option D: Custom Backend**
-See [Backend Integration Guide](BACKEND_INTEGRATION.md) to implement your own DataSource.
+**For custom backend:**
+Implement the `DataSource` interface. See [Backend Integration Guide](BACKEND_INTEGRATION.md).
 
 ---
 
-## 5-Minute Quickstart
+## Mode 1: Standalone (No Backend)
 
-### Step 1: Import Required Packages
+### Recommended For:
+- ✅ Local/offline-first apps
+- ✅ Static screens
+- ✅ Testing and development
+- ✅ Apps that don't need cloud sync
+
+### Basic Setup
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:quicui/quicui.dart';
-import 'package:quicui_supabase/quicui_supabase.dart';  // or your chosen backend
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: StandaloneScreen(),
+    );
+  }
+}
+
+class StandaloneScreen extends StatelessWidget {
+  const StandaloneScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    // Define UI as local JSON - no backend needed!
+    final screenJson = {
+      'type': 'scaffold',
+      'appBar': {
+        'type': 'appbar',
+        'title': 'QuicUI Offline',
+      },
+      'body': {
+        'type': 'center',
+        'child': {
+          'type': 'column',
+          'mainAxisAlignment': 'center',
+          'children': [
+            {
+              'type': 'text',
+              'properties': {
+                'text': 'Hello from QuicUI!',
+                'fontSize': 24,
+                'fontWeight': 'bold',
+              },
+            },
+            {
+              'type': 'sizedBox',
+              'properties': {'height': 16},
+            },
+            {
+              'type': 'text',
+              'properties': {
+                'text': 'No backend required',
+                'fontSize': 16,
+              },
+            },
+          ],
+        },
+      },
+    };
+
+    // Render the screen
+    final screen = Screen.fromJson(screenJson);
+    final renderer = UIRenderer();
+    return renderer.renderScreen(screen);
+  }
+}
 ```
 
-### Step 2: Initialize in main()
+**That's it!** No backend, no configuration, no internet required.
+
+---
+
+## Mode 2: With Backend Plugin (Optional)
+
+### Recommended For:
+- ✅ Real-time UI updates
+- ✅ Dynamic screen management
+- ✅ Multi-device sync
+- ✅ Collaborative features
+
+### Setup with Supabase
 
 ```dart
+import 'package:flutter/material.dart';
+import 'package:quicui/quicui.dart';
+import 'package:quicui_supabase/quicui_supabase.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
@@ -65,492 +147,345 @@ void main() async {
     'your-anon-key',
   );
   
-  // Initialize QuicUI with the plugin
-  await QuicUIService().initializeWithDataSource(dataSource);
+  // Connect to backend
+  await dataSource.connect();
+  
+  // Register with QuicUI (optional - for dependency injection)
+  DataSourceProvider.instance.register(dataSource);
   
   runApp(const MyApp());
 }
-```
 
-### Step 3: Fetch and Display Screens
-
-```dart
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ScreenDisplay(),
+      home: BackendScreen(),
     );
   }
 }
 
-class ScreenDisplay extends StatefulWidget {
-  const ScreenDisplay({Key? key}) : super(key: key);
+class BackendScreen extends StatefulWidget {
+  const BackendScreen({Key? key}) : super(key: key);
 
   @override
-  State<ScreenDisplay> createState() => _ScreenDisplayState();
+  State<BackendScreen> createState() => _BackendScreenState();
 }
 
-class _ScreenDisplayState extends State<ScreenDisplay> {
-  late Future<dynamic> screenFuture;
+class _BackendScreenState extends State<BackendScreen> {
+  late Future<Screen> screenFuture;
 
   @override
   void initState() {
     super.initState();
-    screenFuture = QuicUIService().fetchScreen('home-screen');
+    final dataSource = DataSourceProvider.instance.get();
+    screenFuture = dataSource.fetchScreen('home_screen');
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('QuicUI Screen')),
-      body: FutureBuilder(
-        future: screenFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          }
-          
-          final screen = snapshot.data;
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(screen.toString()),  // Render screen content
-            ),
+    return FutureBuilder<Screen>(
+      future: screenFuture,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(child: CircularProgressIndicator()),
           );
-        },
-      ),
+        }
+
+        if (snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Error')),
+            body: Center(child: Text('Error: ${snapshot.error}')),
+          );
+        }
+
+        if (snapshot.hasData) {
+          final screen = snapshot.data!;
+          final renderer = UIRenderer();
+          return renderer.renderScreen(screen);
+        }
+
+        return const Scaffold(
+          body: Center(child: Text('No screen found')),
+        );
+      },
     );
   }
 }
 ```
 
-That's it! Your app is now running QuicUI with a backend plugin. ✅
-
 ---
 
-## Backend Setup
+## JSON Schema Reference
 
-### Supabase Backend
+### Minimal Widget
 
-**Prerequisites:** Supabase project, table with screen data
+The **only required field** is `type`. Everything else is optional:
 
-```dart
-import 'package:quicui_supabase/quicui_supabase.dart';
-
-final dataSource = SupabaseDataSource(
-  supabaseUrl: 'https://your-project.supabase.co',
-  supabaseAnonKey: 'your-anon-key',
-);
-
-await QuicUIService().initializeWithDataSource(dataSource);
-```
-
-**Configuration:** See [Supabase Integration](BACKEND_INTEGRATION.md#supabase) for table schema.
-
----
-
-### Firebase Backend
-
-**Prerequisites:** Firebase project, Firestore collection with screen data
-
-```dart
-import 'package:quicui_firebase/quicui_firebase.dart';
-
-final dataSource = FirebaseDataSource(
-  projectId: 'your-firebase-project',
-  // Optional: custom configuration
-);
-
-await QuicUIService().initializeWithDataSource(dataSource);
-```
-
-**Configuration:** See [Firebase Integration](BACKEND_INTEGRATION.md#firebase) for collection structure.
-
----
-
-### REST API Backend
-
-**Prerequisites:** REST API endpoint returning screen data
-
-```dart
-import 'package:quicui_rest/quicui_rest.dart';
-
-final dataSource = RestApiDataSource(
-  baseUrl: 'https://api.example.com',
-  apiKey: 'your-api-key',
-);
-
-await QuicUIService().initializeWithDataSource(dataSource);
-```
-
-**Configuration:** See [REST API Integration](BACKEND_INTEGRATION.md#rest-api) for endpoint requirements.
-
----
-
-### Custom Backend
-
-**For proprietary or specialized systems:**
-
-```dart
-import 'package:quicui/quicui.dart';
-
-class MyCustomDataSource extends DataSource {
-  @override
-  Future<dynamic> fetchScreen(String screenId) async {
-    // Your custom implementation
+```json
+{
+  "type": "text",
+  "properties": {
+    "text": "Hello World"
   }
+}
+```
 
-  @override
-  Future<dynamic> fetchData(String dataId) async {
-    // Your custom implementation
+### Widget With Optional ID
+
+The `id` field is **optional** - use it only if you need to reference the widget:
+
+```json
+{
+  "id": "greeting_text",
+  "type": "text",
+  "properties": {
+    "text": "Hello World"
   }
-
-  // ... implement other required methods
-}
-
-final dataSource = MyCustomDataSource();
-await QuicUIService().initializeWithDataSource(dataSource);
-```
-
-See [Custom Backend Integration](BACKEND_INTEGRATION.md#custom-backend) for complete DataSource interface.
-
----
-
-## Common Setups
-
-### Setup 1: Simple App with Supabase
-
-Most common starting point - Supabase as backend.
-
-**main.dart:**
-```dart
-import 'package:flutter/material.dart';
-import 'package:quicui/quicui.dart';
-import 'package:quicui_supabase/quicui_supabase.dart';
-
-const SUPABASE_URL = 'https://xyzabc.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  final dataSource = SupabaseDataSource(SUPABASE_URL, SUPABASE_KEY);
-  await QuicUIService().initializeWithDataSource(dataSource);
-  
-  runApp(const MyApp());
 }
 ```
 
-### Setup 2: Environment-Specific Configuration
+### Complete Widget Example
 
-Different backends for dev/staging/prod environments.
-
-**config.dart:**
-```dart
-class Config {
-  static const prod = _ProdConfig();
-  static const staging = _StagingConfig();
-  static const dev = _DevConfig();
-}
-
-abstract class _BaseConfig {
-  String get supabaseUrl;
-  String get supabaseKey;
-  
-  DataSource createDataSource() => SupabaseDataSource(supabaseUrl, supabaseKey);
-}
-
-class _ProdConfig extends _BaseConfig {
-  const _ProdConfig();
-  
-  @override
-  String get supabaseUrl => 'https://prod.supabase.co';
-  @override
-  String get supabaseKey => 'prod-key';
-}
-
-class _StagingConfig extends _BaseConfig {
-  const _StagingConfig();
-  
-  @override
-  String get supabaseUrl => 'https://staging.supabase.co';
-  @override
-  String get supabaseKey => 'staging-key';
-}
-
-class _DevConfig extends _BaseConfig {
-  const _DevConfig();
-  
-  @override
-  String get supabaseUrl => 'https://dev.supabase.co';
-  @override
-  String get supabaseKey => 'dev-key';
-}
-```
-
-**main.dart:**
-```dart
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Use environment-specific config
-  const environment = String.fromEnvironment('ENV', defaultValue: 'dev');
-  final config = environment == 'prod' 
-      ? Config.prod
-      : environment == 'staging'
-          ? Config.staging
-          : Config.dev;
-  
-  await QuicUIService().initializeWithDataSource(config.createDataSource());
-  
-  runApp(const MyApp());
-}
-```
-
-### Setup 3: Testing with Mock Backend
-
-Write tests without external dependencies.
-
-**test/screens_test.dart:**
-```dart
-import 'package:flutter_test/flutter_test.dart';
-import 'package:mocktail/mocktail.dart';
-import 'package:quicui/quicui.dart';
-
-class MockDataSource extends Mock implements DataSource {}
-
-void main() {
-  test('Screen fetching works correctly', () async {
-    final mockDataSource = MockDataSource();
-    
-    // Mock the behavior
-    when(() => mockDataSource.fetchScreen('home'))
-        .thenAnswer((_) async => {'id': 'home', 'title': 'Home'});
-    
-    // Initialize with mock
-    await QuicUIService().initializeWithDataSource(mockDataSource);
-    
-    // Test
-    final screen = await QuicUIService().fetchScreen('home');
-    expect(screen['title'], equals('Home'));
-  });
-}
-```
-
-### Setup 4: Multi-Backend Support
-
-Switch backends based on feature flags or user preferences.
-
-**backend_manager.dart:**
-```dart
-enum BackendType { supabase, firebase, restApi }
-
-class BackendManager {
-  static DataSource createDataSource(BackendType type) {
-    switch (type) {
-      case BackendType.supabase:
-        return SupabaseDataSource(
-          'https://xyzabc.supabase.co',
-          'anon-key',
-        );
-      case BackendType.firebase:
-        return FirebaseDataSource(projectId: 'my-project');
-      case BackendType.restApi:
-        return RestApiDataSource(baseUrl: 'https://api.example.com');
+```json
+{
+  "id": "submit_button",
+  "type": "button",
+  "properties": {
+    "label": "Submit",
+    "backgroundColor": "#2196F3"
+  },
+  "events": {
+    "onPressed": {
+      "action": "submitForm",
+      "formId": "contact_form"
     }
   }
 }
 ```
 
-**main.dart:**
-```dart
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  // Determine backend based on config or feature flag
-  final backendType = getBackendFromConfig();
-  final dataSource = BackendManager.createDataSource(backendType);
-  
-  await QuicUIService().initializeWithDataSource(dataSource);
-  runApp(const MyApp());
-}
-```
+### Common Widget Types
 
----
-
-## Common Tasks
-
-### Fetch a Single Screen
-
-```dart
-try {
-  final screen = await QuicUIService().fetchScreen('screen-id');
-  print('Screen fetched: $screen');
-} catch (e) {
-  print('Error: $e');
-}
-```
-
-### Fetch Multiple Screens
-
-```dart
-Future<List<dynamic>> fetchMultipleScreens(List<String> ids) async {
-  final futures = ids.map((id) => QuicUIService().fetchScreen(id));
-  return await Future.wait(futures);
-}
-
-// Usage
-final screens = await fetchMultipleScreens(['home', 'profile', 'settings']);
-```
-
-### Subscribe to Real-Time Updates
-
-```dart
-// Get the active DataSource
-final dataSource = DataSourceProvider.instance.get();
-
-// Subscribe to changes
-final stream = dataSource.subscribeToScreen('screen-id');
-stream.listen((screen) {
-  print('Screen updated: $screen');
-});
-```
-
-### Handle Initialization Errors
-
-```dart
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  
-  try {
-    final dataSource = SupabaseDataSource(url, key);
-    await QuicUIService().initializeWithDataSource(dataSource);
-  } on SupabaseException catch (e) {
-    print('Supabase error: ${e.message}');
-    // Handle Supabase-specific errors
-  } on DataSourceException catch (e) {
-    print('DataSource error: ${e.message}');
-    // Handle DataSource errors
-  } catch (e) {
-    print('Unexpected error: $e');
-    // Handle other errors
+```json
+{
+  "type": "scaffold",
+  "appBar": {
+    "type": "appbar",
+    "title": "My App"
+  },
+  "body": {
+    "type": "column",
+    "mainAxisAlignment": "start",
+    "crossAxisAlignment": "center",
+    "children": [
+      {
+        "type": "text",
+        "properties": {
+          "text": "Title",
+          "fontSize": 24,
+          "fontWeight": "bold"
+        }
+      },
+      {
+        "type": "textfield",
+        "properties": {
+          "hint": "Enter text",
+          "label": "Input"
+        }
+      },
+      {
+        "type": "button",
+        "properties": {
+          "label": "Click Me"
+        },
+        "events": {
+          "onPressed": {
+            "action": "navigate",
+            "screen": "detail_screen"
+          }
+        }
+      }
+    ]
   }
 }
 ```
 
 ---
 
-## Troubleshooting
+## Supported Widget Types
 
-### "DataSourceProvider is null"
-**Cause:** Tried to use QuicUIService before initialization  
-**Solution:** Always call `initializeWithDataSource()` in `main()` before `runApp()`
+### Layout Widgets
+- `scaffold` - Full screen with AppBar, body, drawer
+- `appbar` - Top app bar
+- `column` - Vertical layout
+- `row` - Horizontal layout
+- `center` - Center content
+- `container` - Container with decoration
+- `padding` - Add padding
+- `sizedbox` - Fixed size box
+- `expanded` - Flexible expansion
+- `listview` - Scrollable list
+- `gridview` - Grid layout
+- `stack` - Overlay widgets
 
-```dart
-// ✓ Correct
-await QuicUIService().initializeWithDataSource(dataSource);
-runApp(const MyApp());
+### Input Widgets
+- `textfield` - Text input
+- `checkbox` - Checkbox
+- `radiobutton` - Radio button
+- `dropdownbutton` - Dropdown menu
+- `switch` - Toggle switch
 
-// ✗ Wrong - forgot initialization
-runApp(const MyApp());
-```
+### Display Widgets
+- `text` - Static text
+- `richtext` - Rich formatted text
+- `image` - Display image
+- `icon` - Display icon
+- `card` - Material card
+- `listtile` - List item
+- `badge` - Badge display
+- `divider` - Divider
 
-### "fetchScreen failed"
-**Cause:** Connection error or invalid screen ID  
-**Solution:** Verify credentials and screen ID in your backend
+### Button Widgets
+- `button` - Standard button
+- `elevatedbutton` - Elevated button
+- `floatingactionbutton` - FAB
+- `iconbutton` - Icon button
 
-```dart
-// Debug: Check if backend is accessible
-try {
-  final screen = await QuicUIService().fetchScreen('test-screen');
-} catch (e) {
-  print('Debug: $e');
-  // Check credentials, network, and screen ID
+---
+
+## Common Tasks
+
+### Add State Binding
+
+Bind widget properties to application state:
+
+```json
+{
+  "type": "text",
+  "properties": {
+    "text": "${state.userName}"
+  }
 }
 ```
 
-### "Import not found"
-**Cause:** Didn't install backend plugin  
-**Solution:** Install the plugin for your chosen backend
+### Add Event Handlers
 
-```bash
-# For Supabase
-flutter pub add quicui_supabase
+Handle user interactions:
 
-# For Firebase
-flutter pub add quicui_firebase
-
-# For REST API
-flutter pub add quicui_rest
+```json
+{
+  "type": "button",
+  "properties": {"label": "Save"},
+  "events": {
+    "onPressed": {
+      "action": "submitForm",
+      "formId": "user_form"
+    }
+  }
+}
 ```
 
-### "Performance is slow"
-**Cause:** Network latency or large screen data  
-**Solution:** See [Performance Guide](PERFORMANCE.md) for optimization tips
+### Conditional Rendering
+
+Show widget only if condition is met:
+
+```json
+{
+  "type": "text",
+  "properties": {"text": "Premium Feature"},
+  "condition": {
+    "type": "equals",
+    "value": true
+  }
+}
+```
+
+### Add Children to Layout
+
+Layout widgets can have children:
+
+```json
+{
+  "type": "column",
+  "children": [
+    {
+      "type": "text",
+      "properties": {"text": "Child 1"}
+    },
+    {
+      "type": "text",
+      "properties": {"text": "Child 2"}
+    }
+  ]
+}
+```
+
+---
+
+## Testing
+
+### Test Standalone Screens
+
+```dart
+test('Render text widget', () {
+  final json = {
+    'type': 'text',
+    'properties': {'text': 'Hello'},
+  };
+  
+  final widget = WidgetData.fromJson(json);
+  expect(widget.type, equals('text'));
+  expect(widget.properties['text'], equals('Hello'));
+});
+```
+
+### Test with Backend Mock
+
+```dart
+test('Fetch screen from mock backend', () async {
+  final mockDataSource = MockDataSource();
+  DataSourceProvider.instance.register(mockDataSource);
+  
+  final screen = await mockDataSource.fetchScreen('test_screen');
+  expect(screen.id, equals('test_screen'));
+});
+```
 
 ---
 
 ## Next Steps
 
-1. **Explore Your Backend**
-   - Review [Backend Integration Guide](BACKEND_INTEGRATION.md)
-   - Learn about your chosen backend's data structure
-
-2. **Learn Architecture**
-   - Study [Plugin Architecture](PLUGIN_ARCHITECTURE.md)
-   - Understand how backends are abstracted
-
-3. **Advanced Usage**
-   - Check [API Reference](API_REFERENCE.md) for detailed method docs
-   - Implement custom error handling and logging
-
-4. **Optimize Performance**
-   - See [Performance Guide](PERFORMANCE.md)
-   - Implement caching and pagination
-
-5. **Build Custom Backend**
-   - Read [Custom Backend Integration](BACKEND_INTEGRATION.md#custom-backend)
-   - Implement DataSource for your system
+- 📖 Read [Backend Integration Guide](BACKEND_INTEGRATION.md) to add backend support
+- 🔌 Check [Plugin Architecture](PLUGIN_ARCHITECTURE.md) to build custom backends
+- 📚 Explore [API Reference](API_REFERENCE.md) for all available methods
+- 🧪 See `examples/` directory for complete working apps
 
 ---
 
-## Examples
+## Troubleshooting
 
-Complete examples are available in the `examples/` directory:
+### Widgets not rendering?
+- Verify widget `type` is supported (see list above)
+- Check that `properties` is a valid map
+- Ensure children use `List<WidgetData>` type
 
-- `examples/supabase_basic/` - Simple Supabase setup
-- `examples/firebase_setup/` - Firebase initialization
-- `examples/custom_backend/` - Custom DataSource implementation
-- `examples/testing/` - Mock backend for tests
+### Backend not connecting?
+- Verify credentials are correct
+- Check internet connection
+- Review backend-specific setup in the plugin README
 
-See [Examples README](../examples/README.md) for detailed walkthrough.
-
----
-
-## Support
-
-- 📖 **API Reference:** [API_REFERENCE.md](API_REFERENCE.md)
-- 🏗️ **Architecture:** [PLUGIN_ARCHITECTURE.md](PLUGIN_ARCHITECTURE.md)
-- 🔌 **Backends:** [BACKEND_INTEGRATION.md](BACKEND_INTEGRATION.md)
-- 💨 **Performance:** [PERFORMANCE.md](PERFORMANCE.md)
-- 🧪 **Testing:** [TESTING.md](TESTING.md)
+### State not updating?
+- Ensure state binding uses correct `${field}` syntax
+- Verify state field names match backend schema
 
 ---
 
-## Summary
+## Resources
 
-QuicUI is ready to use in 3 steps:
-
-1. **Choose backend** (Supabase, Firebase, REST, or custom)
-2. **Install plugin** (`flutter pub add quicui_<backend>`)
-3. **Initialize** in `main()` with `initializeWithDataSource()`
-
-Your app can now fetch screens with `QuicUIService().fetchScreen(id)`.
-
-**Happy building! 🚀**
+- **GitHub:** https://github.com/Ikolvi/QuicUI
+- **Pub.dev:** https://pub.dev/packages/quicui
+- **Issues:** https://github.com/Ikolvi/QuicUI/issues
+- **Supabase Plugin:** https://pub.dev/packages/quicui_supabase

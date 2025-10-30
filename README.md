@@ -431,10 +431,9 @@ Found a bug? Please [report it on GitHub](https://github.com/yourusername/quicui
 
 ## 📞 Support
 
-- 💬 [Discord Community](#) - Join our community
-- 📧 Email: support@quicui.dev
-- 📚 [Documentation](./docs)
-- 💡 [Discussion Forum](#)
+- � [Full Documentation](./README.md) - Complete guides and examples
+- � [Architecture Guide](./ARCHITECTURE.md) - System design
+- � [Supabase Integration](./SUPABASE_INTEGRATION_GUIDE.md) - Cloud data sync
 
 ## 📜 License
 

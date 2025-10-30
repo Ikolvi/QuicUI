@@ -270,31 +270,6 @@ void main() {
       });
     });
 
-    group('Backward Compatibility', () {
-      test('legacy initialize() method is marked as deprecated', () async {
-        // The method should throw UnimplementedError
-        expect(
-          () => service.initialize(
-            supabaseUrl: 'https://example.supabase.co',
-            supabaseAnonKey: 'test-key',
-          ),
-          throwsA(isA<UnimplementedError>()),
-        );
-      });
-
-      test('provides clear deprecation message', () async {
-        try {
-          await service.initialize(
-            supabaseUrl: 'https://example.supabase.co',
-            supabaseAnonKey: 'test-key',
-          );
-          fail('Should throw UnimplementedError');
-        } on UnimplementedError catch (e) {
-          expect(e.message, contains('Use SupabaseService'));
-        }
-      });
-    });
-
     group('Error Handling', () {
       test('propagates DataSource errors correctly', () async {
         await service.initializeWithDataSource(mockDataSource);

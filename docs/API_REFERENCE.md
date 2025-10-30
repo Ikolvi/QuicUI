@@ -892,5 +892,5 @@ class Component {
 ## See Also
 
 - [Plugin Architecture Overview](PLUGIN_ARCHITECTURE.md)
-- [Migration Guide](MIGRATION_GUIDE.md)
+- [Quick Start Guide](QUICK_START_GUIDE.md)
 - [Backend Integration Guide](BACKEND_INTEGRATION.md)

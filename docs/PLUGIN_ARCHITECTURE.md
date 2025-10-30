@@ -158,10 +158,6 @@ class QuicUIService {
   
   // Fetch screen using registered DataSource
   Future<Map<String, dynamic>> fetchScreen(String screenId);
-  
-  // Deprecated: Old Supabase-specific approach
-  @Deprecated('Use initializeWithDataSource instead')
-  Future<void> initialize(String supabaseUrl, String supabaseAnonKey);
 }
 ```
 
@@ -174,7 +170,7 @@ class QuicUIService {
 
 ## Initialization Flow
 
-### Plugin-Based Initialization (Recommended)
+### Plugin-Based Initialization
 
 ```dart
 // 1. Create your backend implementation
@@ -369,22 +365,17 @@ final screen2 = await QuicUIService().fetchScreen('screen-2');
 // Both calls work concurrently
 ```
 
-## Migration Path (From Old System)
+## Custom Backend Implementation
 
-If you're using the old Supabase-specific initialization:
+To implement a custom DataSource:
 
-**Old (Deprecated):**
-```dart
-await QuicUIService().initialize(supabaseUrl, supabaseAnonKey);
-```
+1. Create a new class extending `DataSource`
+2. Implement all 15 required methods
+3. Handle your backend's authentication/networking
+4. Manage error handling and offline state
+5. Write comprehensive tests
 
-**New (Recommended):**
-```dart
-final dataSource = SupabaseDataSource(supabaseUrl, supabaseAnonKey);
-await QuicUIService().initializeWithDataSource(dataSource);
-```
-
-See [Migration Guide](MIGRATION_GUIDE.md) for step-by-step instructions.
+See [Backend Integration Guide](BACKEND_INTEGRATION.md) for detailed instructions.
 
 ## Summary
 
@@ -395,6 +386,5 @@ The plugin architecture provides:
 ✅ **Testability** - Mock implementations for testing  
 ✅ **Extensibility** - Custom backends easily  
 ✅ **Scalability** - Support multiple backends simultaneously  
-✅ **Backward Compatibility** - Clear migration path  
 
 This architecture enables QuicUI to evolve without requiring changes to application code.

@@ -8,13 +8,13 @@ import 'package:quicui/src/utils/logger_util.dart';
 /// It acts as the entry point for the entire QuicUI framework and manages
 /// cloud data integration through a **plugin-based architecture**.
 ///
-/// QuicUI supports **multiple backend implementations** through the DataSource interface:
+/// QuicUI is backend-agnostic through the DataSource interface, supporting:
 /// - Supabase (via quicui_supabase plugin)
 /// - Firebase (via future quicui_firebase plugin)
 /// - Custom backends (implement DataSource interface)
 ///
 /// Features provided by any DataSource:
-/// - Dynamic UI configuration from cloud
+/// - Dynamic UI configuration from backend
 /// - Real-time UI updates and synchronization  
 /// - User data persistence
 /// - Authentication and authorization
@@ -63,7 +63,7 @@ import 'package:quicui/src/utils/logger_util.dart';
 /// Ready to fetch UI from backend
 /// ```
 ///
-/// ## Usage - Plugin-Based (Recommended)
+/// ## Usage - Plugin-Based Initialization
 ///
 /// ```dart
 /// import 'package:quicui_supabase/quicui_supabase.dart';
@@ -95,29 +95,12 @@ import 'package:quicui/src/utils/logger_util.dart';
 /// final screenData = await QuicUIService().fetchScreen('home_screen');
 /// ```
 ///
-/// ## Usage - Legacy Direct Supabase (Deprecated)
-///
-/// ```dart
-/// // ⚠️ DEPRECATED: Use plugin-based approach instead
-/// void main() async {
-///   WidgetsFlutterBinding.ensureInitialized();
-///   
-///   await QuicUIService().initialize(
-///     supabaseUrl: 'https://xxxx.supabase.co',
-///     supabaseAnonKey: 'your-anon-key',
-///   );
-///   
-///   runApp(MyApp());
-/// }
-/// ```
-///
 /// See also:
 /// - [initializeWithDataSource]: Initialize with DataSource plugin
 /// - [DataSourceProvider]: Service locator for backends
 /// - [ScreenRepository]: Data access layer
 /// - [ScreenBloc]: State management
 /// - https://github.com/Ikolvi/quicui_supabase: Supabase plugin
-/// - [MIGRATION_GUIDE.md]: Migrate from direct Supabase to plugin
 
 /// Main QuicUI service for initialization and configuration
 ///
@@ -138,7 +121,6 @@ import 'package:quicui/src/utils/logger_util.dart';
 /// - Manage authentication context
 /// - Coordinate services
 /// - Handle app lifecycle events
-/// - Provide backward compatibility for legacy code
 ///
 /// ## Thread Safety
 /// - Singleton is thread-safe
@@ -149,7 +131,6 @@ import 'package:quicui/src/utils/logger_util.dart';
 /// ```
 /// 1. Create: QuicUIService() or use factory
 /// 2. Initialize: Call initializeWithDataSource(dataSource) once
-///    - OR use legacy initialize() method (deprecated)
 /// 3. Use: Call fetchScreen(), etc.
 /// 4. Cleanup: dispose() on app close (optional)
 /// ```
@@ -159,7 +140,6 @@ import 'package:quicui/src/utils/logger_util.dart';
 /// - [DataSourceProvider]: Service locator
 /// - [ScreenRepository]: Primary consumer
 /// - [SupabaseDataSource]: Supabase plugin example
-/// - [MIGRATION_GUIDE.md]: Migrate from legacy approach
 class QuicUIService {
   static QuicUIService? _instance;
 
@@ -188,9 +168,9 @@ class QuicUIService {
 
   QuicUIService._internal();
 
-  /// Initialize QuicUI framework with a DataSource plugin (Recommended)
+  /// Initialize QuicUI framework with a DataSource plugin
   ///
-  /// This is the **recommended way** to initialize QuicUI with any backend implementation.
+  /// This is the **only way** to initialize QuicUI with any backend implementation.
   /// Supports Supabase, Firebase, or any custom backend implementing the DataSource interface.
   ///
   /// Must be called exactly once before using QuicUI.
@@ -291,9 +271,7 @@ class QuicUIService {
   /// See also:
   /// - [fetchScreen]: Load UI configuration from backend
   /// - [DataSourceProvider]: Service locator details
-  /// - [initialize]: Legacy Supabase-specific method (deprecated)
   /// - https://github.com/Ikolvi/quicui_supabase: Supabase plugin
-  /// - [MIGRATION_GUIDE.md]: Migration from legacy approach
   Future<void> initializeWithDataSource(DataSource dataSource) async {
     try {
       LoggerUtil.info('Initializing QuicUI with DataSource plugin');
@@ -313,117 +291,6 @@ class QuicUIService {
     }
   }
 
-  /// Initialize QuicUI framework with Supabase cloud backend (Deprecated)
-  ///
-  /// **⚠️ DEPRECATED**: Use [initializeWithDataSource] with [SupabaseDataSource] plugin instead.
-  ///
-  /// This method is kept for backward compatibility only.
-  /// New applications should use the plugin-based approach:
-  ///
-  /// ```dart
-  /// // ❌ OLD (deprecated):
-  /// await QuicUIService().initialize(
-  ///   supabaseUrl: 'https://xxxx.supabase.co',
-  ///   supabaseAnonKey: 'your-anon-key',
-  /// );
-  ///
-  /// // ✅ NEW (recommended):
-  /// import 'package:quicui_supabase/quicui_supabase.dart';
-  /// final dataSource = SupabaseDataSource(...);
-  /// await QuicUIService().initializeWithDataSource(dataSource);
-  /// ```
-  ///
-  /// See also:
-  /// - [MIGRATION_GUIDE.md]: Complete migration instructions
-  /// - [initializeWithDataSource]: New plugin-based approach
-  /// - https://github.com/Ikolvi/quicui_supabase: Supabase plugin package
-  /// 
-  /// Must be called exactly once before using QuicUI.
-  /// Typically called in main() before runApp().
-  /// Initializes connection to Supabase for cloud UI configuration.
-  ///
-  /// ## Parameters
-  /// - [supabaseUrl]: Supabase project URL
-  ///   - Format: https://[project-id].supabase.co
-  ///   - Get from Supabase project settings
-  /// - [supabaseAnonKey]: Supabase anonymous API key
-  ///   - Get from Supabase project settings → API → anon public key
-  ///   - Used for unauthenticated access to cloud data
-  ///
-  /// ## Initialization Process
-  /// 1. Initializes Supabase client with provided credentials
-  /// 2. Sets up local storage (Hive/SharedPreferences)
-  /// 3. Creates repository instances
-  /// 4. Configures error handling
-  /// 5. Starts sync manager for offline support
-  /// 6. Completes - ready to fetch UI from Supabase
-  ///
-  /// ## Behavior
-  /// - Idempotent: Safe to call multiple times
-  /// - Async: Use await to ensure completion
-  /// - Blocking: Holds reference until complete
-  /// - May prompt user for permissions (storage, etc.)
-  ///
-  /// ## Throws
-  /// - [ArgumentError]: Invalid Supabase credentials format
-  /// - [Exception]: Network error during initialization
-  ///
-  /// ## Performance
-  /// - First initialization: ~2-5 seconds
-  /// - Subsequent calls: ~100ms (no-op)
-  /// - Network-dependent: May take longer on slow connections
-  ///
-  /// ## Example
-  /// ```dart
-  /// void main() async {
-  ///   WidgetsFlutterBinding.ensureInitialized();
-  ///
-  ///   try {
-  ///     await QuicUIService().initialize(
-  ///       supabaseUrl: 'https://abcdef.supabase.co',
-  ///       supabaseAnonKey: 'eyJhbGc...',
-  ///     );
-  ///     runApp(const MyApp());
-  ///   } on Exception catch (e) {
-  ///     print('Failed to initialize QuicUI: $e');
-  ///     // Show error UI or fallback
-  ///   }
-  /// }
-  /// ```
-  ///
-  /// ## Cloud Integration
-  /// Once initialized, you can:
-  /// - Fetch dynamic UI from Supabase: `fetchScreen('home')`
-  /// - Subscribe to real-time updates: `watchScreen('home')`
-  /// - Sync offline changes when online
-  /// - Manage user authentication
-  ///
-  /// See also:
-  /// - [SUPABASE_INTEGRATION_GUIDE.md]: Complete cloud integration guide
-  /// - [fetchScreen]: Load UI configuration from Supabase
-  /// - [dispose]: Cleanup (optional)
-  /// - [initializeWithDataSource]: Modern plugin-based approach (recommended)
-  @Deprecated(
-    'Use initializeWithDataSource() with SupabaseDataSource plugin instead. '
-    'See MIGRATION_GUIDE.md for upgrade instructions.'
-  )
-  Future<void> initialize({
-    required String supabaseUrl,
-    required String supabaseAnonKey,
-  }) async {
-    // Framework initialization for Supabase cloud integration
-    // This would typically:
-    // 1. Initialize SupabaseService with provided credentials
-    // 2. Set up local storage (Hive/SharedPreferences)
-    // 3. Initialize repositories and BLoC providers
-    // 4. Start background sync manager
-    // 5. Configure error handling
-    //
-    // Actual implementation delegated to SupabaseService.initialize()
-    throw UnimplementedError(
-      'initialize: Use SupabaseService().initialize(supabaseUrl, supabaseAnonKey)',
-    );
-  }
 
   /// Fetch and prepare a screen for display
   ///

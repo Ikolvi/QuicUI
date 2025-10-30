@@ -3,7 +3,7 @@ description: >-
   QuicUI - Server-Driven UI Framework for Flutter.
   Define dynamic UIs in JSON, update instantly without app deployment.
   Cloud-powered by Supabase for real-time UI changes.
-version: 1.0.1
+version: 1.0.2
 homepage: https://github.com/Ikolvi/QuicUI
 repository: https://github.com/Ikolvi/QuicUI
 issue_tracker: https://github.com/Ikolvi/QuicUI/issues
@@ -33,6 +33,7 @@ dependencies:
   # Local Database (Primary: ObjectBox for performance)
   objectbox: ^5.0.1
   objectbox_flutter_libs: ^5.0.1
+  flat_buffers: ^24.3.25
   
   # Alternative: Hive (lightweight option)
   hive: ^2.2.3

@@ -1,43 +1,51 @@
 name: quicui
-description: "Remote dynamic UI for Flutter"
-version: 0.0.1
-homepage:
+description: >-
+  QuicUI - AI-Friendly Server-Driven UI Framework for Flutter.
+  Define UIs in JSON, update instantly without app deployment.
+version: 1.0.0
+homepage: https://github.com/yourusername/quicui
+repository: https://github.com/yourusername/quicui
+issue_tracker: https://github.com/yourusername/quicui/issues
+documentation: https://github.com/yourusername/quicui/wiki
+license: MIT
 
 environment:
-  sdk: ^3.9.2
-  flutter: ">=1.17.0"
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: '>=3.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   
-  # State Management
-  provider: ^6.1.0
-  get: ^4.6.5
+  # State Management - BLoC Pattern
+  flutter_bloc: ^9.0.0
+  bloc: ^9.0.0
+  equatable: ^2.0.5
   
   # HTTP & API
-  dio: ^5.4.0
-  http: ^1.1.0
+  dio: ^5.7.0
+  http: ^1.2.0
   
-  # Local Database (Primary: ObjectBox)
-  objectbox: ^4.1.0
-  objectbox_flutter_libs: ^4.1.0
+  # Local Database (Primary: ObjectBox for performance)
+  objectbox: ^4.1.1
+  objectbox_flutter_libs: ^4.1.1
   
   # Alternative: Hive (lightweight option)
-  hive: ^2.2.0
+  hive: ^2.2.3
   hive_flutter: ^1.1.0
   
   # Serialization
-  json_serializable: ^6.7.0
-  json_annotation: ^4.8.0
+  json_annotation: ^4.8.1
   
-  # Validation
-  validators: ^3.0.0
+  # Backend Integration
+  supabase_flutter: ^2.10.3
   
   # Utilities
-  uuid: ^4.1.0
+  uuid: ^4.2.1
   intl: ^0.20.0
   cached_network_image: ^3.3.1
+  device_info_plus: ^11.1.1
+  shared_preferences: ^2.2.3
   
   # Logging
   logger: ^2.3.0
@@ -49,10 +57,10 @@ dev_dependencies:
   
   # Code Generation
   build_runner: ^2.4.6
-  objectbox_generator: ^4.1.0
+  objectbox_generator: ^4.3.1
   
   # Testing
-  mockito: ^5.4.4
+  mocktail: ^1.0.0
   integration_test:
     sdk: flutter
 

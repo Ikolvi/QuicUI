@@ -1,0 +1,214 @@
+{
+  "type": "Scaffold",
+  "properties": {
+    "title": "Register"
+  },
+  "children": [
+    {
+      "type": "AppBar",
+      "properties": {
+        "title": "Create Account",
+        "centerTitle": true
+      }
+    },
+    {
+      "type": "SingleChildScrollView",
+      "properties": {
+        "padding": 16
+      },
+      "children": [
+        {
+          "type": "Column",
+          "properties": {
+            "mainAxisAlignment": "start",
+            "crossAxisAlignment": "center",
+            "spacing": 20
+          },
+          "children": [
+            {
+              "type": "SizedBox",
+              "properties": {
+                "height": 24
+              }
+            },
+            {
+              "type": "Text",
+              "properties": {
+                "text": "Create Your Account",
+                "fontSize": 28,
+                "fontWeight": "bold",
+                "color": "#1F2937"
+              }
+            },
+            {
+              "type": "Text",
+              "properties": {
+                "text": "Join us and get started today",
+                "fontSize": 14,
+                "color": "#6B7280"
+              }
+            },
+            {
+              "type": "SizedBox",
+              "properties": {
+                "height": 16
+              }
+            },
+            {
+              "id": "name_input",
+              "type": "TextField",
+              "properties": {
+                "label": "Full Name",
+                "hint": "Enter your full name"
+              }
+            },
+            {
+              "id": "email_input",
+              "type": "TextField",
+              "properties": {
+                "label": "Email",
+                "hint": "Enter your email address",
+                "keyboardType": "email"
+              }
+            },
+            {
+              "id": "password_input",
+              "type": "TextField",
+              "properties": {
+                "label": "Password",
+                "hint": "Enter a strong password",
+                "obscureText": true
+              }
+            },
+            {
+              "id": "confirm_password_input",
+              "type": "TextField",
+              "properties": {
+                "label": "Confirm Password",
+                "hint": "Re-enter your password",
+                "obscureText": true
+              }
+            },
+            {
+              "id": "agree_checkbox",
+              "type": "Checkbox",
+              "properties": {
+                "label": "I agree to the Terms and Conditions"
+              }
+            },
+            {
+              "id": "error_text",
+              "type": "Text",
+              "properties": {
+                "text": "${error}",
+                "fontSize": 14,
+                "color": "#DC2626"
+              },
+              "condition": {
+                "field": "error",
+                "operator": "notEmpty"
+              }
+            },
+            {
+              "id": "register_button",
+              "type": "ElevatedButton",
+              "properties": {
+                "label": "Create Account",
+                "backgroundColor": "#10B981",
+                "width": "match_parent"
+              },
+              "events": {
+                "onPressed": {
+                  "action": "custom",
+                  "handler": "validateRegistrationForm",
+                  "parameters": {
+                    "nameField": "name_input",
+                    "emailField": "email_input",
+                    "passwordField": "password_input",
+                    "confirmPasswordField": "confirm_password_input",
+                    "agreeField": "agree_checkbox"
+                  },
+                  "onSuccess": {
+                    "action": "setState",
+                    "updates": {
+                      "loading": true,
+                      "error": null
+                    },
+                    "onSuccess": {
+                      "action": "apiCall",
+                      "method": "POST",
+                      "endpoint": "/api/auth/register",
+                      "body": {
+                        "name": "${name_input.value}",
+                        "email": "${email_input.value}",
+                        "password": "${password_input.value}"
+                      },
+                      "onSuccess": {
+                        "action": "setState",
+                        "updates": {
+                          "loading": false,
+                          "registered": true,
+                          "message": "Account created successfully!"
+                        },
+                        "onSuccess": {
+                          "action": "navigate",
+                          "target": "login",
+                          "replace": true,
+                          "arguments": {
+                            "message": "Your account has been created. Please sign in."
+                          }
+                        }
+                      },
+                      "onError": {
+                        "action": "setState",
+                        "updates": {
+                          "loading": false,
+                          "error": "Registration failed. Email might already be in use."
+                        }
+                      }
+                    }
+                  },
+                  "onError": {
+                    "action": "setState",
+                    "updates": {
+                      "error": "${validationError}"
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "Row",
+              "properties": {
+                "mainAxisAlignment": "center",
+                "spacing": 8
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "properties": {
+                    "text": "Already have an account?",
+                    "fontSize": 14
+                  }
+                },
+                {
+                  "type": "TextButton",
+                  "properties": {
+                    "label": "Sign In",
+                    "textColor": "#3B82F6"
+                  },
+                  "events": {
+                    "onPressed": {
+                      "action": "navigate",
+                      "target": "login"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "type": "Scaffold",
+  "properties": {
+    "title": "Login"
+  },
+  "children": [
+    {
+      "type": "AppBar",
+      "properties": {
+        "title": "Sign In",
+        "centerTitle": true
+      }
+    },
+    {
+      "type": "SingleChildScrollView",
+      "properties": {
+        "padding": 16
+      },
+      "children": [
+        {
+          "type": "Column",
+          "properties": {
+            "mainAxisAlignment": "start",
+            "crossAxisAlignment": "center",
+            "spacing": 24
+          },
+          "children": [
+            {
+              "type": "SizedBox",
+              "properties": {
+                "height": 40
+              }
+            },
+            {
+              "type": "Text",
+              "properties": {
+                "text": "Welcome Back",
+                "fontSize": 32,
+                "fontWeight": "bold",
+                "color": "#1F2937"
+              }
+            },
+            {
+              "type": "Text",
+              "properties": {
+                "text": "Sign in to your account to continue",
+                "fontSize": 16,
+                "color": "#6B7280"
+              }
+            },
+            {
+              "type": "SizedBox",
+              "properties": {
+                "height": 24
+              }
+            },
+            {
+              "id": "email_input",
+              "type": "TextField",
+              "properties": {
+                "label": "Email",
+                "hint": "Enter your email address",
+                "keyboardType": "email"
+              }
+            },
+            {
+              "id": "password_input",
+              "type": "TextField",
+              "properties": {
+                "label": "Password",
+                "hint": "Enter your password",
+                "obscureText": true
+              }
+            },
+            {
+              "id": "error_text",
+              "type": "Text",
+              "properties": {
+                "text": "${error}",
+                "fontSize": 14,
+                "color": "#DC2626"
+              },
+              "condition": {
+                "field": "error",
+                "operator": "notEmpty"
+              }
+            },
+            {
+              "id": "sign_in_button",
+              "type": "ElevatedButton",
+              "properties": {
+                "label": "Sign In",
+                "backgroundColor": "#3B82F6",
+                "width": "match_parent"
+              },
+              "events": {
+                "onPressed": {
+                  "action": "setState",
+                  "updates": {
+                    "loading": true,
+                    "error": null
+                  },
+                  "onSuccess": {
+                    "action": "apiCall",
+                    "method": "POST",
+                    "endpoint": "/api/auth/login",
+                    "body": {
+                      "email": "${email_input.value}",
+                      "password": "${password_input.value}"
+                    },
+                    "onSuccess": {
+                      "action": "setState",
+                      "updates": {
+                        "loading": false,
+                        "loggedIn": true,
+                        "message": "Login successful!"
+                      },
+                      "onSuccess": {
+                        "action": "navigate",
+                        "target": "dashboard",
+                        "replace": true
+                      }
+                    },
+                    "onError": {
+                      "action": "setState",
+                      "updates": {
+                        "loading": false,
+                        "error": "Invalid email or password"
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "Row",
+              "properties": {
+                "mainAxisAlignment": "center",
+                "spacing": 8
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "properties": {
+                    "text": "Don't have an account?",
+                    "fontSize": 14
+                  }
+                },
+                {
+                  "type": "TextButton",
+                  "properties": {
+                    "label": "Sign Up",
+                    "textColor": "#3B82F6"
+                  },
+                  "events": {
+                    "onPressed": {
+                      "action": "navigate",
+                      "target": "signup"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "TextButton",
+              "properties": {
+                "label": "Forgot Password?",
+                "textColor": "#6B7280"
+              },
+              "events": {
+                "onPressed": {
+                  "action": "navigate",
+                  "target": "forgot_password"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

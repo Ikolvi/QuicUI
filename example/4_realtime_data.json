@@ -1,0 +1,256 @@
+{
+  "type": "Scaffold",
+  "properties": {
+    "title": "Real-time Data"
+  },
+  "children": [
+    {
+      "type": "AppBar",
+      "properties": {
+        "title": "User Data",
+        "centerTitle": true
+      }
+    },
+    {
+      "type": "SingleChildScrollView",
+      "properties": {
+        "padding": 16
+      },
+      "children": [
+        {
+          "type": "Column",
+          "properties": {
+            "mainAxisAlignment": "start",
+            "crossAxisAlignment": "stretch",
+            "spacing": 16
+          },
+          "children": [
+            {
+              "type": "Card",
+              "properties": {
+                "padding": 16
+              },
+              "children": [
+                {
+                  "type": "Column",
+                  "properties": {
+                    "spacing": 12
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "User Information",
+                        "fontSize": 18,
+                        "fontWeight": "bold"
+                      }
+                    },
+                    {
+                      "type": "Row",
+                      "properties": {
+                        "mainAxisAlignment": "spaceBetween"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "Name:",
+                            "fontWeight": "bold"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "${userData.name}",
+                            "color": "#6B7280"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Row",
+                      "properties": {
+                        "mainAxisAlignment": "spaceBetween"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "Email:",
+                            "fontWeight": "bold"
+                          }
+                        },
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "${userData.email}",
+                            "color": "#6B7280"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Row",
+                      "properties": {
+                        "mainAxisAlignment": "spaceBetween"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "Status:",
+                            "fontWeight": "bold"
+                          }
+                        },
+                        {
+                          "type": "Chip",
+                          "properties": {
+                            "label": "${userData.status}",
+                            "backgroundColor": "#10B981",
+                            "textColor": "#FFFFFF"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Text",
+              "properties": {
+                "text": "${loadingMessage}",
+                "fontSize": 14,
+                "color": "#3B82F6"
+              },
+              "condition": {
+                "field": "loading",
+                "operator": "equals",
+                "value": true
+              }
+            },
+            {
+              "type": "ElevatedButton",
+              "properties": {
+                "label": "Refresh Data",
+                "width": "match_parent"
+              },
+              "events": {
+                "onPressed": {
+                  "action": "setState",
+                  "updates": {
+                    "loading": true,
+                    "loadingMessage": "Fetching latest data..."
+                  },
+                  "onSuccess": {
+                    "action": "apiCall",
+                    "method": "GET",
+                    "endpoint": "/api/user/profile",
+                    "timeout": 10,
+                    "onSuccess": {
+                      "action": "setState",
+                      "updates": {
+                        "loading": false,
+                        "loadingMessage": "Data updated successfully",
+                        "userData": "${response.data}",
+                        "lastUpdated": "${now}"
+                      }
+                    },
+                    "onError": {
+                      "action": "setState",
+                      "updates": {
+                        "loading": false,
+                        "loadingMessage": "Failed to fetch data. Please try again."
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "ElevatedButton",
+              "properties": {
+                "label": "Edit Profile",
+                "backgroundColor": "#3B82F6",
+                "width": "match_parent"
+              },
+              "events": {
+                "onPressed": {
+                  "action": "navigate",
+                  "target": "edit_profile",
+                  "arguments": {
+                    "userId": "${userData.id}",
+                    "currentName": "${userData.name}"
+                  }
+                }
+              }
+            },
+            {
+              "type": "ElevatedButton",
+              "properties": {
+                "label": "Change Password",
+                "backgroundColor": "#F59E0B",
+                "width": "match_parent"
+              },
+              "events": {
+                "onPressed": {
+                  "action": "navigate",
+                  "target": "change_password"
+                }
+              }
+            },
+            {
+              "type": "ElevatedButton",
+              "properties": {
+                "label": "Logout",
+                "backgroundColor": "#EF4444",
+                "width": "match_parent"
+              },
+              "events": {
+                "onPressed": {
+                  "action": "setState",
+                  "updates": {
+                    "loading": true
+                  },
+                  "onSuccess": {
+                    "action": "apiCall",
+                    "method": "POST",
+                    "endpoint": "/api/auth/logout",
+                    "onSuccess": {
+                      "action": "setState",
+                      "updates": {
+                        "loading": false,
+                        "isAuthenticated": false,
+                        "userData": null
+                      },
+                      "onSuccess": {
+                        "action": "navigate",
+                        "target": "login",
+                        "replace": true
+                      }
+                    },
+                    "onError": {
+                      "action": "setState",
+                      "updates": {
+                        "loading": false
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            {
+              "type": "Text",
+              "properties": {
+                "text": "Last updated: ${lastUpdated}",
+                "fontSize": 12,
+                "color": "#9CA3AF",
+                "alignment": "center"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

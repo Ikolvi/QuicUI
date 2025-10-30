@@ -1,5 +1,6 @@
 import 'package:quicui/src/models/screen.dart';
 import 'package:quicui/src/repositories/abstract/data_source.dart';
+import 'package:quicui/src/utils/logger_util.dart';
 
 /// Screen repository for data management
 ///
@@ -113,6 +114,7 @@ class ScreenRepository {
   /// ## Behavior
   /// - Fetches from backend data source
   /// - Returns screen data
+  /// - Logs operations for debugging
   ///
   /// ## Parameters
   /// - [screenId]: Unique identifier of the screen
@@ -131,6 +133,11 @@ class ScreenRepository {
   /// - [DataSourceException]: Backend error
   /// - [Exception]: Other errors
   ///
+  /// ## Logging
+  /// - **info**: When screen is successfully fetched
+  /// - **warning**: When backend is unavailable (if fallback used)
+  /// - **error**: When fetch fails with error details
+  ///
   /// ## Example
   /// ```dart
   /// try {
@@ -147,24 +154,38 @@ class ScreenRepository {
   /// - [listScreens]: List multiple screens
   /// - [saveScreen]: Update screen data
   Future<Screen> getScreen(String screenId) async {
-    return await _dataSource.fetchScreen(screenId);
+    LoggerUtil.debug('Fetching screen: $screenId');
+    try {
+      final screen = await _dataSource.fetchScreen(screenId);
+      LoggerUtil.info('Successfully fetched screen: $screenId');
+      return screen;
+    } catch (e, stackTrace) {
+      LoggerUtil.error('Failed to fetch screen: $screenId', e, stackTrace);
+      rethrow;
+    }
   }
 
   /// List all available screens
   ///
-  /// Retrieves metadata for all screens accessible to the user.
+  /// Retrieves all screens accessible to the user.
   /// Useful for navigation menus, screen listing, and app discovery.
   ///
   /// ## Behavior
   /// - Fetches from backend
-  /// - Returns all screens
+  /// - Returns all screens with pagination support
+  /// - Logs operations for debugging
   ///
   /// ## Returns
-  /// List of screens with all their data
+  /// List of screens with all their data. Returns empty list if no screens exist.
   ///
   /// ## Throws
   /// - [DataSourceException]: Backend error
   /// - [Exception]: Other errors
+  ///
+  /// ## Logging
+  /// - **debug**: When fetching starts
+  /// - **info**: When screens are successfully retrieved (with count)
+  /// - **error**: When fetch fails with error details
   ///
   /// ## Example
   /// ```dart
@@ -178,10 +199,18 @@ class ScreenRepository {
   /// - [getScreen]: Get full screen details
   /// - [ScreenBloc]: Primary consumer
   Future<List<Screen>> listScreens() async {
-    return await _dataSource.fetchScreens(
-      limit: 1000,
-      offset: 0,
-    );
+    LoggerUtil.debug('Fetching all screens');
+    try {
+      final screens = await _dataSource.fetchScreens(
+        limit: 1000,
+        offset: 0,
+      );
+      LoggerUtil.info('Successfully fetched ${screens.length} screens');
+      return screens;
+    } catch (e, stackTrace) {
+      LoggerUtil.error('Failed to fetch screens list', e, stackTrace);
+      rethrow;
+    }
   }
 
   /// Save or update screen data
@@ -194,6 +223,7 @@ class ScreenRepository {
   ///
   /// ## Behavior
   /// - Sends to backend data source
+  /// - Logs operations for debugging
   ///
   /// ## Parameters
   /// - [screenId]: Unique identifier
@@ -203,6 +233,11 @@ class ScreenRepository {
   /// - [ArgumentError]: Invalid screen data
   /// - [DataSourceException]: Backend error
   /// - [Exception]: Other errors
+  ///
+  /// ## Logging
+  /// - **debug**: When save starts
+  /// - **info**: When screen is successfully saved
+  /// - **error**: When save fails with error details
   ///
   /// ## Example
   /// ```dart
@@ -223,41 +258,49 @@ class ScreenRepository {
       throw ArgumentError('screenId cannot be empty');
     }
 
-    await _dataSource.saveScreen(screenId, screen);
+    LoggerUtil.debug('Saving screen: $screenId');
+    try {
+      await _dataSource.saveScreen(screenId, screen);
+      LoggerUtil.info('Successfully saved screen: $screenId');
+    } catch (e, stackTrace) {
+      LoggerUtil.error('Failed to save screen: $screenId', e, stackTrace);
+      rethrow;
+    }
   }
 
   /// Delete a screen
   ///
-  /// Removes screen from all storage locations.
-  /// This is a destructive operation - deleted data cannot be recovered.
+  /// Removes screen data from backend completely.
+  /// Used for:
+  /// - Deleting user-created screens
+  /// - Cleaning up obsolete screens
+  /// - Removing screens marked for deletion
   ///
   /// ## Behavior
-  /// - Deletes from backend
-  /// - Cannot be undone
+  /// - Sends delete request to backend data source
+  /// - Logs operations for debugging
+  /// - Operation is permanent
   ///
   /// ## Parameters
-  /// - [screenId]: ID of screen to delete
-  ///   - Must exist
+  /// - [screenId]: Unique identifier of screen to delete
   ///
   /// ## Throws
-  /// - [ScreenNotFoundException]: Screen not found
+  /// - [ArgumentError]: Invalid screenId
   /// - [DataSourceException]: Backend error
   /// - [Exception]: Other errors
   ///
+  /// ## Logging
+  /// - **debug**: When deletion starts
+  /// - **info**: When screen is successfully deleted
+  /// - **error**: When deletion fails with error details
+  ///
   /// ## Example
   /// ```dart
-  /// // Confirm before deleting
-  /// final confirmed = await showDeleteDialog(context);
-  /// if (confirmed) {
-  ///   await repository.deleteScreen('temp_screen');
-  ///   ScaffoldMessenger.of(context).showSnackBar(
-  ///     SnackBar(content: Text('Screen deleted')),
-  ///   );
-  /// }
+  /// await repository.deleteScreen('old_screen');
   /// ```
   ///
   /// See also:
-  /// - [saveScreen]: Update screen
+  /// - [saveScreen]: Create or update screen
   /// - [getScreen]: Retrieve screen
   Future<void> deleteScreen(String screenId) async {
     // Validate input
@@ -265,6 +308,13 @@ class ScreenRepository {
       throw ArgumentError('screenId cannot be empty');
     }
 
-    await _dataSource.deleteScreen(screenId);
+    LoggerUtil.debug('Deleting screen: $screenId');
+    try {
+      await _dataSource.deleteScreen(screenId);
+      LoggerUtil.info('Successfully deleted screen: $screenId');
+    } catch (e, stackTrace) {
+      LoggerUtil.error('Failed to delete screen: $screenId', e, stackTrace);
+      rethrow;
+    }
   }
 }

@@ -147,6 +147,43 @@ See `/example` folder for:
 - Offline Sync App - Offline-first synchronization
 - Dashboard App - Complex layouts and theming
 
+
+## 🔌 Official Plugins
+
+QuicUI supports backend integration through official plugins. Mix and match plugins based on your needs:
+
+### [QuicUI Supabase](https://pub.dev/packages/quicui_supabase)
+Complete Supabase backend integration with real-time synchronization and offline-first architecture.
+
+**Features:**
+- Real-time UI updates via WebSocket
+- Offline-first with automatic sync
+- Screen management and search
+- Conflict resolution
+- PostgreSQL database integration
+
+**Installation:**
+```yaml
+dependencies:
+  quicui: ^1.0.2
+  quicui_supabase: ^2.0.1
+```
+
+**Usage:**
+```dart
+import 'package:quicui_supabase/quicui_supabase.dart';
+
+final dataSource = SupabaseDataSource(
+  'https://your-project.supabase.co',
+  'your-anon-key',
+);
+await QuicUIService().initializeWithDataSource(dataSource);
+```
+
+[📖 View Supabase Plugin Documentation](https://pub.dev/packages/quicui_supabase)
+
+---
+
 ## 🏗️ Architecture Overview
 
 ### Layered Architecture

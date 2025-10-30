@@ -573,7 +573,21 @@ Found a bug? Please [report it on GitHub](https://github.com/yourusername/quicui
 - 📚 [Full Documentation](./README.md) - Complete guides and examples
 - 🏗️ [Architecture Guide](./ARCHITECTURE.md) - System design
 - 📱 [Supabase Integration](./SUPABASE_INTEGRATION_GUIDE.md) - Cloud data sync
-- ☕ [Buy Me a Coffee](https://buymeacoffee.com/kiranbjm) - Support the development
+
+## ☕ Love QuicUI?
+
+If you find QuicUI helpful and want to support its development, consider buying me a coffee! Every cup fuels more features, faster updates, and better documentation.
+
+**[☕ Buy Me a Coffee](https://buymeacoffee.com/kiranbjm)** - Help keep QuicUI growing!
+
+Your support helps us:
+- 🚀 Build new features faster
+- 📚 Create better documentation
+- 🐛 Fix bugs quickly
+- 💡 Implement community requests
+- 🎯 Maintain long-term support
+
+Every contribution is deeply appreciated! ❤️
 
 ## 📜 License
 

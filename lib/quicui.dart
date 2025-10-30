@@ -171,6 +171,12 @@ export 'src/bloc/screen/screen_bloc.dart';
 export 'src/repositories/screen_repository.dart';
 export 'src/repositories/sync_repository.dart';
 
+// Repository Abstractions (v2.0.0 Plugin Architecture)
+export 'src/repositories/abstract/data_source.dart';
+export 'src/repositories/abstract/realtime_source.dart';
+export 'src/repositories/abstract/sync_models.dart';
+export 'src/repositories/abstract/exceptions.dart';
+
 // Data Sources
 export 'src/data/datasources/remote_data_source.dart';
 export 'src/data/datasources/local_data_source.dart';

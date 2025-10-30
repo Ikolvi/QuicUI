@@ -170,6 +170,7 @@ export 'src/bloc/screen/screen_bloc.dart';
 // Repository Layer
 export 'src/repositories/screen_repository.dart';
 export 'src/repositories/sync_repository.dart';
+export 'src/repositories/data_source_provider.dart';
 
 // Repository Abstractions (v2.0.0 Plugin Architecture)
 export 'src/repositories/abstract/data_source.dart';

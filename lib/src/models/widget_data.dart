@@ -1,24 +1,222 @@
 /// Widget data model for Server-Driven UI
+///
+/// This module defines the core data structures for JSON-based UI definitions.
+/// [WidgetData] represents individual widgets that can be composed into screens.
+
 import 'package:equatable/equatable.dart';
 
-/// Represents a widget in the JSON-based UI definition
+/// Represents a widget in the JSON-based UI definition.
+///
+/// WidgetData is the fundamental building block of QuicUI. It represents:
+/// - A single Flutter widget
+/// - Its properties and configuration
+/// - Child widgets (for layout widgets)
+/// - Event handlers and actions
+/// - Conditional rendering logic
+///
+/// ## Supported Widget Types
+///
+/// ### Layout Widgets
+/// - `column`: Vertical layout
+/// - `row`: Horizontal layout
+/// - `center`: Center content
+/// - `container`: Container with decoration
+/// - `stack`: Overlay widgets
+/// - `listview`: Scrollable list
+/// - `gridview`: Grid layout
+/// - `padding`: Add padding
+/// - `expanded`: Flexible expansion
+///
+/// ### Text & Input
+/// - `text`: Static text
+/// - `textfield`: Text input
+/// - `richtext`: Rich formatted text
+/// - `checkbox`: Checkbox input
+/// - `radiobutton`: Radio button
+///
+/// ### Buttons & Interactions
+/// - `button`: Standard button
+/// - `floatingactionbutton`: FAB
+/// - `iconbutton`: Icon button
+/// - `gesturedetector`: Gesture handler
+///
+/// ### Display
+/// - `image`: Display image
+/// - `icon`: Display icon
+/// - `card`: Material card
+/// - `listtile`: List item
+/// - `divider`: Visual divider
+///
+/// ### Other
+/// - `scaffold`: App structure
+/// - `appbar`: Top app bar
+/// - `drawer`: Side navigation
+/// - `badge`: Badge display
+///
+/// ## Example Usage
+///
+/// ```dart
+/// // Simple text widget
+/// const textWidget = WidgetData(
+///   type: 'text',
+///   properties: {
+///     'text': 'Hello, World!',
+///     'style': {
+///       'fontSize': 24,
+///       'fontWeight': 'bold',
+///     },
+///   },
+/// );
+///
+/// // Button with action
+/// const buttonWidget = WidgetData(
+///   type: 'button',
+///   properties: {
+///     'label': 'Click Me',
+///     'backgroundColor': '#2196F3',
+///   },
+///   events: {
+///     'onPressed': {
+///       'action': 'navigate',
+///       'screen': 'detail_screen',
+///     },
+///   },
+/// );
+///
+/// // Column with children
+/// const column = WidgetData(
+///   type: 'column',
+///   properties: {'mainAxisAlignment': 'start'},
+///   children: [textWidget, buttonWidget],
+/// );
+/// ```
+///
+/// ## Properties
+///
+/// Widget properties are type-safe and validated:
+/// - Colors: `#RRGGBB` or `#RRGGBBAA` format
+/// - Numbers: Integer or double values
+/// - Enums: String values matching allowed options
+/// - Objects: Nested property maps
+/// - Arrays: Lists of values
+///
+/// ## State Binding
+///
+/// Properties can bind to application state:
+/// ```dart
+/// const binding = WidgetData(
+///   type: 'text',
+///   properties: {
+///     'text': '\${state.userName}',  // Binds to state
+///   },
+/// );
+/// ```
+///
+/// ## Event Handling
+///
+/// Events trigger actions:
+/// ```dart
+/// const eventWidget = WidgetData(
+///   type: 'button',
+///   properties: {'label': 'Save'},
+///   events: {
+///     'onPressed': {
+///       'action': 'submitForm',
+///       'formId': 'user_form',
+///     },
+///   },
+/// );
+/// ```
+///
+/// ## Conditional Rendering
+///
+/// Widgets can render conditionally:
+/// ```dart
+/// const conditionalWidget = WidgetData(
+///   type: 'text',
+///   properties: {'text': 'Premium User'},
+///   condition: {
+///     'field': 'isPremium',
+///     'operator': 'equals',
+///     'value': true,
+///   },
+/// );
+/// ```
+///
+/// See also:
+/// - [Screen]: Top-level screen definition
+/// - [UIRenderer]: For rendering widgets to Flutter
+/// - [WidgetFactory]: For creating Flutter widgets
 class WidgetData extends Equatable {
   /// Type of widget (e.g., 'column', 'row', 'text', 'button')
+  ///
+  /// Determines which Flutter widget will be created.
+  /// Must be one of the supported widget types.
+  ///
+  /// Common types:
+  /// - Layout: column, row, center, container, stack, listview, gridview
+  /// - Text: text, richtext, textfield
+  /// - Input: checkbox, radiobutton
+  /// - Button: button, floatingactionbutton, iconbutton
+  /// - Display: image, icon, card, listtile
   final String type;
 
   /// Properties of the widget
+  ///
+  /// Maps property names to their values. Common properties:
+  /// - `text`: Text content
+  /// - `fontSize`: Font size in points
+  /// - `backgroundColor`: Background color
+  /// - `padding`: Padding values
+  /// - `margin`: Margin values
+  /// - `mainAxisAlignment`: For row/column
+  /// - `crossAxisAlignment`: For row/column
+  ///
+  /// Property validation is performed during rendering.
   final Map<String, dynamic> properties;
 
   /// Child widgets (for layout widgets)
+  ///
+  /// Used by container widgets like:
+  /// - Column/Row: Ordered children
+  /// - Stack: Layered children
+  /// - ListView: Scrollable children
+  /// - Container: Single child
+  ///
+  /// null for widgets that don't support children (Text, Button, etc.)
   final List<WidgetData>? children;
 
   /// Event handlers
+  ///
+  /// Maps event names to their handlers:
+  /// - `onPressed`: Button press
+  /// - `onChanged`: Value changed
+  /// - `onSubmitted`: Form submission
+  /// - `onTap`: Tap gesture
+  ///
+  /// Each handler specifies:
+  /// - `action`: Type of action (navigate, submitForm, etc.)
+  /// - Additional parameters specific to the action
   final Map<String, dynamic>? events;
 
   /// Custom ID for reference
+  ///
+  /// Used to:
+  /// - Reference widget in tests
+  /// - Bind state to specific widget
+  /// - Track user interactions
+  ///
+  /// Should be unique within the screen.
   final String? id;
 
   /// Conditional rendering
+  ///
+  /// Determines if widget should be rendered:
+  /// - `field`: State field to check
+  /// - `operator`: Comparison operator (equals, contains, etc.)
+  /// - `value`: Expected value
+  ///
+  /// Widget is rendered only if condition evaluates to true.
   final Map<String, dynamic>? condition;
 
   const WidgetData({

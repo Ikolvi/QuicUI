@@ -1,0 +1,337 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "Dashboard App",
+    "description": "Analytics dashboard demonstrating charts, cards, and real-time data updates",
+    "author": "QuicUI Team",
+    "createdAt": "2024-01-01"
+  },
+  "theme": {
+    "primaryColor": "#1976D2",
+    "backgroundColor": "#ECEFF1",
+    "textColor": "#263238",
+    "fontFamily": "Roboto"
+  },
+  "screens": [
+    {
+      "id": "dashboard_screen",
+      "name": "Dashboard Screen",
+      "widgets": [
+        {
+          "id": "scaffold_1",
+          "type": "Scaffold",
+          "properties": {
+            "backgroundColor": "#ECEFF1"
+          },
+          "children": [
+            {
+              "id": "app_bar_1",
+              "type": "AppBar",
+              "slot": "appBar",
+              "properties": {
+                "title": "Analytics Dashboard",
+                "backgroundColor": "#1976D2"
+              }
+            },
+            {
+              "id": "single_child_scroll_view",
+              "type": "SingleChildScrollView",
+              "slot": "body",
+              "children": [
+                {
+                  "id": "column_main",
+                  "type": "Column",
+                  "properties": {
+                    "mainAxisAlignment": "start",
+                    "crossAxisAlignment": "stretch"
+                  },
+                  "children": [
+                    {
+                      "id": "padding_1",
+                      "type": "Padding",
+                      "properties": {
+                        "padding": 16
+                      },
+                      "children": [
+                        {
+                          "id": "row_date_range",
+                          "type": "Row",
+                          "properties": {
+                            "mainAxisAlignment": "spaceBetween",
+                            "crossAxisAlignment": "center"
+                          },
+                          "children": [
+                            {
+                              "id": "text_date_range",
+                              "type": "Text",
+                              "properties": {
+                                "data": "Last 7 Days",
+                                "style": {
+                                  "fontSize": 18,
+                                  "fontWeight": "bold",
+                                  "color": "#263238"
+                                }
+                              }
+                            },
+                            {
+                              "id": "button_refresh",
+                              "type": "IconButton",
+                              "properties": {
+                                "icon": "refresh",
+                                "color": "#1976D2"
+                              },
+                              "actions": [
+                                {
+                                  "type": "refreshData",
+                                  "endpoint": "/api/analytics",
+                                  "method": "GET"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "id": "grid_view_cards",
+                      "type": "GridView",
+                      "properties": {
+                        "crossAxisCount": 2,
+                        "padding": 16,
+                        "mainAxisSpacing": 16,
+                        "crossAxisSpacing": 16
+                      },
+                      "stateBinding": {
+                        "variable": "metrics",
+                        "defaultValue": []
+                      },
+                      "itemBuilder": {
+                        "id": "metric_card",
+                        "type": "Card",
+                        "properties": {
+                          "elevation": 4
+                        },
+                        "children": [
+                          {
+                            "id": "column_card_content",
+                            "type": "Column",
+                            "properties": {
+                              "mainAxisAlignment": "center",
+                              "crossAxisAlignment": "center",
+                              "padding": 16
+                            },
+                            "children": [
+                              {
+                                "id": "text_metric_label",
+                                "type": "Text",
+                                "properties": {
+                                  "data": "{metric.label}",
+                                  "style": {
+                                    "fontSize": 14,
+                                    "color": "#78909C"
+                                  }
+                                }
+                              },
+                              {
+                                "id": "text_metric_value",
+                                "type": "Text",
+                                "properties": {
+                                  "data": "{metric.value}",
+                                  "style": {
+                                    "fontSize": 32,
+                                    "fontWeight": "bold",
+                                    "color": "#1976D2"
+                                  }
+                                }
+                              },
+                              {
+                                "id": "text_metric_change",
+                                "type": "Text",
+                                "properties": {
+                                  "data": "{metric.change}",
+                                  "style": {
+                                    "fontSize": 12,
+                                    "color": "{metric.changePositive ? '#4CAF50' : '#F44336'}"
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    {
+                      "id": "padding_chart",
+                      "type": "Padding",
+                      "properties": {
+                        "padding": 16
+                      },
+                      "children": [
+                        {
+                          "id": "card_chart",
+                          "type": "Card",
+                          "properties": {
+                            "elevation": 4,
+                            "padding": 16
+                          },
+                          "children": [
+                            {
+                              "id": "column_chart",
+                              "type": "Column",
+                              "properties": {
+                                "mainAxisAlignment": "start",
+                                "crossAxisAlignment": "stretch"
+                              },
+                              "children": [
+                                {
+                                  "id": "text_chart_title",
+                                  "type": "Text",
+                                  "properties": {
+                                    "data": "Revenue Trend",
+                                    "style": {
+                                      "fontSize": 18,
+                                      "fontWeight": "bold",
+                                      "color": "#263238"
+                                    }
+                                  }
+                                },
+                                {
+                                  "id": "chart_line",
+                                  "type": "LineChart",
+                                  "properties": {
+                                    "height": 300,
+                                    "xLabel": "Date",
+                                    "yLabel": "Revenue ($)"
+                                  },
+                                  "stateBinding": {
+                                    "variable": "revenueData",
+                                    "defaultValue": []
+                                  }
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "id": "padding_summary",
+                      "type": "Padding",
+                      "properties": {
+                        "padding": 16
+                      },
+                      "children": [
+                        {
+                          "id": "card_summary",
+                          "type": "Card",
+                          "properties": {
+                            "elevation": 4,
+                            "padding": 16
+                          },
+                          "children": [
+                            {
+                              "id": "column_summary",
+                              "type": "Column",
+                              "properties": {
+                                "mainAxisAlignment": "start",
+                                "crossAxisAlignment": "stretch"
+                              },
+                              "children": [
+                                {
+                                  "id": "text_summary_title",
+                                  "type": "Text",
+                                  "properties": {
+                                    "data": "Summary",
+                                    "style": {
+                                      "fontSize": 18,
+                                      "fontWeight": "bold",
+                                      "color": "#263238"
+                                    }
+                                  }
+                                },
+                                {
+                                  "id": "column_summary_items",
+                                  "type": "Column",
+                                  "properties": {
+                                    "mainAxisAlignment": "start",
+                                    "crossAxisAlignment": "stretch"
+                                  },
+                                  "children": [
+                                    {
+                                      "id": "row_total_revenue",
+                                      "type": "Row",
+                                      "properties": {
+                                        "mainAxisAlignment": "spaceBetween",
+                                        "margin": 8
+                                      },
+                                      "children": [
+                                        {
+                                          "id": "text_total_revenue_label",
+                                          "type": "Text",
+                                          "properties": {
+                                            "data": "Total Revenue:",
+                                            "style": {"fontSize": 14, "color": "#78909C"}
+                                          }
+                                        },
+                                        {
+                                          "id": "text_total_revenue_value",
+                                          "type": "Text",
+                                          "properties": {
+                                            "data": "$12,345.67",
+                                            "style": {"fontSize": 14, "fontWeight": "bold", "color": "#1976D2"}
+                                          },
+                                          "stateBinding": {
+                                            "variable": "totalRevenue",
+                                            "defaultValue": "$0.00"
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    {
+                                      "id": "row_avg_order",
+                                      "type": "Row",
+                                      "properties": {
+                                        "mainAxisAlignment": "spaceBetween",
+                                        "margin": 8
+                                      },
+                                      "children": [
+                                        {
+                                          "id": "text_avg_order_label",
+                                          "type": "Text",
+                                          "properties": {
+                                            "data": "Average Order:",
+                                            "style": {"fontSize": 14, "color": "#78909C"}
+                                          }
+                                        },
+                                        {
+                                          "id": "text_avg_order_value",
+                                          "type": "Text",
+                                          "properties": {
+                                            "data": "$234.56",
+                                            "style": {"fontSize": 14, "fontWeight": "bold", "color": "#1976D2"}
+                                          },
+                                          "stateBinding": {
+                                            "variable": "averageOrder",
+                                            "defaultValue": "$0.00"
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

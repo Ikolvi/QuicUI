@@ -1,0 +1,171 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "Form App",
+    "description": "User registration form demonstrating text input, validation, and form submission",
+    "author": "QuicUI Team",
+    "createdAt": "2024-01-01"
+  },
+  "theme": {
+    "primaryColor": "#FF9800",
+    "backgroundColor": "#F5F5F5",
+    "textColor": "#333333",
+    "fontFamily": "Roboto"
+  },
+  "screens": [
+    {
+      "id": "form_screen",
+      "name": "Form Screen",
+      "widgets": [
+        {
+          "id": "scaffold_1",
+          "type": "Scaffold",
+          "properties": {
+            "backgroundColor": "#F5F5F5"
+          },
+          "children": [
+            {
+              "id": "app_bar_1",
+              "type": "AppBar",
+              "slot": "appBar",
+              "properties": {
+                "title": "User Registration",
+                "backgroundColor": "#FF9800"
+              }
+            },
+            {
+              "id": "single_child_scroll_view",
+              "type": "SingleChildScrollView",
+              "slot": "body",
+              "children": [
+                {
+                  "id": "padding_1",
+                  "type": "Padding",
+                  "properties": {
+                    "padding": 16
+                  },
+                  "children": [
+                    {
+                      "id": "column_1",
+                      "type": "Column",
+                      "properties": {
+                        "mainAxisAlignment": "start",
+                        "crossAxisAlignment": "stretch"
+                      },
+                      "children": [
+                        {
+                          "id": "text_field_name",
+                          "type": "TextField",
+                          "properties": {
+                            "label": "Full Name",
+                            "hint": "Enter your full name",
+                            "keyboardType": "text",
+                            "maxLines": 1
+                          },
+                          "stateBinding": {
+                            "variable": "fullName",
+                            "defaultValue": ""
+                          },
+                          "margin": 8
+                        },
+                        {
+                          "id": "text_field_email",
+                          "type": "TextField",
+                          "properties": {
+                            "label": "Email",
+                            "hint": "Enter your email",
+                            "keyboardType": "email",
+                            "maxLines": 1
+                          },
+                          "stateBinding": {
+                            "variable": "email",
+                            "defaultValue": ""
+                          },
+                          "margin": 8
+                        },
+                        {
+                          "id": "text_field_phone",
+                          "type": "TextField",
+                          "properties": {
+                            "label": "Phone Number",
+                            "hint": "Enter your phone number",
+                            "keyboardType": "phone",
+                            "maxLines": 1
+                          },
+                          "stateBinding": {
+                            "variable": "phone",
+                            "defaultValue": ""
+                          },
+                          "margin": 8
+                        },
+                        {
+                          "id": "text_field_password",
+                          "type": "TextField",
+                          "properties": {
+                            "label": "Password",
+                            "hint": "Enter a secure password",
+                            "keyboardType": "text",
+                            "obscureText": true,
+                            "maxLines": 1
+                          },
+                          "stateBinding": {
+                            "variable": "password",
+                            "defaultValue": ""
+                          },
+                          "margin": 8
+                        },
+                        {
+                          "id": "elevated_button_submit",
+                          "type": "ElevatedButton",
+                          "properties": {
+                            "label": "Register",
+                            "backgroundColor": "#FF9800",
+                            "textColor": "#FFFFFF"
+                          },
+                          "margin": 16,
+                          "actions": [
+                            {
+                              "type": "submitForm",
+                              "endpoint": "/api/register",
+                              "method": "POST",
+                              "body": {
+                                "fullName": "{fullName}",
+                                "email": "{email}",
+                                "phone": "{phone}",
+                                "password": "{password}"
+                              },
+                              "onSuccess": {
+                                "type": "showSnackbar",
+                                "message": "Registration successful!"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "id": "text_result",
+                          "type": "Text",
+                          "properties": {
+                            "data": "Form status: Ready",
+                            "style": {
+                              "fontSize": 14,
+                              "color": "#666666"
+                            }
+                          },
+                          "stateBinding": {
+                            "variable": "formStatus",
+                            "defaultValue": "Ready"
+                          },
+                          "margin": 16
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

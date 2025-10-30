@@ -1,0 +1,101 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "Counter App",
+    "description": "Simple counter application demonstrating state management and button interactions",
+    "author": "QuicUI Team",
+    "createdAt": "2024-01-01"
+  },
+  "theme": {
+    "primaryColor": "#2196F3",
+    "backgroundColor": "#FFFFFF",
+    "textColor": "#000000",
+    "fontFamily": "Roboto"
+  },
+  "screens": [
+    {
+      "id": "counter_screen",
+      "name": "Counter Screen",
+      "widgets": [
+        {
+          "id": "scaffold_1",
+          "type": "Scaffold",
+          "properties": {
+            "backgroundColor": "#FFFFFF"
+          },
+          "children": [
+            {
+              "id": "app_bar_1",
+              "type": "AppBar",
+              "slot": "appBar",
+              "properties": {
+                "title": "Counter App",
+                "backgroundColor": "#2196F3"
+              }
+            },
+            {
+              "id": "center_1",
+              "type": "Center",
+              "slot": "body",
+              "children": [
+                {
+                  "id": "column_1",
+                  "type": "Column",
+                  "properties": {
+                    "mainAxisAlignment": "center",
+                    "crossAxisAlignment": "center"
+                  },
+                  "children": [
+                    {
+                      "id": "text_1",
+                      "type": "Text",
+                      "properties": {
+                        "data": "You have pushed the button this many times:",
+                        "style": {
+                          "fontSize": 16,
+                          "color": "#666666"
+                        }
+                      }
+                    },
+                    {
+                      "id": "text_2",
+                      "type": "Text",
+                      "properties": {
+                        "data": "0",
+                        "style": {
+                          "fontSize": 72,
+                          "fontWeight": "bold",
+                          "color": "#2196F3"
+                        }
+                      },
+                      "stateBinding": {
+                        "variable": "counter",
+                        "defaultValue": "0"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "float_action_button",
+              "type": "FloatingActionButton",
+              "slot": "floatingActionButton",
+              "properties": {
+                "label": "+",
+                "backgroundColor": "#2196F3"
+              },
+              "actions": [
+                {
+                  "type": "setState",
+                  "variable": "counter",
+                  "operation": "increment"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

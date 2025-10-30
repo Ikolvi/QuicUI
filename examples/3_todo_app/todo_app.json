@@ -1,0 +1,186 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "Todo App",
+    "description": "Todo list application demonstrating lists, state management, and CRUD operations",
+    "author": "QuicUI Team",
+    "createdAt": "2024-01-01"
+  },
+  "theme": {
+    "primaryColor": "#4CAF50",
+    "backgroundColor": "#FAFAFA",
+    "textColor": "#212121",
+    "fontFamily": "Roboto"
+  },
+  "screens": [
+    {
+      "id": "todo_screen",
+      "name": "Todo Screen",
+      "widgets": [
+        {
+          "id": "scaffold_1",
+          "type": "Scaffold",
+          "properties": {
+            "backgroundColor": "#FAFAFA"
+          },
+          "children": [
+            {
+              "id": "app_bar_1",
+              "type": "AppBar",
+              "slot": "appBar",
+              "properties": {
+                "title": "My Todo List",
+                "backgroundColor": "#4CAF50"
+              }
+            },
+            {
+              "id": "column_main",
+              "type": "Column",
+              "slot": "body",
+              "properties": {
+                "mainAxisAlignment": "start",
+                "crossAxisAlignment": "stretch"
+              },
+              "children": [
+                {
+                  "id": "padding_input",
+                  "type": "Padding",
+                  "properties": {
+                    "padding": 16
+                  },
+                  "children": [
+                    {
+                      "id": "row_input",
+                      "type": "Row",
+                      "properties": {
+                        "mainAxisAlignment": "spaceBetween",
+                        "crossAxisAlignment": "center"
+                      },
+                      "children": [
+                        {
+                          "id": "text_field_new_todo",
+                          "type": "TextField",
+                          "properties": {
+                            "label": "New todo",
+                            "hint": "Enter a new task",
+                            "keyboardType": "text",
+                            "maxLines": 1,
+                            "flex": 1
+                          },
+                          "stateBinding": {
+                            "variable": "newTodoText",
+                            "defaultValue": ""
+                          }
+                        },
+                        {
+                          "id": "button_add",
+                          "type": "IconButton",
+                          "properties": {
+                            "icon": "add",
+                            "color": "#4CAF50"
+                          },
+                          "actions": [
+                            {
+                              "type": "addTodo",
+                              "text": "{newTodoText}",
+                              "onSuccess": {
+                                "type": "clearField",
+                                "variable": "newTodoText"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "expanded_list",
+                  "type": "Expanded",
+                  "children": [
+                    {
+                      "id": "list_view_todos",
+                      "type": "ListView",
+                      "properties": {
+                        "padding": 8,
+                        "itemCount": 10
+                      },
+                      "stateBinding": {
+                        "variable": "todos",
+                        "defaultValue": []
+                      },
+                      "itemBuilder": {
+                        "id": "todo_item",
+                        "type": "Card",
+                        "properties": {
+                          "margin": 8,
+                          "elevation": 2
+                        },
+                        "children": [
+                          {
+                            "id": "list_tile",
+                            "type": "ListTile",
+                            "properties": {
+                              "contentPadding": 8
+                            },
+                            "children": [
+                              {
+                                "id": "checkbox_done",
+                                "type": "Checkbox",
+                                "properties": {
+                                  "value": "{todo.completed}"
+                                },
+                                "actions": [
+                                  {
+                                    "type": "toggleTodo",
+                                    "todoId": "{todo.id}"
+                                  }
+                                ]
+                              },
+                              {
+                                "id": "expanded_title",
+                                "type": "Expanded",
+                                "children": [
+                                  {
+                                    "id": "text_todo_title",
+                                    "type": "Text",
+                                    "properties": {
+                                      "data": "{todo.title}",
+                                      "style": {
+                                        "fontSize": 16,
+                                        "color": "#212121",
+                                        "decoration": "{todo.completed ? 'lineThrough' : 'none'}"
+                                      }
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "id": "button_delete",
+                                "type": "IconButton",
+                                "properties": {
+                                  "icon": "delete",
+                                  "color": "#F44336"
+                                },
+                                "actions": [
+                                  {
+                                    "type": "deleteTodo",
+                                    "todoId": "{todo.id}"
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

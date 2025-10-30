@@ -1,0 +1,261 @@
+{
+  "version": "1.0",
+  "metadata": {
+    "name": "Offline Sync App",
+    "description": "Application demonstrating offline-first architecture with local storage and sync capabilities",
+    "author": "QuicUI Team",
+    "createdAt": "2024-01-01"
+  },
+  "theme": {
+    "primaryColor": "#9C27B0",
+    "backgroundColor": "#F3E5F5",
+    "textColor": "#4A148C",
+    "fontFamily": "Roboto"
+  },
+  "screens": [
+    {
+      "id": "sync_screen",
+      "name": "Offline Sync Screen",
+      "widgets": [
+        {
+          "id": "scaffold_1",
+          "type": "Scaffold",
+          "properties": {
+            "backgroundColor": "#F3E5F5"
+          },
+          "children": [
+            {
+              "id": "app_bar_1",
+              "type": "AppBar",
+              "slot": "appBar",
+              "properties": {
+                "title": "Offline-First App",
+                "backgroundColor": "#9C27B0"
+              }
+            },
+            {
+              "id": "column_main",
+              "type": "Column",
+              "slot": "body",
+              "properties": {
+                "mainAxisAlignment": "start",
+                "crossAxisAlignment": "stretch"
+              },
+              "children": [
+                {
+                  "id": "container_sync_status",
+                  "type": "Container",
+                  "properties": {
+                    "backgroundColor": "{isOnline ? '#4CAF50' : '#F44336'}",
+                    "padding": 16
+                  },
+                  "stateBinding": {
+                    "variable": "isOnline",
+                    "defaultValue": true
+                  },
+                  "children": [
+                    {
+                      "id": "text_sync_status",
+                      "type": "Text",
+                      "properties": {
+                        "data": "{isOnline ? 'Online' : 'Offline'}",
+                        "style": {
+                          "fontSize": 18,
+                          "fontWeight": "bold",
+                          "color": "#FFFFFF"
+                        }
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "padding_content",
+                  "type": "Padding",
+                  "properties": {
+                    "padding": 16
+                  },
+                  "children": [
+                    {
+                      "id": "column_content",
+                      "type": "Column",
+                      "properties": {
+                        "mainAxisAlignment": "start",
+                        "crossAxisAlignment": "stretch"
+                      },
+                      "children": [
+                        {
+                          "id": "text_info",
+                          "type": "Text",
+                          "properties": {
+                            "data": "Sync Status",
+                            "style": {
+                              "fontSize": 20,
+                              "fontWeight": "bold",
+                              "color": "#4A148C"
+                            }
+                          }
+                        },
+                        {
+                          "id": "card_sync_info",
+                          "type": "Card",
+                          "properties": {
+                            "margin": 8,
+                            "elevation": 4,
+                            "padding": 16
+                          },
+                          "children": [
+                            {
+                              "id": "column_stats",
+                              "type": "Column",
+                              "properties": {
+                                "mainAxisAlignment": "start",
+                                "crossAxisAlignment": "stretch"
+                              },
+                              "children": [
+                                {
+                                  "id": "row_pending",
+                                  "type": "Row",
+                                  "properties": {
+                                    "mainAxisAlignment": "spaceBetween"
+                                  },
+                                  "children": [
+                                    {
+                                      "id": "text_pending_label",
+                                      "type": "Text",
+                                      "properties": {
+                                        "data": "Pending Syncs:",
+                                        "style": {"fontSize": 14, "color": "#666666"}
+                                      }
+                                    },
+                                    {
+                                      "id": "text_pending_count",
+                                      "type": "Text",
+                                      "properties": {
+                                        "data": "3",
+                                        "style": {"fontSize": 14, "fontWeight": "bold", "color": "#9C27B0"}
+                                      },
+                                      "stateBinding": {
+                                        "variable": "pendingSyncCount",
+                                        "defaultValue": "0"
+                                      }
+                                    }
+                                  ]
+                                },
+                                {
+                                  "id": "row_last_sync",
+                                  "type": "Row",
+                                  "properties": {
+                                    "mainAxisAlignment": "spaceBetween"
+                                  },
+                                  "children": [
+                                    {
+                                      "id": "text_last_sync_label",
+                                      "type": "Text",
+                                      "properties": {
+                                        "data": "Last Sync:",
+                                        "style": {"fontSize": 14, "color": "#666666"}
+                                      }
+                                    },
+                                    {
+                                      "id": "text_last_sync_time",
+                                      "type": "Text",
+                                      "properties": {
+                                        "data": "2024-01-01 10:30 AM",
+                                        "style": {"fontSize": 14, "color": "#666666"}
+                                      },
+                                      "stateBinding": {
+                                        "variable": "lastSyncTime",
+                                        "defaultValue": "Never"
+                                      }
+                                    }
+                                  ]
+                                },
+                                {
+                                  "id": "row_storage",
+                                  "type": "Row",
+                                  "properties": {
+                                    "mainAxisAlignment": "spaceBetween"
+                                  },
+                                  "children": [
+                                    {
+                                      "id": "text_storage_label",
+                                      "type": "Text",
+                                      "properties": {
+                                        "data": "Local Storage:",
+                                        "style": {"fontSize": 14, "color": "#666666"}
+                                      }
+                                    },
+                                    {
+                                      "id": "text_storage_size",
+                                      "type": "Text",
+                                      "properties": {
+                                        "data": "2.3 MB",
+                                        "style": {"fontSize": 14, "color": "#666666"}
+                                      },
+                                      "stateBinding": {
+                                        "variable": "storageUsed",
+                                        "defaultValue": "0 MB"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "id": "button_sync_now",
+                          "type": "ElevatedButton",
+                          "properties": {
+                            "label": "Sync Now",
+                            "backgroundColor": "#9C27B0",
+                            "textColor": "#FFFFFF"
+                          },
+                          "margin": 16,
+                          "actions": [
+                            {
+                              "type": "syncOfflineData",
+                              "endpoint": "/api/sync",
+                              "method": "POST",
+                              "onSuccess": {
+                                "type": "showSnackbar",
+                                "message": "Sync completed!"
+                              },
+                              "onError": {
+                                "type": "showSnackbar",
+                                "message": "Sync failed. Data saved locally."
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "id": "button_clear_cache",
+                          "type": "ElevatedButton",
+                          "properties": {
+                            "label": "Clear Local Cache",
+                            "backgroundColor": "#F44336",
+                            "textColor": "#FFFFFF"
+                          },
+                          "margin": 16,
+                          "actions": [
+                            {
+                              "type": "clearLocalCache",
+                              "onSuccess": {
+                                "type": "showSnackbar",
+                                "message": "Cache cleared"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

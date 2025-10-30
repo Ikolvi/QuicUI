@@ -1,15 +1,135 @@
 /// Main UI renderer implementation - 70+ Flutter widgets
 /// 
-/// Converts JSON configuration to Flutter widgets with support for:
-/// - 70+ built-in Flutter widgets across all categories
-/// - Event handling and callbacks
-/// - Theme integration
-/// - Conditional rendering
-/// - Advanced layout, display, input, and app-level widgets
+/// This module provides the core rendering engine for QuicUI.
+/// It converts JSON-based [WidgetData] and [Screen] configurations
+/// into fully-rendered Flutter widgets.
+///
+/// ## Widget Coverage
+///
+/// UIRenderer supports 70+ Flutter widgets organized by category:
+///
+/// ### App & Navigation (8 widgets)
+/// - Scaffold, AppBar, BottomAppBar, Drawer
+/// - FloatingActionButton, NavigationBar, TabBar
+///
+/// ### Layout (15 widgets)
+/// - Column, Row, Container, Stack, Positioned
+/// - Center, Padding, Align, Sized Box, Single Child Scroll View
+/// - ListView, GridView, Expanded, Flexible, Wrap
+///
+/// ### Text & Display (8 widgets)
+/// - Text, RichText, TextField, Icon, Image
+/// - Card, ListTile, Divider
+///
+/// ### Buttons & Input (8 widgets)
+/// - ElevatedButton, TextButton, OutlinedButton
+/// - Checkbox, Radio, Slider, Switch, GestureDetector
+///
+/// ### Advanced (10+ widgets)
+/// - CustomPaint, AnimatedContainer, Transform
+/// - Opacity, ClipRRect, Badge, and more
+///
+/// ## Rendering Process
+///
+/// 1. **Parse:** Extract widget type and properties from JSON
+/// 2. **Validate:** Check properties against widget schema
+/// 3. **Build:** Create Flutter widget with parsed properties
+/// 4. **Bind:** Connect state and event handlers
+/// 5. **Render:** Add to widget tree
+///
+/// ## Example
+///
+/// ```dart
+/// final config = {
+///   'type': 'Column',
+///   'properties': {
+///     'mainAxisAlignment': 'center',
+///     'crossAxisAlignment': 'center',
+///   },
+///   'children': [
+///     {
+///       'type': 'Text',
+///       'properties': {
+///         'text': 'Hello, World!',
+///         'fontSize': 24,
+///       },
+///     },
+///     {
+///       'type': 'ElevatedButton',
+///       'properties': {'label': 'Press Me'},
+///       'events': {
+///         'onPressed': {'action': 'navigate', 'screen': 'next'},
+///       },
+///     },
+///   ],
+/// };
+///
+/// final widget = UIRenderer.render(config);
+/// ```
+///
+/// ## Property Support
+///
+/// Properties are automatically converted to appropriate types:
+/// - **Colors:** `#RRGGBB` format
+/// - **Numbers:** Integer or double
+/// - **Enums:** String matching enum values
+/// - **Objects:** Nested property maps
+/// - **State Binding:** `${state.fieldName}` syntax
+///
+/// ## Event Handling
+///
+/// Events trigger actions:
+/// - `onPressed`: Button tap
+/// - `onChanged`: Value change
+/// - `onTap`: General tap
+/// - `onSubmitted`: Form submit
+///
+/// ## Error Handling
+///
+/// - Unknown widget types render as [Placeholder]
+/// - Missing properties use sensible defaults
+/// - Invalid values are caught and reported
+/// - Errors don't crash the app
+///
+/// ## Performance
+///
+/// Rendering is optimized for:
+/// - Fast initial render
+/// - Efficient rebuilds
+/// - Minimal widget overhead
+/// - Smooth animations
+///
+/// See also:
+/// - [WidgetFactory]: Helper for creating widgets
+/// - [WidgetBuilder]: Builder utilities
+/// - [UIRenderer.render]: Main render method
 
 import 'package:flutter/material.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
+///
+/// Converts JSON-based widget configurations to Flutter widgets.
+/// Supports 70+ widget types with full property binding and event handling.
+///
+/// ## Basic Usage
+///
+/// ```dart
+/// final renderer = UIRenderer();
+/// final widget = renderer.render({
+///   'type': 'Text',
+///   'properties': {'text': 'Hello'},
+/// });
+/// ```
+///
+/// ## Advanced Usage
+///
+/// ```dart
+/// // With state binding
+/// final widget = renderer.render(
+///   config,
+///   context: context,
+/// );
+/// ```
 class UIRenderer {
   /// Render a widget tree from JSON configuration
   static Widget render(Map<String, dynamic> config, {BuildContext? context}) {

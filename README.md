@@ -24,6 +24,17 @@
 
 ## 📦 What's New
 
+**v1.0.4 (October 30, 2025) - Callback Action System** ✨ NEW
+- ✅ Generic callback action system (navigate, setState, apiCall, custom)
+- ✅ JSON-driven interactive flows without Dart code
+- ✅ Action chaining with success/error handling
+- ✅ Variable binding with `${variable_name}` syntax
+- ✅ 29 comprehensive unit tests (100% passing)
+- ✅ 4,500+ lines of complete documentation
+- ✅ 15 working JSON examples (login, registration, CRUD)
+- ✅ Custom handler registry for app-specific logic
+- ✅ Built-in state management for interactive UIs
+
 **v1.0.1 (October 30, 2025) - Production Release** ✨
 - ✅ Backend-agnostic plugin architecture
 - ✅ 70+ pre-built widgets fully functional
@@ -199,6 +210,114 @@ await QuicUIService().initializeWithDataSource(dataSource);
 - Loop (dynamic lists)
 - Form (with validation)
 - Custom (extensible)
+
+## 🎯 Interactive Callbacks System
+
+**Build dynamic, responsive UIs without writing Dart code!** Define interactive workflows as JSON - the callback system handles everything from button taps to API calls to state management.
+
+### The 4 Generic Actions
+
+Transform any static UI into an interactive app with these 4 reusable actions:
+
+| Action | Purpose | Example |
+|--------|---------|---------|
+| **navigate** | Move between screens | Navigate to login, home, profile |
+| **setState** | Update UI state dynamically | Toggle loading, show/hide elements |
+| **apiCall** | Make HTTP requests | Fetch data, submit forms, authenticate |
+| **custom** | Execute app-specific logic | Email validation, calculations, business logic |
+
+### Quick Example: Login Screen
+
+```json
+{
+  "id": "button_login",
+  "type": "ElevatedButton",
+  "properties": {"label": "Login"},
+  "actions": [
+    {
+      "action": "setState",
+      "updates": {"isLoading": true}
+    },
+    {
+      "action": "apiCall",
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "body": {
+        "email": "${email_input}",
+        "password": "${password_input}"
+      },
+      "onSuccess": {
+        "action": "navigate",
+        "screen": "home",
+        "replace": true
+      },
+      "onError": {
+        "action": "setState",
+        "updates": {"error": "Login failed"}
+      }
+    },
+    {
+      "action": "setState",
+      "updates": {"isLoading": false}
+    }
+  ]
+}
+```
+
+### Key Features
+
+✅ **Action Chaining** - Execute actions sequentially with success/error handling
+✅ **Variable Binding** - Reference form inputs with `${variable_name}`
+✅ **Event Triggers** - onPressed, onTap, onLongTap, onChanged, onSubmitted
+✅ **State Management** - Update UI state on-the-fly
+✅ **Custom Handlers** - Register custom validation and business logic functions
+✅ **Error Handling** - Built-in error callbacks with automatic retry
+✅ **Loading States** - Show/hide loading indicators automatically
+
+### Complete Examples
+
+- **[Login Screen](./CALLBACK_COMPLETE_GUIDE.md#example-1-login-screen-complete)** - Email/password authentication with loading states
+- **[Registration Form](./CALLBACK_COMPLETE_GUIDE.md#example-2-registration-with-validation-complete)** - Multi-field validation and submission
+- **[Data List with CRUD](./CALLBACK_COMPLETE_GUIDE.md#example-3-data-list-with-crud-operations-complete)** - Create, read, update, delete operations
+
+### How to Use
+
+**Step 1: Configure Base URL**
+```dart
+void main() {
+  ApiConfig.baseUrl = 'https://your-api.com';
+  runApp(QuicUI());
+}
+```
+
+**Step 2: Use in JSON**
+```json
+{
+  "action": "apiCall",
+  "method": "POST",
+  "endpoint": "/api/auth/login",
+  "body": {"email": "${email}", "password": "${password}"}
+}
+```
+
+**Step 3: Optional - Add Custom Handlers**
+```dart
+CallbackRegistry.register('validateEmail', (context, params) async {
+  final email = params['email'] as String;
+  if (!email.contains('@')) throw Exception('Invalid email');
+  return {'valid': true};
+});
+```
+
+### Documentation
+
+📖 **[Complete Callback Guide](./CALLBACK_COMPLETE_GUIDE.md)** - 4,500+ lines with:
+- All 4 actions with real code examples
+- 15 complete JSON examples
+- Step-by-step tutorials
+- Configuration guide
+- Advanced patterns
+- Testing examples
 
 ## 📝 JSON Schema Example
 

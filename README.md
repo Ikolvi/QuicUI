@@ -4,16 +4,16 @@
 ![Flutter](https://img.shields.io/badge/Flutter-%3E%3D3.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Build Status](https://img.shields.io/badge/status-stable-brightgreen)
-![Cloud Backend](https://img.shields.io/badge/Cloud-Supabase-green)
+![Architecture](https://img.shields.io/badge/Architecture-Plugin--Based-brightblue)
 
-**QuicUI** is a powerful Server-Driven UI (SDUI) framework for Flutter that enables you to build, update, and deliver dynamic user interfaces without redeploying your app. Define your UI as **JSON** and render it natively at runtime.
+**QuicUI** is a powerful Server-Driven UI (SDUI) framework for Flutter that enables you to build, update, and deliver dynamic user interfaces without redeploying your app. Define your UI as **JSON** and render it natively at runtime. Built with a **backend-agnostic plugin architecture** supporting any backend.
 
 ## 🚀 Features
 
 - **Instant Updates**: Ship UI changes without App Store/Play Store approval
 - **JSON-Driven**: Define widgets in JSON, render natively in Flutter
-- **Cloud-Powered by Supabase**: Store UI definitions and user data in PostgreSQL
-- **Real-Time Sync**: Live UI updates from Supabase with minimal latency
+- **Backend-Agnostic**: Supabase, Firebase, REST API, or custom backends
+- **Real-Time Sync**: Live UI updates with minimal latency
 - **Dynamic Navigation**: Control routes from the backend
 - **Form Management**: Server-side forms with built-in validation
 - **Dynamic Theming**: Update branding and styles in real-time
@@ -24,16 +24,16 @@
 ## 📦 What's New
 
 **v1.0.1 (October 30, 2025) - Production Release** ✨
-- ✅ Cloud integration via Supabase only
+- ✅ Backend-agnostic plugin architecture
 - ✅ 70+ pre-built widgets fully functional
 - ✅ BLoC state management complete
 - ✅ Offline-first architecture with sync
-- ✅ Real-time UI sync with Supabase
+- ✅ Real-time UI sync support
 - ✅ ObjectBox local persistence
-- ✅ Comprehensive Supabase integration guide
+- ✅ Comprehensive backend integration guides
 - ✅ 5 complete example applications
 - ✅ 11,000+ lines of documentation
-- ✅ 228/228 tests passing (100%)
+- ✅ 267/267 tests passing (100%)
 - ✅ Published to pub.dev
 
 ## 🎯 Quick Start
@@ -52,11 +52,9 @@ import 'package:quicui/quicui.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize with Supabase for cloud UI configuration
-  await QuicUIService().initialize(
-    supabaseUrl: 'https://your-project.supabase.co',
-    supabaseAnonKey: 'your-anon-key',
-  );
+  // Initialize with your chosen backend plugin
+  // See Backend Integration Guide for plugin-specific setup
+  await QuicUIService().initializeWithDataSource(dataSource);
   
   runApp(const MyApp());
 }
@@ -72,7 +70,7 @@ class MyApp extends StatelessWidget {
           "properties": {"padding": "16"},
           "child": {
             "type": "text",
-            "properties": {"text": "Hello from Supabase!"}
+            "properties": {"text": "Hello from Backend!"}
           }
         }
         ''',
@@ -85,27 +83,26 @@ class MyApp extends StatelessWidget {
 ## 📚 Documentation
 
 ### Getting Started
-- **[Quick Start Guide](./QUICKSTART.md)** - 5-minute setup guide with examples
-- **[Implementation Plan](./IMPLEMENTATION_PLAN.md)** - Detailed 7-week roadmap and architecture
+- **[Quick Start Guide](./docs/QUICK_START_GUIDE.md)** - 5-minute setup guide with plugin examples
+- **[Plugin Architecture](./docs/PLUGIN_ARCHITECTURE.md)** - Understanding the plugin system
+
+### Backend Integration
+- **[Backend Integration Guide](./docs/BACKEND_INTEGRATION.md)** - How to build custom DataSource implementations
+- **[API Reference](./docs/API_REFERENCE.md)** - Complete DataSource interface documentation
+- **[Supabase Backend Package](https://pub.dev/packages/quicui_supabase)** - Supabase integration with examples
+- **[Firebase Integration](./docs/BACKEND_INTEGRATION.md#firebase)** - Firebase backend setup
+- **[Custom Backend](./docs/BACKEND_INTEGRATION.md#custom-backend)** - Build your own DataSource
+
+### Examples & Patterns
+- **[Example Applications](./examples/)** - REST API and custom backend examples
+- **[Supabase Examples](https://pub.dev/packages/quicui_supabase)** - See the Supabase package for Supabase-specific examples
+- **[Testing Guide](./docs/TESTING.md)** - Mock backends and unit testing
+- **[Performance Guide](./docs/PERFORMANCE.md)** - Caching, optimization, and best practices
 
 ### Technical Documentation
 - **[Architecture Guide](./ARCHITECTURE.md)** - System design and component structure
 - **[Database Strategy](./DATABASE_STRATEGY.md)** - ObjectBox integration and local storage
 - **[Development Roadmap](./ROADMAP.md)** - Phase-by-phase breakdown with milestones
-
-### Cloud Integration
-- **[Supabase Integration Guide](./SUPABASE_INTEGRATION_GUIDE.md)** - Complete guide for cloud data, real-time sync, and authentication
-- **[Supabase Examples](./SUPABASE_EXAMPLES.md)** - Ready-to-use code examples (Todo App, Product Catalog, User Profiles)
-
-### Real-Time Updates (v1.1.0+)
-- **[Real-Time Updates Plan](./REALTIME_PLAN.md)** - Complete 4-week implementation roadmap with timeline, risks, and success criteria
-- **[Real-Time Architecture](./REALTIME_ARCHITECTURE.md)** - Detailed system diagrams, event flows, and data synchronization patterns
-- **Real-Time Features (Coming Soon):**
-  - PostgreSQL real-time subscriptions via Supabase
-  - Live UI updates with <500ms latency
-  - Automatic conflict resolution
-  - Offline-to-online sync coordination
-  - Connection auto-recovery with exponential backoff
 
 ### Example Applications
 See `/example` folder for:

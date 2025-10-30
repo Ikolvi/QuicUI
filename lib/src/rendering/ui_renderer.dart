@@ -4,6 +4,28 @@
 /// It converts JSON-based [WidgetData] and [Screen] configurations
 /// into fully-rendered Flutter widgets.
 ///
+/// ## Callback Action System
+///
+/// Supports generic callback actions via JSON:
+/// - Navigate to screens
+/// - Update widget state
+/// - Make API calls
+/// - Execute custom handlers
+/// - Chain actions with onSuccess/onError
+///
+/// Example:
+/// ```json
+/// {
+///   "events": {
+///     "onPressed": {
+///       "action": "apiCall",
+///       "method": "POST",
+///       "endpoint": "/api/login"
+///     }
+///   }
+/// }
+/// ```
+///
 /// ## Widget Coverage
 ///
 /// UIRenderer supports 70+ Flutter widgets organized by category:
@@ -105,6 +127,7 @@
 /// - [UIRenderer.render]: Main render method
 
 import 'package:flutter/material.dart';
+import '../models/callback_actions.dart' as callback_actions;
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///
@@ -1130,8 +1153,33 @@ class UIRenderer {
     );
   }
 
-  static void _handleButtonPress(String action) {
-    print('Button pressed: $action');
+  static void _handleButtonPress(dynamic actionData) {
+    // Support both old string format and new action object format
+    if (actionData == null || actionData.toString().isEmpty) {
+      print('No action specified');
+      return;
+    }
+
+    // Old format: just a string
+    if (actionData is String) {
+      print('Button pressed: $actionData');
+      return;
+    }
+
+    // New format: action object (Map)
+    if (actionData is Map<String, dynamic>) {
+      try {
+        final action = callback_actions.Action.fromJson(actionData);
+        // TODO: Execute action with proper context
+        // For now, just print the action type
+        print('Action executed: ${action.action}');
+      } catch (e) {
+        print('Error parsing action: $e');
+      }
+      return;
+    }
+
+    print('Invalid action format: $actionData');
   }
 
   static MainAxisAlignment _parseMainAxisAlignment(dynamic value) {

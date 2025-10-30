@@ -3,10 +3,10 @@ description: >-
   QuicUI - AI-Friendly Server-Driven UI Framework for Flutter.
   Define UIs in JSON, update instantly without app deployment.
 version: 1.0.0
-homepage: https://github.com/yourusername/quicui
-repository: https://github.com/yourusername/quicui
-issue_tracker: https://github.com/yourusername/quicui/issues
-documentation: https://github.com/yourusername/quicui/wiki
+homepage: https://github.com/Ikolvi/QuicUI
+repository: https://github.com/Ikolvi/QuicUI
+issue_tracker: https://github.com/Ikolvi/QuicUI/issues
+documentation: https://github.com/Ikolvi/QuicUI/wiki
 license: MIT
 
 environment:

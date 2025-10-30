@@ -1,54 +1,83 @@
 /// # QuicUI - Server-Driven UI Framework for Flutter
 ///
-/// A production-ready framework for defining and rendering UIs from JSON,
-/// with real-time synchronization via **Supabase**, offline-first architecture, and BLoC-based state management.
+/// A production-ready framework for defining and rendering UIs from JSON.
+/// **Fully optional cloud integration** - works standalone with local data, or connects to any backend via plugins.
 ///
 /// ## Overview
 ///
 /// QuicUI enables developers to create Flutter applications using JSON-based UI definitions.
 /// The framework handles:
 ///
-/// - **Server-Driven UI:** Define UIs on Supabase server, render on the client
-/// - **Cloud Integration:** Dynamic UI changes from Supabase without app updates
-/// - **Offline-First:** Full offline support with automatic synchronization
-/// - **Real-Time Updates:** Live UI updates through Supabase real-time subscriptions
+/// - **JSON-Driven UI:** Define UIs in JSON, render natively in Flutter
+/// - **Standalone Usage:** Works without any backend - perfect for local/static UIs
+/// - **Optional Cloud:** Integrate with Supabase, Firebase, or custom backends via plugins
+/// - **Real-Time Sync:** Live UI updates with your chosen backend (optional)
+/// - **Offline-First:** Full offline support with automatic synchronization when online
 /// - **70+ Widgets:** Extensive widget library with Material Design support
 /// - **Type Safety:** Full Dart null-safety and type checking
-/// - **Testing:** 228+ comprehensive tests ensuring reliability
+/// - **Testing:** 267/267 comprehensive tests ensuring reliability
 ///
-/// ## Cloud Backend: Supabase Only
+/// ## Backend: Fully Optional
 ///
-/// QuicUI exclusively uses **Supabase** for cloud operations:
-/// - **Dynamic UI Configuration:** Fetch screen definitions from Supabase
-/// - **Real-Time Sync:** Subscribe to UI changes in real-time
-/// - **User Authentication:** Built-in Supabase auth integration
-/// - **Data Persistence:** Store and sync user data with PostgreSQL
+/// QuicUI works in multiple scenarios:
 ///
-/// No other API keys or services required - **Supabase is the only cloud backend**.
+/// ### Standalone (No Backend Required)
+/// ```dart
+/// // Works offline with local JSON data
+/// final jsonData = {'type': 'text', 'properties': {'text': 'Hello'}};
+/// final screen = Screen.fromJson(jsonData);
+/// final widget = UIRenderer.render(screen);
+/// ```
+///
+/// ### With Backend Plugin (Optional)
+/// ```dart
+/// // Use Supabase, Firebase, or custom backend
+/// final dataSource = SupabaseDataSource(...);
+/// await QuicUIService().initializeWithDataSource(dataSource);
+/// final screenData = await QuicUIService().fetchScreen('home');
+/// ```
+///
+/// See [QuicUIService] for plugin-based initialization.
 ///
 /// ## Quick Start
 ///
+/// ### Minimal Setup (No Backend)
 /// ```dart
 /// import 'package:quicui/quicui.dart';
 ///
 /// void main() {
-///   runApp(const QuicUIApp());
+///   runApp(QuicUIApp(home: MyLocalScreen()));
+/// }
+/// ```
+///
+/// ### With Backend Plugin (Optional)
+/// ```dart
+/// import 'package:quicui/quicui.dart';
+/// import 'package:quicui_supabase/quicui_supabase.dart';
+///
+/// void main() async {
+///   WidgetsFlutterBinding.ensureInitialized();
+///   final dataSource = SupabaseDataSource(...);
+///   await QuicUIService().initializeWithDataSource(dataSource);
+///   runApp(MyApp());
 /// }
 /// ```
 ///
 /// ## Core Concepts
 ///
 /// ### Screen & WidgetData
-/// - [Screen]: Top-level definition of a UI screen
+/// - [Screen]: Top-level definition of a UI screen (works with local JSON)
 /// - [WidgetData]: Individual widget configuration with properties and actions
 ///
 /// ### State Management
 /// - [ScreenBloc]: BLoC for managing screen state and user interactions
-/// - [ScreenRepository]: Repository pattern for data access
+/// - [ScreenRepository]: Repository pattern for data access (optional if no backend)
 ///
-/// ### Data Sources
-/// - [RemoteDataSource]: Fetches screen definitions from Supabase
-/// - [LocalDataSource]: Provides offline access to cached screens
+/// ### Data Sources (Optional)
+/// - [DataSource]: Plugin interface for backend integration
+/// - [DataSourceProvider]: Service locator for registered backends
+/// - Built-in: Local-only data (no DataSource needed)
+/// - Plugins: Supabase, Firebase, REST API, custom
 ///
 /// ### Rendering
 /// - [UIRenderer]: Main rendering engine for converting JSON to Flutter widgets
@@ -56,79 +85,94 @@
 /// - [WidgetBuilder]: Helper for building complex widgets
 ///
 /// ### Services
-/// - [QuicUIService]: Main service for initializing framework with Supabase
-/// - [SupabaseService]: Integration with Supabase backend
-/// - [StorageService]: Local storage and caching
+/// - [QuicUIService]: Main service - use for backend initialization (optional)
+/// - [StorageService]: Local storage and caching (optional)
 ///
 /// ## Examples
 ///
-/// ### Basic Setup
+/// ### Local Screen Rendering (No Backend)
 /// ```dart
-/// final quicUIService = QuicUIService();
-/// await quicUIService.initialize(
-///   supabaseUrl: 'your-supabase-url',
-///   supabaseAnonKey: 'your-supabase-key',
-/// );
-/// ```
-///
-/// ### Rendering a Screen
-/// ```dart
-/// final screenData = {
+/// final jsonData = {
 ///   'id': 'home_screen',
 ///   'name': 'Home',
 ///   'widgets': [...],
-///   'state': {...},
 /// };
-/// final screen = Screen.fromJson(screenData);
+/// final screen = Screen.fromJson(jsonData);
 /// final renderer = UIRenderer();
 /// final widget = renderer.renderScreen(screen);
 /// ```
 ///
-/// ### Cloud Integration
-/// The framework integrates seamlessly with Supabase to:
-/// - Fetch dynamic UI configurations from cloud
-/// - Subscribe to real-time UI updates
-/// - Authenticate users securely
-/// - Sync data between device and cloud
+/// ### With Backend Plugin (Optional)
+/// ```dart
+/// // Initialize with Supabase plugin
+/// final dataSource = SupabaseDataSource(...);
+/// await QuicUIService().initializeWithDataSource(dataSource);
+/// 
+/// // Fetch dynamic UI from backend
+/// final screenData = await QuicUIService().fetchScreen('home');
+/// final renderer = UIRenderer();
+/// final widget = renderer.renderScreen(screenData);
+/// ```
 ///
 /// ### Offline Support
 /// The framework automatically:
-/// - Caches screens locally when online
+/// - Works with local data without any backend
+/// - Caches screens when backend is available
 /// - Serves cached screens when offline
-/// - Queues user interactions while offline
-/// - Syncs with Supabase when connection is restored
+/// - Syncs with backend when connection is restored
 ///
 /// ## Architecture
 ///
+/// ### Standalone Mode (No Backend)
+/// ```
+/// JSON Data (local)
+///    ↓
+/// ┌──────────────────┐
+/// │   Screen Model   │
+/// └──────┬───────────┘
+///        ↓
+/// ┌──────────────────┐
+/// │   UIRenderer     │ (convert to widgets)
+/// └──────┬───────────┘
+///        ↓
+///     Flutter UI
+/// ```
+///
+/// ### With Backend Plugin (Optional)
 /// ```
 /// ┌─────────────────────┐
 /// │   Flutter UI Layer  │
 /// └──────────┬──────────┘
 ///            │
 /// ┌──────────▼──────────┐
-/// │   BLoC Layer        │ (State Management)
-/// │   (ScreenBloc)      │
+/// │   UIRenderer        │
 /// └──────────┬──────────┘
 ///            │
 /// ┌──────────▼──────────┐
-/// │  Repository Layer   │ (Data Access)
-/// │ (ScreenRepository)  │
+/// │  QuicUIService      │ (optional, for backend)
+/// │  + BLoC Layer       │
+/// └──────────┬──────────┘
+///            │
+/// ┌──────────▼──────────┐
+/// │  DataSourceProvider │ (optional)
+/// │  (backend registry) │
 /// └──────────┬──────────┘
 ///            │
 /// ┌──────────┴──────────┐
 /// │                     │
 /// ▼                     ▼
-/// RemoteDataSource  LocalDataSource
-/// (Supabase)        (SharedPrefs/SQLite)
+/// Supabase         Firebase (future)
+/// (plugin)         or custom backend
 /// ```
 ///
 /// ## Testing
 ///
-/// QuicUI includes 228 tests covering:
-/// - Unit tests for all components (86 tests)
-/// - Integration tests for workflows (38 tests)
-/// - Example app tests demonstrating patterns (101 tests)
-/// - Original framework tests (3 tests)
+/// QuicUI includes 267 tests covering:
+/// - Unit tests for all components
+/// - Integration tests for workflows
+/// - Example app tests demonstrating patterns
+/// - Standalone (no backend) scenarios
+/// - Plugin-based initialization scenarios
 ///
 /// ## Documentation
 ///

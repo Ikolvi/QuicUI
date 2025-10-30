@@ -6,16 +6,17 @@
 ![Build Status](https://img.shields.io/badge/status-stable-brightgreen)
 ![Architecture](https://img.shields.io/badge/Architecture-Plugin--Based-brightblue)
 
-**QuicUI** is a powerful Server-Driven UI (SDUI) framework for Flutter that enables you to build, update, and deliver dynamic user interfaces without redeploying your app. Define your UI as **JSON** and render it natively at runtime. Built with a **backend-agnostic plugin architecture** supporting any backend.
+**QuicUI** is a powerful Server-Driven UI (SDUI) framework for Flutter that enables you to build, update, and deliver dynamic user interfaces without redeploying your app. Define your UI as **JSON** and render it natively at runtime. **Backend is fully optional** - works standalone with local data, or integrates with any cloud backend via plugins.
 
 ## 🚀 Features
 
 - **Instant Updates**: Ship UI changes without App Store/Play Store approval
 - **JSON-Driven**: Define widgets in JSON, render natively in Flutter
-- **Backend-Agnostic**: Supabase, Firebase, REST API, or custom backends
-- **Real-Time Sync**: Live UI updates with minimal latency
-- **Dynamic Navigation**: Control routes from the backend
-- **Form Management**: Server-side forms with built-in validation
+- **Standalone Usage**: Works with local JSON data - no backend required
+- **Backend Optional**: Integrate with Supabase, Firebase, REST API, or custom backends
+- **Real-Time Sync**: Live UI updates with minimal latency (when backend is available)
+- **Dynamic Navigation**: Control routes from the backend or locally
+- **Form Management**: Server-side or local forms with built-in validation
 - **Dynamic Theming**: Update branding and styles in real-time
 - **Offline-First**: Lightning-fast local database (ObjectBox) for offline apps
 - **Extensible**: Custom widgets, actions, and native integrations
@@ -44,16 +45,50 @@
 flutter pub add quicui
 ```
 
-### Basic Usage
+### Minimal Setup (No Backend)
 
 ```dart
 import 'package:quicui/quicui.dart';
 
+void main() {
+  runApp(QuicUIApp(home: MyApp()));
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // Render local JSON without any backend
+    final jsonData = {
+      'type': 'column',
+      'properties': {'mainAxisAlignment': 'center'},
+      'children': [
+        {
+          'type': 'text',
+          'properties': {'text': 'Hello from Local JSON!', 'fontSize': 24}
+        }
+      ]
+    };
+    
+    final screen = Screen.fromJson(jsonData);
+    return UIRenderer.render(screen);
+  }
+}
+```
+
+### With Cloud Backend (Optional)
+
+```dart
+import 'package:quicui/quicui.dart';
+import 'package:quicui_supabase/quicui_supabase.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize with your chosen backend plugin
-  // See Backend Integration Guide for plugin-specific setup
+  // Initialize with backend (optional)
+  final dataSource = SupabaseDataSource(
+    'https://your-project.supabase.co',
+    'your-anon-key',
+  );
   await QuicUIService().initializeWithDataSource(dataSource);
   
   runApp(const MyApp());
@@ -62,18 +97,17 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Now fetch dynamic UI from backend
     return MaterialApp(
-      home: QuicUIScreen(
-        jsonData: '''
-        {
-          "type": "container",
-          "properties": {"padding": "16"},
-          "child": {
-            "type": "text",
-            "properties": {"text": "Hello from Backend!"}
+      home: FutureBuilder(
+        future: QuicUIService().fetchScreen('home_screen'),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final screen = Screen.fromJson(snapshot.data);
+            return UIRenderer.render(screen);
           }
-        }
-        ''',
+          return const Scaffold(body: CircularProgressIndicator());
+        },
       ),
     );
   }

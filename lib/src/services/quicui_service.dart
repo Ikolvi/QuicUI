@@ -6,14 +6,27 @@ import 'package:quicui/src/utils/logger_util.dart';
 ///
 /// This module provides the main service for QuicUI initialization and configuration.
 /// It acts as the entry point for the entire QuicUI framework and manages
-/// cloud data integration through a **plugin-based architecture**.
+/// **optional** cloud data integration through a **plugin-based architecture**.
 ///
+/// ## Backend is Optional
+///
+/// QuicUI works in multiple ways:
+///
+/// ### 1. Standalone (No Backend Required) ✅
+/// ```dart
+/// // No initialization needed - just render local JSON
+/// final json = {'type': 'text', 'properties': {'text': 'Hello'}};
+/// final screen = Screen.fromJson(json);
+/// final widget = UIRenderer.render(screen);
+/// ```
+///
+/// ### 2. With Backend Plugin (Optional)
 /// QuicUI is backend-agnostic through the DataSource interface, supporting:
 /// - Supabase (via quicui_supabase plugin)
 /// - Firebase (via future quicui_firebase plugin)
 /// - Custom backends (implement DataSource interface)
 ///
-/// Features provided by any DataSource:
+/// Features when backend is available:
 /// - Dynamic UI configuration from backend
 /// - Real-time UI updates and synchronization  
 /// - User data persistence
@@ -23,12 +36,15 @@ import 'package:quicui/src/utils/logger_util.dart';
 /// ## Singleton Pattern
 ///
 /// ```dart
-/// // Automatically uses singleton
+/// // No backend - just render local data
+/// final service = QuicUIService();
+/// // service doesn't need initialization
+/// // just use UIRenderer directly with local JSON
+///
+/// // Or with backend plugin
 /// final service = QuicUIService();
 /// await service.initializeWithDataSource(dataSource);
-///
-/// // Later calls return same instance
-/// final service2 = QuicUIService(); // Same as service
+/// final screenData = await service.fetchScreen('home_screen');
 /// ```
 ///
 /// ## Architecture
@@ -105,22 +121,27 @@ import 'package:quicui/src/utils/logger_util.dart';
 /// Main QuicUI service for initialization and configuration
 ///
 /// Provides:
-/// - Plugin-based backend initialization
-/// - Framework initialization
+/// - **Optional** plugin-based backend initialization (for cloud features)
+/// - Framework initialization (standalone works without this)
 /// - Global configuration management
 /// - Service coordination
 /// - Screen fetching
 /// - Singleton lifecycle management
 /// - DataSource registration with DataSourceProvider
 ///
+/// ## Important: Backend is Optional
+/// - Use QuicUI WITHOUT backend initialization by just rendering local JSON
+/// - Only call initializeWithDataSource() if you want cloud features
+/// - Framework works perfectly offline with local data
+///
 /// ## Responsibilities
-/// - Initialize DataSource plugins
-/// - Register DataSource with service locator
-/// - Initialize storage and repositories
-/// - Configure BLoC providers
-/// - Manage authentication context
-/// - Coordinate services
-/// - Handle app lifecycle events
+/// - Initialize DataSource plugins (optional)
+/// - Register DataSource with service locator (optional)
+/// - Initialize storage and repositories (optional)
+/// - Configure BLoC providers (optional)
+/// - Manage authentication context (optional)
+/// - Coordinate services (optional)
+/// - Handle app lifecycle events (optional)
 ///
 /// ## Thread Safety
 /// - Singleton is thread-safe
@@ -129,9 +150,15 @@ import 'package:quicui/src/utils/logger_util.dart';
 ///
 /// ## Lifecycle
 /// ```
+/// ✅ STANDALONE MODE (No Backend Needed)
+/// 1. Load: Render local JSON with UIRenderer
+/// 2. Use: Works immediately, no initialization
+/// 3. App works offline-first
+///
+/// ✅ WITH BACKEND PLUGIN (Optional)
 /// 1. Create: QuicUIService() or use factory
-/// 2. Initialize: Call initializeWithDataSource(dataSource) once
-/// 3. Use: Call fetchScreen(), etc.
+/// 2. Initialize: Call initializeWithDataSource(dataSource) once (OPTIONAL)
+/// 3. Use: Call fetchScreen(), sync(), etc.
 /// 4. Cleanup: dispose() on app close (optional)
 /// ```
 ///
@@ -168,9 +195,21 @@ class QuicUIService {
 
   QuicUIService._internal();
 
-  /// Initialize QuicUI framework with a DataSource plugin
+  /// Initialize QuicUI framework with a DataSource plugin (OPTIONAL)
   ///
-  /// This is the **only way** to initialize QuicUI with any backend implementation.
+  /// This method is **OPTIONAL** - only call it if you want backend features.
+  /// QuicUI works perfectly without calling this - just render local JSON.
+  ///
+  /// When to call this:
+  /// - ✅ You want to fetch UI from Supabase, Firebase, or custom backend
+  /// - ✅ You want real-time sync from cloud
+  /// - ✅ You want offline-first with cloud backup
+  ///
+  /// When NOT to call this:
+  /// - ✅ Using local/static JSON for UI definitions
+  /// - ✅ Building offline-only apps
+  /// - ✅ App works fine without cloud features
+  ///
   /// Supports Supabase, Firebase, or any custom backend implementing the DataSource interface.
   ///
   /// Must be called exactly once before using QuicUI.
@@ -295,11 +334,16 @@ class QuicUIService {
   /// Fetch and prepare a screen for display
   ///
   /// Retrieves screen configuration from the registered DataSource backend and prepares it for rendering.
-  /// This is the primary method for loading screens in QuicUI apps.
-  /// Works with any backend (Supabase, Firebase, custom) that implements the DataSource interface.
+  /// This method **requires** [initializeWithDataSource] to have been called first.
+  /// Use this only if you have cloud backend integration.
   ///
-  /// ## Prerequisites
-  /// Must call [initializeWithDataSource] before using this method.
+  /// ## For Local/Static UI Without Backend
+  /// Don't use this method. Instead:
+  /// ```dart
+  /// final json = {'type': 'text', 'properties': {'text': 'Hello'}};
+  /// final screen = Screen.fromJson(json);
+  /// final widget = UIRenderer.render(screen);
+  /// ```
   ///
   /// ## Parameters
   /// - [screenId]: Unique screen identifier

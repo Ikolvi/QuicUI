@@ -1,8 +1,14 @@
-/// QuicUI service for initialization and app-level operations
+/// QuicUI service for initialization and cloud configuration
 ///
 /// This module provides the main service for QuicUI initialization and configuration.
 /// It acts as the entry point for the entire QuicUI framework and manages
-/// app-level concerns like authentication, configuration, and global state.
+/// cloud data integration via **Supabase**.
+///
+/// QuicUI uses **Supabase** exclusively as the cloud backend for:
+/// - Dynamic UI configuration from cloud
+/// - Real-time UI updates and synchronization  
+/// - User data persistence
+/// - Authentication and authorization
 ///
 /// ## Singleton Pattern
 ///
@@ -21,25 +27,24 @@
 /// QuicUIService (this file - singleton)
 ///   ├── ScreenRepository (data layer)
 ///   ├── SyncRepository (offline sync)
-///   ├── SupabaseService (remote backend)
+///   ├── SupabaseService (cloud backend via Supabase)
 ///   ├── StorageService (local persistence)
 ///   └── ScreenBloc (state management)
 /// ```
 ///
-/// ## Initialization Flow
+/// ## Cloud Integration Flow
 ///
 /// ```
 /// App starts
 ///   ↓
-/// QuicUIService.initialize(apiKey, supabaseUrl, supabaseKey)
-///   ├→ Validate configuration
+/// QuicUIService.initialize(supabaseUrl, supabaseAnonKey)
 ///   ├→ Initialize Supabase
 ///   ├→ Initialize local storage
 ///   ├→ Set up repositories
 ///   ├→ Configure BLoC providers
 ///   └→ Complete
 ///   ↓
-/// Ready to use: fetchScreen(), etc.
+/// Ready to fetch UI from Supabase
 /// ```
 ///
 /// ## Usage
@@ -50,7 +55,6 @@
 ///   WidgetsFlutterBinding.ensureInitialized();
 ///   
 ///   await QuicUIService().initialize(
-///     appApiKey: 'your-api-key',
 ///     supabaseUrl: 'https://xxxx.supabase.co',
 ///     supabaseAnonKey: 'your-anon-key',
 ///   );
@@ -58,14 +62,15 @@
 ///   runApp(MyApp());
 /// }
 ///
-/// // In widgets
+/// // In widgets - fetch dynamic UI from Supabase
 /// final screenData = await QuicUIService().fetchScreen('home_screen');
 /// ```
 ///
 /// See also:
 /// - [ScreenRepository]: Data access layer
 /// - [ScreenBloc]: State management
-/// - [UIRenderer]: Widget rendering
+/// - [SupabaseService]: Cloud backend documentation
+/// - [SUPABASE_INTEGRATION_GUIDE.md]: Comprehensive cloud integration guide
 
 /// Main QuicUI service for initialization and configuration
 ///
@@ -129,30 +134,27 @@ class QuicUIService {
 
   QuicUIService._internal();
 
-  /// Initialize QuicUI framework
+  /// Initialize QuicUI framework with Supabase cloud backend
   ///
   /// Must be called exactly once before using QuicUI.
   /// Typically called in main() before runApp().
+  /// Initializes connection to Supabase for cloud UI configuration.
   ///
   /// ## Parameters
-  /// - [appApiKey]: Your QuicUI API key
-  ///   - Obtained from QuicUI dashboard
-  ///   - Used for authentication and quota tracking
   /// - [supabaseUrl]: Supabase project URL
   ///   - Format: https://[project-id].supabase.co
-  ///   - From Supabase project settings
-  /// - [supabaseAnonKey]: Supabase anonymous key
-  ///   - From Supabase project settings
-  ///   - Used for unauthenticated access
+  ///   - Get from Supabase project settings
+  /// - [supabaseAnonKey]: Supabase anonymous API key
+  ///   - Get from Supabase project settings → API → anon public key
+  ///   - Used for unauthenticated access to cloud data
   ///
   /// ## Initialization Process
-  /// 1. Validates API keys
-  /// 2. Initializes Supabase client
-  /// 3. Sets up local storage (Hive/SharedPreferences)
-  /// 4. Creates repository instances
-  /// 5. Configures error handling
-  /// 6. Starts sync manager
-  /// 7. Completes
+  /// 1. Initializes Supabase client with provided credentials
+  /// 2. Sets up local storage (Hive/SharedPreferences)
+  /// 3. Creates repository instances
+  /// 4. Configures error handling
+  /// 5. Starts sync manager for offline support
+  /// 6. Completes - ready to fetch UI from Supabase
   ///
   /// ## Behavior
   /// - Idempotent: Safe to call multiple times
@@ -161,8 +163,8 @@ class QuicUIService {
   /// - May prompt user for permissions (storage, etc.)
   ///
   /// ## Throws
-  /// - [ArgumentError]: Invalid API keys format
-  /// - [Exception]: Network error, initialization failed
+  /// - [ArgumentError]: Invalid Supabase credentials format
+  /// - [Exception]: Network error during initialization
   ///
   /// ## Performance
   /// - First initialization: ~2-5 seconds
@@ -176,7 +178,6 @@ class QuicUIService {
   ///
   ///   try {
   ///     await QuicUIService().initialize(
-  ///       appApiKey: 'qk_live_xxxxx',
   ///       supabaseUrl: 'https://abcdef.supabase.co',
   ///       supabaseAnonKey: 'eyJhbGc...',
   ///     );
@@ -188,26 +189,22 @@ class QuicUIService {
   /// }
   /// ```
   ///
-  /// ## Error Recovery
-  /// ```dart
-  /// try {
-  ///   await QuicUIService().initialize(...);
-  /// } on ArgumentError {
-  ///   // Fix configuration and retry
-  /// } on SocketException {
-  ///   // Network error - retry later or use offline mode
-  /// }
-  /// ```
+  /// ## Cloud Integration
+  /// Once initialized, you can:
+  /// - Fetch dynamic UI from Supabase: `fetchScreen('home')`
+  /// - Subscribe to real-time updates: `watchScreen('home')`
+  /// - Sync offline changes when online
+  /// - Manage user authentication
   ///
   /// See also:
-  /// - [fetchScreen]: Use after initialization
+  /// - [SUPABASE_INTEGRATION_GUIDE.md]: Complete cloud integration guide
+  /// - [fetchScreen]: Load UI configuration from Supabase
   /// - [dispose]: Cleanup (optional)
   Future<void> initialize({
-    required String appApiKey,
-    String? supabaseUrl,
-    String? supabaseAnonKey,
+    required String supabaseUrl,
+    required String supabaseAnonKey,
   }) async {
-    // TODO: Implement initialization
+    // TODO: Implement initialization with Supabase only
   }
 
   /// Fetch and prepare a screen for display

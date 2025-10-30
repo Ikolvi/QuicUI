@@ -11,13 +11,13 @@
 
 - **Instant Updates**: Ship UI changes without App Store/Play Store approval
 - **JSON-Driven**: Define widgets in JSON, render natively in Flutter
-- **Dart to JSON**: Convert Flutter widgets to JSON and deploy dynamically
-- **Dynamic Navigation**: Control routes and API calls from the backend
+- **Cloud-Powered by Supabase**: Store UI definitions and user data in PostgreSQL
+- **Real-Time Sync**: Live UI updates from Supabase with minimal latency
+- **Dynamic Navigation**: Control routes from the backend
 - **Form Management**: Server-side forms with built-in validation
 - **Dynamic Theming**: Update branding and styles in real-time
-- **Offline Support**: Lightning-fast local database (ObjectBox) for offline-first apps
+- **Offline-First**: Lightning-fast local database (ObjectBox) for offline apps
 - **Extensible**: Custom widgets, actions, and native integrations
-- **A/B Testing**: Built-in support for feature flags and personalization
 - **Cross-Platform**: iOS, Android, Web, Windows, macOS, Linux
 
 ## 📦 What's New
@@ -48,7 +48,14 @@ flutter pub add quicui
 import 'package:quicui/quicui.dart';
 
 void main() async {
-  await QuicUIManager.initialize();
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize with Supabase for cloud UI configuration
+  await QuicUIService().initialize(
+    supabaseUrl: 'https://your-project.supabase.co',
+    supabaseAnonKey: 'your-anon-key',
+  );
+  
   runApp(const MyApp());
 }
 
@@ -63,7 +70,7 @@ class MyApp extends StatelessWidget {
           "properties": {"padding": "16"},
           "child": {
             "type": "text",
-            "properties": {"text": "Hello QuicUI!"}
+            "properties": {"text": "Hello from Supabase!"}
           }
         }
         ''',

@@ -1,19 +1,30 @@
-/// # QuicUI - AI-Friendly Server-Driven UI Framework for Flutter
+/// # QuicUI - Server-Driven UI Framework for Flutter
 ///
 /// A production-ready framework for defining and rendering UIs from JSON,
-/// with real-time synchronization, offline-first architecture, and BLoC-based state management.
+/// with real-time synchronization via **Supabase**, offline-first architecture, and BLoC-based state management.
 ///
 /// ## Overview
 ///
-/// QuicUI enables developers to create Flutter applications using JSON-based UI definitions,
-/// similar to web frameworks but optimized for mobile. The framework handles:
+/// QuicUI enables developers to create Flutter applications using JSON-based UI definitions.
+/// The framework handles:
 ///
-/// - **Server-Driven UI:** Define UIs on the server, render on the client
+/// - **Server-Driven UI:** Define UIs on Supabase server, render on the client
+/// - **Cloud Integration:** Dynamic UI changes from Supabase without app updates
 /// - **Offline-First:** Full offline support with automatic synchronization
-/// - **Real-Time Updates:** Live UI updates through BLoC state management
+/// - **Real-Time Updates:** Live UI updates through Supabase real-time subscriptions
 /// - **70+ Widgets:** Extensive widget library with Material Design support
 /// - **Type Safety:** Full Dart null-safety and type checking
 /// - **Testing:** 228+ comprehensive tests ensuring reliability
+///
+/// ## Cloud Backend: Supabase Only
+///
+/// QuicUI exclusively uses **Supabase** for cloud operations:
+/// - **Dynamic UI Configuration:** Fetch screen definitions from Supabase
+/// - **Real-Time Sync:** Subscribe to UI changes in real-time
+/// - **User Authentication:** Built-in Supabase auth integration
+/// - **Data Persistence:** Store and sync user data with PostgreSQL
+///
+/// No other API keys or services required - **Supabase is the only cloud backend**.
 ///
 /// ## Quick Start
 ///
@@ -36,7 +47,7 @@
 /// - [ScreenRepository]: Repository pattern for data access
 ///
 /// ### Data Sources
-/// - [RemoteDataSource]: Fetches screen definitions from server (Supabase)
+/// - [RemoteDataSource]: Fetches screen definitions from Supabase
 /// - [LocalDataSource]: Provides offline access to cached screens
 ///
 /// ### Rendering
@@ -45,7 +56,7 @@
 /// - [WidgetBuilder]: Helper for building complex widgets
 ///
 /// ### Services
-/// - [QuicUIService]: Main service for initializing and managing the framework
+/// - [QuicUIService]: Main service for initializing framework with Supabase
 /// - [SupabaseService]: Integration with Supabase backend
 /// - [StorageService]: Local storage and caching
 ///
@@ -56,7 +67,7 @@
 /// final quicUIService = QuicUIService();
 /// await quicUIService.initialize(
 ///   supabaseUrl: 'your-supabase-url',
-///   supabaseKey: 'your-supabase-key',
+///   supabaseAnonKey: 'your-supabase-key',
 /// );
 /// ```
 ///
@@ -73,12 +84,19 @@
 /// final widget = renderer.renderScreen(screen);
 /// ```
 ///
+/// ### Cloud Integration
+/// The framework integrates seamlessly with Supabase to:
+/// - Fetch dynamic UI configurations from cloud
+/// - Subscribe to real-time UI updates
+/// - Authenticate users securely
+/// - Sync data between device and cloud
+///
 /// ### Offline Support
 /// The framework automatically:
 /// - Caches screens locally when online
 /// - Serves cached screens when offline
 /// - Queues user interactions while offline
-/// - Syncs when connection is restored
+/// - Syncs with Supabase when connection is restored
 ///
 /// ## Architecture
 ///

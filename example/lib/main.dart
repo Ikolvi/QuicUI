@@ -3,7 +3,12 @@ import 'package:quicui/quicui.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await QuicUIManager.initialize();
+  // Initialize QuicUI with Supabase for cloud UI configuration
+  // In production, get these values from environment or secure storage
+  await QuicUIService().initialize(
+    supabaseUrl: 'YOUR_SUPABASE_URL',
+    supabaseAnonKey: 'YOUR_SUPABASE_ANON_KEY',
+  );
   runApp(const QuicUIExampleApp());
 }
 

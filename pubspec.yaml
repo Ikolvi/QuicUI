@@ -33,7 +33,7 @@ dependencies:
   # Local Database (Primary: ObjectBox for performance)
   objectbox: ^5.0.1
   objectbox_flutter_libs: ^5.0.1
-  flat_buffers: ^24.3.25
+  flat_buffers: ^23.5.26
   
   # Alternative: Hive (lightweight option)
   hive: ^2.2.3

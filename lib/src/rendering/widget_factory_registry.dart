@@ -11,7 +11,6 @@ import 'app_level_widgets.dart' as app_level_widgets;
 import 'gesture_widgets.dart' as gesture_widgets_module;
 import 'input_widgets.dart' as input_widgets;
 import 'dialog_widgets.dart' as dialog_widgets;
-import '../utils/logger_util.dart';
 
 /// Type definition for widget builders
 typedef WidgetBuilder = Widget Function(
@@ -25,9 +24,6 @@ typedef WidgetBuilder = Widget Function(
 /// Consolidates UIRenderer and WidgetFactoryRegistry into unified system
 /// This is a CRITICAL FIX: includes all available widgets from all widget files
 class WidgetFactoryRegistry {
-  // Placeholder for field controllers from UIRenderer
-  static final Map<String, TextEditingController> _fieldControllers = {};
-
   // ===== UNIFIED WIDGET REGISTRY (130+ WIDGETS) =====
   
   static final Map<String, WidgetBuilder> _allWidgets = {
@@ -2468,38 +2464,6 @@ class WidgetFactoryRegistry {
     }
   }
 
-  static void _handleButtonPress(dynamic actionData) {
-    LoggerUtil.debug('Button pressed: $actionData');
-  }
-
-  static double? _parseDouble(dynamic value) {
-    if (value == null) return null;
-    if (value is num) return value.toDouble();
-    if (value is String) return double.tryParse(value);
-    return null;
-  }
-
-  static MainAxisAlignment _parseMainAxisAlignment(dynamic value) {
-    return switch (value) {
-      'center' => MainAxisAlignment.center,
-      'end' => MainAxisAlignment.end,
-      'spaceBetween' => MainAxisAlignment.spaceBetween,
-      'spaceAround' => MainAxisAlignment.spaceAround,
-      'spaceEvenly' => MainAxisAlignment.spaceEvenly,
-      _ => MainAxisAlignment.start,
-    };
-  }
-
-  static CrossAxisAlignment _parseCrossAxisAlignment(dynamic value) {
-    return switch (value) {
-      'center' => CrossAxisAlignment.center,
-      'end' => CrossAxisAlignment.end,
-      'stretch' => CrossAxisAlignment.stretch,
-      'baseline' => CrossAxisAlignment.baseline,
-      _ => CrossAxisAlignment.start,
-    };
-  }
-
   static Color? _parseColor(dynamic value) {
     if (value is String) {
       if (value.startsWith('#')) {
@@ -2516,126 +2480,6 @@ class WidgetFactoryRegistry {
         'grey' => Colors.grey,
         _ => null,
       };
-    }
-    return null;
-  }
-
-  static EdgeInsets? _parseEdgeInsets(dynamic value) {
-    if (value == null) return null;
-    if (value is num) return EdgeInsets.all(value.toDouble());
-    if (value is Map) {
-      if (value.containsKey('all')) {
-        return EdgeInsets.all((value['all'] as num?)?.toDouble() ?? 0);
-      }
-      return EdgeInsets.fromLTRB(
-        (value['left'] as num?)?.toDouble() ?? 0,
-        (value['top'] as num?)?.toDouble() ?? 0,
-        (value['right'] as num?)?.toDouble() ?? 0,
-        (value['bottom'] as num?)?.toDouble() ?? 0,
-      );
-    }
-    return null;
-  }
-
-  static Alignment _parseAlignment(dynamic value) {
-    return switch (value) {
-      'topLeft' => Alignment.topLeft,
-      'topCenter' => Alignment.topCenter,
-      'topRight' => Alignment.topRight,
-      'centerLeft' => Alignment.centerLeft,
-      'center' => Alignment.center,
-      'centerRight' => Alignment.centerRight,
-      'bottomLeft' => Alignment.bottomLeft,
-      'bottomCenter' => Alignment.bottomCenter,
-      'bottomRight' => Alignment.bottomRight,
-      _ => Alignment.center,
-    };
-  }
-
-  static IconData _parseIconData(String iconName) {
-    return switch (iconName.toLowerCase()) {
-      'home' => Icons.home,
-      'settings' => Icons.settings,
-      'search' => Icons.search,
-      'add' => Icons.add,
-      'delete' => Icons.delete,
-      'edit' => Icons.edit,
-      'close' => Icons.close,
-      'check' => Icons.check,
-      'menu' => Icons.menu,
-      'back' => Icons.arrow_back,
-      'info' => Icons.info,
-      'warning' => Icons.warning,
-      _ => Icons.widgets,
-    };
-  }
-
-  static BoxDecoration? _parseBoxDecoration(dynamic value) {
-    if (value == null) return null;
-    if (value is Map) {
-      return BoxDecoration(
-        color: _parseColor(value['color']),
-        border: _parseBorder(value['border']),
-        borderRadius: _parseBorderRadius(value['borderRadius']),
-        boxShadow: _parseBoxShadow(value['boxShadow']),
-      );
-    }
-    return null;
-  }
-
-  static Border? _parseBorder(dynamic value) {
-    if (value == null) return null;
-    if (value is Map) {
-      if (value.containsKey('color') || value.containsKey('width')) {
-        final color = _parseColor(value['color']) ?? Colors.black;
-        final width = (value['width'] as num?)?.toDouble() ?? 1.0;
-        return Border.all(color: color, width: width);
-      }
-    }
-    return null;
-  }
-
-  static List<BoxShadow>? _parseBoxShadow(dynamic value) {
-    if (value == null) return null;
-    if (value is List) {
-      return value
-          .map((shadow) => _parseSingleBoxShadow(shadow))
-          .where((shadow) => shadow != null)
-          .cast<BoxShadow>()
-          .toList();
-    }
-    return null;
-  }
-
-  static BoxShadow? _parseSingleBoxShadow(dynamic value) {
-    if (value is Map) {
-      return BoxShadow(
-        color: _parseColor(value['color']) ?? Colors.black26,
-        blurRadius: (value['blurRadius'] as num?)?.toDouble() ?? 0.0,
-        spreadRadius: (value['spreadRadius'] as num?)?.toDouble() ?? 0.0,
-        offset: _parseOffset(value['offset']),
-      );
-    }
-    return null;
-  }
-
-  static Offset _parseOffset(dynamic value) {
-    if (value is Map) {
-      final dx = (value['dx'] as num?)?.toDouble() ?? 0.0;
-      final dy = (value['dy'] as num?)?.toDouble() ?? 0.0;
-      return Offset(dx, dy);
-    }
-    return Offset.zero;
-  }
-
-  static BorderRadius? _parseBorderRadius(dynamic value) {
-    if (value == null) return null;
-    if (value is num) return BorderRadius.circular(value.toDouble());
-    if (value is Map) {
-      if (value.containsKey('all')) {
-        final radius = (value['all'] as num?)?.toDouble() ?? 0.0;
-        return BorderRadius.circular(radius);
-      }
     }
     return null;
   }

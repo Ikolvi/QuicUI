@@ -457,6 +457,12 @@ class UIRenderer {
         'LongPressDraggable' => buildLongPressDraggable(config, _handleCallback),
         'DragTarget' => buildDragTarget(config, _handleCallback),
         
+        // ===== ADVANCED GESTURE WIDGETS (Phase 4) =====
+        'SwipeDetector' => buildSwipeDetector(config, _handleCallback),
+        'RotationGestureDetector' => buildRotationGestureDetector(config, _handleCallback),
+        'ScaleGestureDetector' => buildScaleGestureDetector(config, _handleCallback),
+        'MultiTouchGestureDetector' => buildMultiTouchGestureDetector(config, _handleCallback),
+        
         // ===== DIALOG & OVERLAY WIDGETS =====
         'Dialog' => _buildDialog(properties, childrenData, context),
         'AlertDialog' => _buildAlertDialog(properties, childrenData, context),

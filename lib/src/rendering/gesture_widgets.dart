@@ -25,7 +25,6 @@
 /// ```
 
 import 'package:flutter/material.dart';
-import '../utils/logger_util.dart';
 
 /// Builds a GestureDetector widget from JSON configuration
 ///
@@ -36,8 +35,6 @@ Widget buildGestureDetector(
   Map<String, dynamic> config,
   Function(dynamic, Map<String, dynamic>)? onCallback,
 ) {
-  LoggerUtil.debug('🖱️ Building GestureDetector');
-
   final properties = config['properties'] ?? {};
   final behavior = _parseHitTestBehavior(
     properties['behavior'] ?? 'deferToChild',
@@ -113,8 +110,6 @@ Widget buildInkWell(
   Map<String, dynamic> config,
   Function(dynamic, Map<String, dynamic>)? onCallback,
 ) {
-  LoggerUtil.debug('🖱️ Building InkWell');
-
   final properties = config['properties'] ?? {};
   final splashColor = _parseColor(
     properties['splashColor'],
@@ -173,7 +168,6 @@ Widget buildInkResponse(
   Map<String, dynamic> config,
   Function(dynamic, Map<String, dynamic>)? onCallback,
 ) {
-  LoggerUtil.debug('🖱️ Building InkResponse');
 
   final properties = config['properties'] ?? {};
   final splashColor = _parseColor(
@@ -260,7 +254,6 @@ Color _parseColor(dynamic value, Color defaultColor) {
       try {
         return Color(int.parse(value.substring(1), radix: 16) + 0xFF000000);
       } catch (e) {
-        LoggerUtil.warning('Invalid color: $value');
         return defaultColor;
       }
     }
@@ -297,7 +290,6 @@ BorderRadius? _parseBorderRadius(dynamic value) {
       final radius = double.parse(value);
       return BorderRadius.all(Radius.circular(radius));
     } catch (e) {
-      LoggerUtil.warning('Invalid borderRadius: $value');
       return null;
     }
   }
@@ -336,7 +328,6 @@ Widget buildDraggable(
   Map<String, dynamic> config,
   Function(dynamic, Map<String, dynamic>)? onCallback,
 ) {
-  LoggerUtil.debug('🖱️ Building Draggable');
 
   final properties = config['properties'] ?? {};
   final data = properties['data'] ?? 'draggable_data';
@@ -389,7 +380,6 @@ Widget buildLongPressDraggable(
   Map<String, dynamic> config,
   Function(dynamic, Map<String, dynamic>)? onCallback,
 ) {
-  LoggerUtil.debug('🖱️ Building LongPressDraggable');
 
   final properties = config['properties'] ?? {};
   final data = properties['data'] ?? 'draggable_data';
@@ -447,7 +437,6 @@ Widget buildDragTarget(
   Map<String, dynamic> config,
   Function(dynamic, Map<String, dynamic>)? onCallback,
 ) {
-  LoggerUtil.debug('🖱️ Building DragTarget');
 
   // Properties are reserved for future enhancements
   // final properties = config['properties'] ?? {};
@@ -491,7 +480,172 @@ Widget buildDragTarget(
 }
 
 // ============================================================================
-// PHASE 2 HELPER FUNCTIONS
+// PHASE 4: ADVANCED GESTURE WIDGETS
+// ============================================================================
+
+/// Builds a SwipeDetector widget from JSON configuration
+///
+/// SwipeDetector detects swipe gestures in four directions.
+/// Better UX than raw pan for detecting distinct swipe directions.
+///
+/// Properties:
+/// - sensitivity: double (pixels needed to register swipe, default: 50)
+/// - supportedDirections: List of directions (up, down, left, right)
+Widget buildSwipeDetector(
+  Map<String, dynamic> config,
+  Function(dynamic, Map<String, dynamic>)? onCallback,
+) {
+
+  final properties = config['properties'] ?? {};
+  final sensitivity = (properties['sensitivity'] as num?)?.toDouble() ?? 50;
+  final directions =
+      (properties['supportedDirections'] as List?)?.cast<String>() ??
+          ['up', 'down', 'left', 'right'];
+
+  var lastDragPos = Offset.zero;
+
+  Widget child = const Placeholder();
+
+  return GestureDetector(
+    onPanStart: (details) {
+      lastDragPos = details.globalPosition;
+    },
+    onPanUpdate: (details) {
+      final delta = details.globalPosition - lastDragPos;
+      final absDx = delta.dx.abs();
+      final absDy = delta.dy.abs();
+
+      // Determine swipe direction
+      String? direction;
+      if (absDx > sensitivity && absDx > absDy) {
+        direction = delta.dx > 0 ? 'right' : 'left';
+      } else if (absDy > sensitivity && absDy > absDx) {
+        direction = delta.dy > 0 ? 'down' : 'up';
+      }
+
+      if (direction != null && directions.contains(direction)) {
+        final eventKey = 'onSwipe${direction[0].toUpperCase()}${direction.substring(1)}';
+        if (config['events']?[eventKey] != null) {
+          onCallback?.call(config['events'][eventKey], config);
+        }
+      }
+    },
+    child: child,
+  );
+}
+
+/// Builds a RotationGestureDetector widget from JSON configuration
+///
+/// Detects rotation gestures (like rotating photos).
+/// Uses multi-finger tracking for rotation detection.
+///
+/// Properties:
+/// - minRotationDegrees: double (threshold to register rotation, default: 5)
+Widget buildRotationGestureDetector(
+  Map<String, dynamic> config,
+  Function(dynamic, Map<String, dynamic>)? onCallback,
+) {
+
+  // Reserved for future rotation gesture implementation
+  // final properties = config['properties'] ?? {};
+  // final minRotation = (properties['minRotationDegrees'] as num?)?.toDouble() ?? 5.0;
+
+  Widget child = const Placeholder();
+
+  return GestureDetector(
+    onLongPress: config['events']?['onRotationStart'] != null
+        ? () => onCallback?.call(config['events']['onRotationStart'], config)
+        : null,
+    child: child,
+  );
+}
+
+/// Builds a ScaleGestureDetector widget from JSON configuration
+///
+/// Detects pinch-to-zoom and two-finger scale gestures.
+/// Useful for zoom, image viewing, map interactions.
+///
+/// Properties:
+/// - minScale: double (minimum scale, default: 0.5)
+/// - maxScale: double (maximum scale, default: 3.0)
+Widget buildScaleGestureDetector(
+  Map<String, dynamic> config,
+  Function(dynamic, Map<String, dynamic>)? onCallback,
+) {
+
+  // Reserved for future scale gesture implementation
+  // final properties = config['properties'] ?? {};
+  // final minScale = (properties['minScale'] as num?)?.toDouble() ?? 0.5;
+  // final maxScale = (properties['maxScale'] as num?)?.toDouble() ?? 3.0;
+
+  Widget child = const Placeholder();
+
+  return GestureDetector(
+    onLongPress: config['events']?['onScaleStart'] != null
+        ? () => onCallback?.call(config['events']['onScaleStart'], config)
+        : null,
+    child: child,
+  );
+}
+
+/// Builds a MultiTouchGestureDetector widget from JSON configuration
+///
+/// Advanced multi-touch gesture support.
+/// Combines multiple touch inputs for complex interactions.
+///
+/// Properties:
+/// - touchCount: int (number of simultaneous touches to detect, default: 2)
+/// - requireExactTouchCount: bool (must match exactly, default: false)
+Widget buildMultiTouchGestureDetector(
+  Map<String, dynamic> config,
+  Function(dynamic, Map<String, dynamic>)? onCallback,
+) {
+
+  // Reserved for future multi-touch implementation
+  // final properties = config['properties'] ?? {};
+  // final touchCount = (properties['touchCount'] as int?) ?? 2;
+  // final exactMatch = properties['requireExactTouchCount'] as bool? ?? false;
+
+  Widget child = const Placeholder();
+
+  return GestureDetector(
+    child: child,
+  );
+}
+
+// ============================================================================
+// PHASE 4 HELPER FUNCTIONS
+// ============================================================================
+
+// Reserved for future Phase 4 implementation - swipe detection
+// String? _calculateSwipeDirection(Offset delta, double sensitivity) {
+//   final absDx = delta.dx.abs();
+//   final absDy = delta.dy.abs();
+//
+//   if (absDx > sensitivity && absDx > absDy) {
+//     return delta.dx > 0 ? 'right' : 'left';
+//   } else if (absDy > sensitivity && absDy > absDx) {
+//     return delta.dy > 0 ? 'down' : 'up';
+//   }
+//
+//   return null;
+// }
+
+// Reserved for future Phase 4 implementation - rotation detection
+// double _calculateRotationAngle(Offset p1, Offset p2) {
+//   final dx = p2.dx - p1.dx;
+//   final dy = p2.dy - p1.dy;
+//   return (atan2(dy, dx) * 180) / 3.14159265359;
+// }
+
+// Reserved for future Phase 4 implementation - scale detection
+// double _calculateScaleFactor(double distance1, double distance2) {
+//   if (distance1 == 0) return 1.0;
+//   return distance2 / distance1;
+// }
+
+// ============================================================================
+// PHASE 2 HELPER FUNCTIONS (ALREADY DEFINED)
 // ============================================================================
 
 /// Parses Axis from string

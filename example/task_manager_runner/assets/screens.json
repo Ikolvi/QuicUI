@@ -176,8 +176,7 @@
                                     "action": "navigateWithData",
                                     "screen": "dashboard",
                                     "data": {
-                                      "username": "${fields.username}",
-                                      "loginTime": "${now}"
+                                      "username": "${fields.username}"
                                     }
                                   }
                                 }
@@ -298,7 +297,7 @@
                             {
                               "type": "Text",
                               "properties": {
-                                "text": "Login Time: ${navigationData.loginTime}",
+                                "text": "Ready to manage your tasks efficiently",
                                 "fontSize": 12,
                                 "color": "#9CA3AF"
                               }

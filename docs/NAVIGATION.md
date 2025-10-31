@@ -61,7 +61,6 @@ Pass data when navigating to a new screen:
       "screen": "dashboard",
       "data": {
         "username": "${fields.username}",
-        "loginTime": "${now}",
         "userId": 12345
       }
     }
@@ -173,7 +172,6 @@ class _QuicUIAppState extends State<QuicUIApp> {
               "screen": "dashboard",
               "data": {
                 "userEmail": "${fields.email}",
-                "loginTime": "${now}",
                 "sessionId": "session_12345"
               }
             }

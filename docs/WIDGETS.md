@@ -346,8 +346,7 @@ Primary action button.
       "action": "navigateWithData",
       "screen": "dashboard",
       "data": {
-        "username": "${fields.username}",
-        "loginTime": "${now}"
+        "username": "${fields.username}"
       }
     }
   }
@@ -684,7 +683,7 @@ Insert current timestamp:
 {
   "type": "Text",
   "properties": {
-    "text": "Updated: ${now}"
+    "text": "Updated: ${navigationData.lastUpdated}"
   }
 }
 ```
@@ -768,8 +767,7 @@ Insert current timestamp:
                   "action": "navigateWithData",
                   "screen": "dashboard",
                   "data": {
-                    "username": "${fields.username}",
-                    "loginTime": "${now}"
+                    "username": "${fields.username}"
                   }
                 }
               }
@@ -830,7 +828,7 @@ Insert current timestamp:
                     {
                       "type": "Text",
                       "properties": {
-                        "text": "Logged in: ${navigationData.loginTime}",
+                        "text": "Welcome to your dashboard",
                         "fontSize": 12,
                         "color": "#6B7280"
                       }

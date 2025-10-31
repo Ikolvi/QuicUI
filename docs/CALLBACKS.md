@@ -66,7 +66,7 @@ Navigate while passing data:
       "data": {
         "username": "${fields.username}",
         "userId": 123,
-        "loginTime": "${now}"
+        "sessionId": "sess_abc123"
       }
     }
   }
@@ -77,7 +77,6 @@ Navigate while passing data:
 - Static values: `"userId": 123`
 - Field values: `"email": "${fields.email}"`
 - Passed data: `"role": "${navigationData.role}"`
-- Timestamps: `"timestamp": "${now}"`
 
 ## Event Types
 
@@ -266,27 +265,6 @@ Access passed data using `${navigationData.key}`:
 }
 ```
 
-### Timestamps
-
-Include current time using `${now}`:
-
-```json
-{
-  "type": "ElevatedButton",
-  "properties": {"label": "Submit"},
-  "events": {
-    "onPressed": {
-      "action": "navigateWithData",
-      "screen": "receipt",
-      "data": {
-        "submissionTime": "${now}",
-        "username": "${fields.username}"
-      }
-    }
-  }
-}
-```
-
 ## Complete Callback Examples
 
 ### Example 1: Login Flow
@@ -325,8 +303,7 @@ Include current time using `${now}`:
                   "screen": "dashboard",
                   "data": {
                     "username": "${fields.username}",
-                    "loginTime": "${now}",
-                    "sessionId": "sess_${now}"
+                    "sessionId": "sess_abc123"
                   }
                 }
               }
@@ -400,7 +377,7 @@ Include current time using `${now}`:
             "email": "${fields.email}",
             "password": "${fields.password}",
             "agreedToTerms": "${fields.agreeTerms}",
-            "registrationTime": "${now}"
+            "userId": 12345
           }
         }
       }
@@ -536,7 +513,6 @@ Include current time using `${now}`:
 │ Process Variable Interpolation      │
 │ - Replace ${fields.x} with values   │
 │ - Replace ${navigationData.x}       │
-│ - Replace ${now} with timestamp     │
 └────────┬────────────────────────────┘
          │
          ▼
@@ -588,7 +564,7 @@ Include current time using `${now}`:
   "screen": "dashboard",
   "data": {
     "username": "${fields.username}",
-    "loginTime": "${now}"
+    "sessionId": "session_abc123"
   }
 }
 ```
@@ -628,7 +604,7 @@ Include current time using `${now}`:
   "data": {
     "username": "${fields.username}",
     "userId": 12345,
-    "timestamp": "${now}",
+    "sessionId": "session_abc123",
     "isAdmin": false
   }
 }

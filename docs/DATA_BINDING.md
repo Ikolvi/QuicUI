@@ -61,29 +61,13 @@ Access values from form fields in the current or previous screens. Field IDs are
         "screen": "dashboard",
         "data": {
           "username": "${fields.username}",
-          "loginTime": "${now}"
+          "sessionId": "session_abc123"
         }
       }
     }
   }
 }
 ```
-
-### 3. Timestamp: `${now}`
-
-Inserts the current date and time in ISO 8601 format.
-
-**Example:**
-```json
-{
-  "type": "Text",
-  "properties": {
-    "text": "Last updated: ${now}"
-  }
-}
-```
-
-Output: `Last updated: 2025-10-31T15:40:58.054671`
 
 ## How It Works
 
@@ -165,8 +149,7 @@ Output: `Last updated: 2025-10-31T15:40:58.054671`
                 "action": "navigateWithData",
                 "screen": "dashboard",
                 "data": {
-                  "username": "${fields.username}",
-                  "loginTime": "${now}"
+                  "username": "${fields.username}"
                 }
               }
             }
@@ -301,7 +284,6 @@ static String _processVariableString(
 **Supported Patterns:**
 - `${navigationData.keyName}` - from navigationData map
 - `${fields.fieldId}` - from TextField with given fieldId
-- `${now}` - current ISO 8601 timestamp
 
 ### renderChild()
 
@@ -387,21 +369,70 @@ static Widget renderChild(
 3. Ensure user entered text before clicking button
 4. Check field controller is properly registered
 
-### Timestamp Always Same
+## Design Philosophy: No Magic Variable Names
 
-**Problem:** `${now}` shows the same time always
+QuicUI follows a principle of **explicit data management** without magic variable names. Variable interpolation is limited to:
+- `${navigationData.key}` - accessing passed data
+- `${fields.fieldId}` - accessing form field values
 
-**Note:** This is by design - `${now}` captures the time when the navigation happens. If you need real-time updates, use a different approach or StatefulWidget with periodic updates.
+This keeps the system:
+- ✅ Simple and predictable
+- ✅ Without hidden side effects
+- ✅ Easy to understand and debug
+- ✅ Type-safe when data is prepared
+
+### Timestamps and Computed Data
+
+For timestamps, dates, and other computed values, handle them explicitly in Dart code:
+
+**Example:**
+
+Instead of trying to add special patterns in JSON, compute in main.dart:
+
+```dart
+void _navigateTo(String screen, {Map<String, dynamic>? data}) {
+  final enrichedData = {
+    ...?data,
+    'loginTime': DateTime.now().toIso8601String(),
+    'timestamp': DateTime.now().millisecondsSinceEpoch,
+    'sessionId': _generateSessionId(),
+  };
+  
+  setState(() {
+    currentScreen = screen;
+    navigationData = enrichedData;
+  });
+}
+```
+
+Then display in JSON:
+
+```json
+{
+  "type": "Text",
+  "properties": {
+    "text": "Logged in at: ${navigationData.loginTime}"
+  }
+}
+```
+
+**Benefits:**
+- ✅ Clear data flow
+- ✅ Type safety in Dart
+- ✅ Easy to test
+- ✅ No magic strings in JSON
 
 ## Future Extensions
 
 Possible future additions to the data binding system:
 
-1. **Computed properties**: `${navigationData.user.firstName}`
+1. **Nested properties**: `${navigationData.user.firstName}`
 2. **Filters**: `${navigationData.date | format:'MM/dd/yyyy'}`
 3. **Conditions**: `${navigationData.role == 'admin' ? 'Admin Panel' : 'User Dashboard'}`
 4. **Array access**: `${navigationData.items[0].name}`
 5. **Global state**: `${global.appName}`
+
+*Note: These are potential future enhancements. Current system focuses on explicit data passing without magic patterns.*
 
 ## Related Documentation
 

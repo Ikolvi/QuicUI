@@ -1913,13 +1913,6 @@ class UIRenderer {
       return value ?? match.group(0)!;
     });
     
-    // Process ${now} pattern
-    if (result.contains('\${now}')) {
-      final now = DateTime.now().toIso8601String();
-      result = result.replaceAll('\${now}', now);
-      LoggerUtil.debug('Replaced \${now} with $now');
-    }
-    
     return result;
   }
 

@@ -56,7 +56,7 @@ Handle all interactions through JSON-configured callbacks:
       "screen": "dashboard",
       "data": {
         "username": "${fields.username}",
-        "loginTime": "${now}"
+        "userId": 12345
       }
     }
   }
@@ -264,7 +264,7 @@ class _QuicUIAppState extends State<QuicUIApp> {
                       "screen": "dashboard",
                       "data": {
                         "username": "${fields.username}",
-                        "loginTime": "${now}"
+                        "userId": 12345
                       }
                     }
                   }
@@ -432,7 +432,6 @@ Use DataBinding for clean data presentation:
 |---------|---------|----------|
 | `${fields.fieldId}` | `${fields.email}` | Get form field value |
 | `${navigationData.key}` | `${navigationData.username}` | Access passed data |
-| `${now}` | `${now}` | Current ISO timestamp |
 
 ## Best Practices
 

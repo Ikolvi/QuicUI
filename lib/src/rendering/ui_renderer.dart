@@ -1257,9 +1257,14 @@ class UIRenderer {
     
     return ElevatedButton(
       onPressed: () {
+        LoggerUtil.info('🔘 ElevatedButton pressed');
         final events = properties['events'] as Map<String, dynamic>?;
+        LoggerUtil.info('Events: $events');
         if (events != null) {
+          LoggerUtil.info('Calling _handleCallback with onPressed event');
           _handleCallback(events['onPressed'], config);
+        } else {
+          LoggerUtil.warning('No events found for button');
         }
       },
       child: child,
@@ -1644,6 +1649,10 @@ class UIRenderer {
   }
 
   static void _handleCallback(dynamic actionData, Map<String, dynamic> properties) {
+    LoggerUtil.info('=== CALLBACK TRIGGERED ===');
+    LoggerUtil.info('Action Data: $actionData');
+    LoggerUtil.info('Properties keys: ${properties.keys.toList()}');
+    
     if (actionData == null) {
       LoggerUtil.warning('No action specified for callback');
       return;
@@ -1652,15 +1661,21 @@ class UIRenderer {
     if (actionData is Map<String, dynamic>) {
       try {
         final action = actionData['action'] as String?;
+        LoggerUtil.info('Action type: $action');
         
         switch (action) {
           case 'navigate':
             final screen = actionData['screen'] as String?;
+            LoggerUtil.info('Navigate action - screen: $screen');
             if (screen != null) {
               // Get the navigation callback from properties
               final onNavigateTo = properties['onNavigateTo'];
+              LoggerUtil.info('onNavigateTo callback type: ${onNavigateTo.runtimeType}');
               if (onNavigateTo is Function) {
+                LoggerUtil.info('Calling onNavigateTo with screen: $screen');
                 onNavigateTo(screen);
+              } else {
+                LoggerUtil.warning('onNavigateTo is not a function: $onNavigateTo');
               }
             }
             break;
@@ -1668,13 +1683,20 @@ class UIRenderer {
           case 'navigateWithData':
             final screen = actionData['screen'] as String?;
             final data = actionData['data'] as Map<String, dynamic>?;
+            LoggerUtil.info('NavigateWithData action - screen: $screen');
+            LoggerUtil.info('Raw data: $data');
             if (screen != null) {
               // Get the navigation callback from properties
               final onNavigateTo = properties['onNavigateTo'];
+              LoggerUtil.info('onNavigateTo callback type: ${onNavigateTo.runtimeType}');
               if (onNavigateTo is Function) {
                 // Collect field values from data object
                 final processedData = _processDataVariables(data ?? {}, properties);
+                LoggerUtil.info('Processed data: $processedData');
+                LoggerUtil.info('Calling onNavigateTo with screen: $screen, data: $processedData');
                 onNavigateTo(screen, processedData);
+              } else {
+                LoggerUtil.warning('onNavigateTo is not a function: $onNavigateTo');
               }
             }
             break;
@@ -1686,8 +1708,8 @@ class UIRenderer {
           default:
             LoggerUtil.warning('Unknown action: $action');
         }
-      } catch (e) {
-        LoggerUtil.error('Error executing callback: $e', e);
+      } catch (e, stackTrace) {
+        LoggerUtil.error('Error executing callback: $e', e, stackTrace);
       }
     }
   }
@@ -1697,28 +1719,41 @@ class UIRenderer {
     Map<String, dynamic> data,
     Map<String, dynamic> properties,
   ) {
+    LoggerUtil.info('=== PROCESSING DATA VARIABLES ===');
+    LoggerUtil.info('Input data: $data');
+    LoggerUtil.info('Field controllers: ${_fieldControllers.keys.toList()}');
+    
     final result = <String, dynamic>{};
     
     data.forEach((key, value) {
+      LoggerUtil.info('Processing key: $key, value: $value (type: ${value.runtimeType})');
+      
       if (value is String) {
         // Handle ${fields.fieldId} patterns
         if (value.startsWith('\${fields.') && value.endsWith('}')) {
           final fieldId = value.replaceFirst('\${fields.', '').replaceFirst('}', '');
+          LoggerUtil.info('Found field reference: $fieldId');
           // Get field value from controllers
           final controller = _fieldControllers[fieldId];
-          result[key] = controller?.text ?? value;
+          final fieldValue = controller?.text ?? value;
+          LoggerUtil.info('Field $fieldId controller found: ${controller != null}, value: $fieldValue');
+          result[key] = fieldValue;
         }
         // Handle ${navigationData.x} patterns
         else if (value.startsWith('\${navigationData.') && value.endsWith('}')) {
           final dataKey = value.replaceFirst('\${navigationData.', '').replaceFirst('}', '');
           final navData = properties['navigationData'] as Map<String, dynamic>? ?? {};
+          LoggerUtil.info('Found navigationData reference: $dataKey, navigationData: $navData');
           result[key] = navData[dataKey] ?? value;
         }
         // Handle ${now} pattern
         else if (value == '\${now}') {
-          result[key] = DateTime.now().toIso8601String();
+          final nowValue = DateTime.now().toIso8601String();
+          LoggerUtil.info('Found now pattern, value: $nowValue');
+          result[key] = nowValue;
         }
         else {
+          LoggerUtil.info('No pattern match, using raw value');
           result[key] = value;
         }
       } else {
@@ -1726,6 +1761,7 @@ class UIRenderer {
       }
     });
     
+    LoggerUtil.info('Final processed data: $result');
     return result;
   }
 

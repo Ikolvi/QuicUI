@@ -221,7 +221,7 @@ class InputWidgets {
   /// 
   /// Properties:
   /// - value: bool (checked state)
-  /// - activeColor: String (hex color)
+  /// - activeThumbColor: String (hex color)
   /// - checkColor: String (hex color)
   static Widget buildCheckbox(
     Map<String, dynamic> properties, {
@@ -231,7 +231,7 @@ class InputWidgets {
   }) {
     return Checkbox(
       value: properties['value'] as bool? ?? false,
-      activeColor: ParseUtils.parseColor(properties['activeColor']),
+      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
       checkColor: ParseUtils.parseColor(properties['checkColor']),
       onChanged: (bool? value) {
         if (onChanged != null && value != null) {
@@ -246,7 +246,7 @@ class InputWidgets {
   /// Properties:
   /// - label: String (tile label)
   /// - value: bool (checked state)
-  /// - activeColor: String (hex color)
+  /// - activeThumbColor: String (hex color)
   /// - subtitle: String (optional subtitle)
   static Widget buildCheckboxListTile(
     Map<String, dynamic> properties, {
@@ -260,7 +260,7 @@ class InputWidgets {
           ? Text(properties['subtitle'] as String)
           : null,
       value: properties['value'] as bool? ?? false,
-      activeColor: ParseUtils.parseColor(properties['activeColor']),
+      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
       onChanged: (bool? value) {
         if (onChanged != null && value != null) {
           onChanged(value);
@@ -276,7 +276,7 @@ class InputWidgets {
   /// Properties:
   /// - value: String (radio value)
   /// - groupValue: String (current selected value)
-  /// - activeColor: String (hex color)
+  /// - activeThumbColor: String (hex color)
   static Widget buildRadio(
     Map<String, dynamic> properties, {
     List<dynamic>? childrenData,
@@ -286,7 +286,7 @@ class InputWidgets {
     return Radio<String>(
       value: properties['value'] as String? ?? '',
       groupValue: properties['groupValue'] as String?,
-      activeColor: ParseUtils.parseColor(properties['activeColor']),
+      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
       onChanged: (String? value) {
         if (onChanged != null && value != null) {
           onChanged(value);
@@ -301,7 +301,7 @@ class InputWidgets {
   /// - label: String (tile label)
   /// - value: String (radio value)
   /// - groupValue: String (current selected value)
-  /// - activeColor: String (hex color)
+  /// - activeThumbColor: String (hex color)
   /// - subtitle: String (optional subtitle)
   static Widget buildRadioListTile(
     Map<String, dynamic> properties, {
@@ -316,7 +316,7 @@ class InputWidgets {
           : null,
       value: properties['value'] as String? ?? '',
       groupValue: properties['groupValue'] as String?,
-      activeColor: ParseUtils.parseColor(properties['activeColor']),
+      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
       onChanged: (String? value) {
         if (onChanged != null && value != null) {
           onChanged(value);
@@ -331,7 +331,7 @@ class InputWidgets {
   /// 
   /// Properties:
   /// - value: bool (switch state)
-  /// - activeColor: String (hex color)
+  /// - activeThumbColor: String (hex color)
   /// - inactiveThumbColor: String (hex color)
   /// - inactiveTrackColor: String (hex color)
   static Widget buildSwitch(
@@ -342,7 +342,7 @@ class InputWidgets {
   }) {
     return Switch(
       value: properties['value'] as bool? ?? false,
-      activeColor: ParseUtils.parseColor(properties['activeColor']),
+      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
       inactiveThumbColor: ParseUtils.parseColor(properties['inactiveThumbColor']),
       inactiveTrackColor: ParseUtils.parseColor(properties['inactiveTrackColor']),
       onChanged: (bool value) {
@@ -358,7 +358,7 @@ class InputWidgets {
   /// Properties:
   /// - label: String (tile label)
   /// - value: bool (switch state)
-  /// - activeColor: String (hex color)
+  /// - activeThumbColor: String (hex color)
   /// - subtitle: String (optional subtitle)
   static Widget buildSwitchListTile(
     Map<String, dynamic> properties, {
@@ -372,7 +372,7 @@ class InputWidgets {
           ? Text(properties['subtitle'] as String)
           : null,
       value: properties['value'] as bool? ?? false,
-      activeColor: ParseUtils.parseColor(properties['activeColor']),
+      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
       onChanged: (bool value) {
         if (onChanged != null) {
           onChanged(value);
@@ -390,8 +390,8 @@ class InputWidgets {
   /// - min: double (minimum value)
   /// - max: double (maximum value)
   /// - divisions: int (number of discrete divisions)
-  /// - activeColor: String (hex color)
-  /// - inactiveColor: String (hex color)
+  /// - activeThumbColor: String (hex color)
+  /// - inactiveThumbColor: String (hex color)
   static Widget buildSlider(
     Map<String, dynamic> properties, {
     List<dynamic>? childrenData,
@@ -407,8 +407,8 @@ class InputWidgets {
       min: min,
       max: max,
       divisions: (properties['divisions'] as num?)?.toInt(),
-      activeColor: ParseUtils.parseColor(properties['activeColor']),
-      inactiveColor: ParseUtils.parseColor(properties['inactiveColor']),
+      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
+      inactiveThumbColor: ParseUtils.parseColor(properties['inactiveColor']),
       onChanged: (double value) {
         if (onChanged != null) {
           onChanged(value);
@@ -424,8 +424,8 @@ class InputWidgets {
   /// - end: double (end value)
   /// - min: double (minimum value)
   /// - max: double (maximum value)
-  /// - activeColor: String (hex color)
-  /// - inactiveColor: String (hex color)
+  /// - activeThumbColor: String (hex color)
+  /// - inactiveThumbColor: String (hex color)
   static Widget buildRangeSlider(
     Map<String, dynamic> properties, {
     List<dynamic>? childrenData,
@@ -441,8 +441,8 @@ class InputWidgets {
       values: RangeValues(start, end),
       min: min,
       max: max,
-      activeColor: ParseUtils.parseColor(properties['activeColor']),
-      inactiveColor: ParseUtils.parseColor(properties['inactiveColor']),
+      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
+      inactiveThumbColor: ParseUtils.parseColor(properties['inactiveColor']),
       onChanged: (RangeValues values) {
         if (onChanged != null) {
           onChanged(values);

@@ -117,15 +117,15 @@ Widget buildInkWell(
   );
   final highlightColor = _parseColor(
     properties['highlightColor'],
-    Colors.grey.withOpacity(0.12),
+    Colors.grey.withValues(alpha: 0.12),
   );
   final hoverColor = _parseColor(
     properties['hoverColor'],
-    Colors.grey.withOpacity(0.04),
+    Colors.grey.withValues(alpha: 0.04),
   );
   final focusColor = _parseColor(
     properties['focusColor'],
-    Colors.grey.withOpacity(0.12),
+    Colors.grey.withValues(alpha: 0.12),
   );
   final radius = (properties['radius'] as num?)?.toDouble();
   final borderRadius = _parseBorderRadius(properties['borderRadius']);
@@ -176,15 +176,15 @@ Widget buildInkResponse(
   );
   final highlightColor = _parseColor(
     properties['highlightColor'],
-    Colors.grey.withOpacity(0.12),
+    Colors.grey.withValues(alpha: 0.12),
   );
   final hoverColor = _parseColor(
     properties['hoverColor'],
-    Colors.grey.withOpacity(0.04),
+    Colors.grey.withValues(alpha: 0.04),
   );
   final focusColor = _parseColor(
     properties['focusColor'],
-    Colors.grey.withOpacity(0.12),
+    Colors.grey.withValues(alpha: 0.12),
   );
   final radius = (properties['radius'] as num?)?.toDouble();
   final borderRadius = _parseBorderRadius(properties['borderRadius']);
@@ -462,14 +462,14 @@ Widget buildDragTarget(
 
   return DragTarget(
     builder: builder,
-    onWillAccept: config['events']?['onWillAccept'] != null
-        ? (data) {
+    onWillAcceptWithDetails: config['events']?['onWillAccept'] != null
+        ? (details) {
             onCallback?.call(config['events']['onWillAccept'], config);
             return true;
           }
         : null,
-    onAccept: config['events']?['onAccept'] != null
-        ? (data) =>
+    onAcceptWithDetails: config['events']?['onAccept'] != null
+        ? (details) =>
             onCallback?.call(config['events']['onAccept'], config)
         : null,
     onLeave: config['events']?['onLeave'] != null

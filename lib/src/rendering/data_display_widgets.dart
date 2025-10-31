@@ -220,7 +220,7 @@ class DataDisplayWidgets {
                     Container(
                       width: 2,
                       height: 40,
-                      color: lineColor.withOpacity(0.3),
+                      color: lineColor.withValues(alpha: 0.3),
                     ),
                 ],
               ),
@@ -299,7 +299,7 @@ class DataDisplayWidgets {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         gradient: SweepGradient(
-          colors: [ringColor, ringColor.withOpacity(0.2)],
+          colors: [ringColor, ringColor.withValues(alpha: 0.2)],
           stops: [progress, progress],
         ),
       ),
@@ -329,7 +329,7 @@ class DataDisplayWidgets {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
           gradient: LinearGradient(
-            colors: [backgroundColor, backgroundColor.withOpacity(0.7)],
+            colors: [backgroundColor, backgroundColor.withValues(alpha: 0.7)],
           ),
         ),
         child: Column(
@@ -430,7 +430,7 @@ class DataDisplayWidgets {
         return Card(
           child: Container(
             decoration: BoxDecoration(
-              color: backgroundColor.withOpacity(0.1),
+              color: backgroundColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Center(
@@ -671,7 +671,7 @@ class AreaChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = areaColor.withOpacity(0.3)
+      ..color = areaColor.withValues(alpha: 0.3)
       ..style = PaintingStyle.fill;
 
     if (dataPoints.isEmpty) return;

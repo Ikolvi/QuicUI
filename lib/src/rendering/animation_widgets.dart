@@ -360,7 +360,7 @@ class AnimationWidgets {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: Colors.cyan.withOpacity(0.3),
+              color: Colors.cyan.withValues(alpha: 0.3),
               blurRadius: 10,
               offset: Offset(0, 5),
             ),
@@ -384,7 +384,7 @@ class AnimationWidgets {
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: glowColor.withOpacity(0.6),
+            color: glowColor.withValues(alpha: 0.6),
             blurRadius: glowRadius,
             spreadRadius: 2,
           ),

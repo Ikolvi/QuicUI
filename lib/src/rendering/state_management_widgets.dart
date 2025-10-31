@@ -237,7 +237,7 @@ class _SkeletonItem extends StatelessWidget {
               ],
               colors: [
                 Colors.transparent,
-                Colors.white.withOpacity(0.3),
+                Colors.white.withValues(alpha: 0.3),
                 Colors.transparent,
               ],
             ),
@@ -411,7 +411,7 @@ class StatusBadge extends StatelessWidget {
     return Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: _getColor().withOpacity(0.1),
+        color: _getColor().withValues(alpha: 0.1),
         border: Border.all(color: _getColor(), width: 1),
         borderRadius: BorderRadius.circular(20),
       ),
@@ -546,7 +546,7 @@ class OfflineIndicator extends StatelessWidget {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: isOnline ? Colors.green.withOpacity(0.1) : Colors.red.withOpacity(0.1),
+        color: isOnline ? Colors.green.withValues(alpha: 0.1) : Colors.red.withValues(alpha: 0.1),
         border: Border.all(
           color: isOnline ? Colors.green : Colors.red,
           width: 1,
@@ -610,7 +610,7 @@ class SyncStatusWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         border: Border.all(color: color, width: 1),
         borderRadius: BorderRadius.circular(8),
       ),
@@ -695,7 +695,7 @@ class WarningBanner extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: backgroundColor ?? Colors.orange.withOpacity(0.1),
+        color: backgroundColor ?? Colors.orange.withValues(alpha: 0.1),
         border: Border.all(color: Colors.orange, width: 1),
         borderRadius: BorderRadius.circular(8),
       ),
@@ -743,7 +743,7 @@ class InfoPanel extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: backgroundColor ?? Colors.blue.withOpacity(0.1),
+        color: backgroundColor ?? Colors.blue.withValues(alpha: 0.1),
         border: Border.all(color: Colors.blue, width: 1),
         borderRadius: BorderRadius.circular(8),
       ),

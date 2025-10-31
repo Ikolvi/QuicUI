@@ -742,7 +742,7 @@ class LayoutWidgets {
     if (value is List) {
       return value
           .map((shadow) => BoxShadow(
-                color: _parseColor(shadow['color']) ?? Colors.black.withOpacity(0.1),
+                color: _parseColor(shadow['color']) ?? Colors.black.withValues(alpha: 0.1),
                 blurRadius: (shadow['blurRadius'] as num?)?.toDouble() ?? 0,
                 spreadRadius: (shadow['spreadRadius'] as num?)?.toDouble() ?? 0,
                 offset: Offset(

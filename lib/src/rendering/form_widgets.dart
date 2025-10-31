@@ -439,7 +439,7 @@ class FormWidgets {
 
   /// Convert color to hex string
   static String _colorToHex(Color color) {
-    return '#${color.value.toRadixString(16).toUpperCase().padLeft(8, '0').substring(2)}';
+    return '#${color.toARGB32().toRadixString(16).toUpperCase().padLeft(8, '0').substring(2)}';
   }
 
   /// Parse keyboard type from string

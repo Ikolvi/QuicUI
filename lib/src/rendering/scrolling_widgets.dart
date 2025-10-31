@@ -127,11 +127,15 @@ class ScrollingWidgets {
 
   /// MediaQuery helper - Responsive design widget
   static Widget buildMediaQueryHelper(Map<String, dynamic> properties, List<dynamic> childrenData) {
-    return MediaQuery(
-      data: MediaQueryData.fromView(WidgetsBinding.instance.window),
-      child: childrenData.isNotEmpty 
-          ? (childrenData.first as Map<String, dynamic>)['child'] ?? const SizedBox.shrink()
-          : const SizedBox.shrink(),
+    return Builder(
+      builder: (context) {
+        return MediaQuery(
+          data: MediaQueryData.fromView(View.of(context)),
+          child: childrenData.isNotEmpty 
+              ? (childrenData.first as Map<String, dynamic>)['child'] ?? const SizedBox.shrink()
+              : const SizedBox.shrink(),
+        );
+      }
     );
   }
 

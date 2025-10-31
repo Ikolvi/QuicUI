@@ -134,7 +134,7 @@ import 'phase3_widgets.dart';
 import 'phase4_widgets.dart';
 import 'phase5_widgets.dart';
 import 'phase6_widgets.dart';
-import 'phase7_widgets.dart' as phase7;
+import 'phase7_widgets.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///
@@ -386,101 +386,22 @@ class UIRenderer {
         'DataGrid' => Phase6Widgets.buildDataGrid(properties, childrenData),
         
         // ===== PHASE 7: STATE MANAGEMENT UI PATTERNS =====
-        'LoadingStateWidget' => phase7.LoadingStateWidget(
-          size: (properties['size'] as num?)?.toDouble(),
-          color: _parseColor(properties['color']),
-          message: properties['message'] as String?,
-        ),
-        'ErrorStateWidget' => phase7.ErrorStateWidget(
-          title: properties['title'] as String? ?? 'Error',
-          message: properties['message'] as String? ?? 'Something went wrong',
-          onRetry: null,
-          icon: _parseIconData(properties['icon'] as String? ?? 'error_outline'),
-        ),
-        'EmptyStateWidget' => phase7.EmptyStateWidget(
-          title: properties['title'] as String? ?? 'No Data',
-          message: properties['message'] as String? ?? 'Nothing to display yet',
-          icon: _parseIconData(properties['icon'] as String? ?? 'inbox'),
-          onAction: null,
-          actionLabel: properties['actionLabel'] as String? ?? 'Create',
-        ),
-        'SkeletonLoader' => phase7.SkeletonLoader(
-          itemCount: (properties['itemCount'] as num?)?.toInt() ?? 3,
-          height: (properties['height'] as num?)?.toDouble() ?? 16,
-          width: (properties['width'] as num?)?.toDouble() ?? double.infinity,
-          borderRadius: (properties['borderRadius'] as num?)?.toDouble() ?? 8,
-        ),
-        'SuccessStateWidget' => phase7.SuccessStateWidget(
-          title: properties['title'] as String? ?? 'Success',
-          message: properties['message'] as String? ?? 'Operation completed',
-          onDismiss: null,
-          duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 3000),
-        ),
-        'RetryButton' => phase7.RetryButton(
-          onPressed: () => _handleButtonPress(properties['onPressed']),
-          label: properties['label'] as String? ?? 'Retry',
-          isLoading: properties['isLoading'] as bool? ?? false,
-          icon: _parseIconData(properties['icon'] as String? ?? 'refresh'),
-        ),
-        'ProgressIndicatorCustom' => phase7.ProgressIndicator(
-          progress: (properties['progress'] as num?)?.toDouble() ?? 0.0,
-          label: properties['label'] as String?,
-          showPercentage: properties['showPercentage'] as bool? ?? true,
-          backgroundColor: _parseColor(properties['backgroundColor']),
-          progressColor: _parseColor(properties['progressColor']),
-          height: (properties['height'] as num?)?.toDouble() ?? 8,
-        ),
-        'StatusBadge' => phase7.StatusBadge(
-          label: properties['label'] as String? ?? 'Status',
-          type: _parseStatusType(properties['type'] as String?),
-          icon: properties['icon'] != null ? _parseIconData(properties['icon'] as String) : null,
-          padding: _parseEdgeInsets(properties['padding']) ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        ),
-        'StateTransitionWidget' => phase7.StateTransitionWidget(
-          child: const SizedBox(),
-          duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 300),
-        ),
-        'DataRefreshWidget' => phase7.DataRefreshWidget(
-          label: properties['label'] as String? ?? 'Refresh Data',
-          onRefresh: () => _handleButtonPress(properties['onRefresh']),
-          isRefreshing: properties['isRefreshing'] as bool? ?? false,
-          lastRefreshTime: null,
-        ),
-        'OfflineIndicator' => phase7.OfflineIndicator(
-          isOnline: properties['isOnline'] as bool? ?? true,
-          onlineMessage: properties['onlineMessage'] as String? ?? 'Online',
-          offlineMessage: properties['offlineMessage'] as String? ?? 'Offline',
-        ),
-        'SyncStatusWidget' => phase7.SyncStatusWidget(
-          isSyncing: properties['isSyncing'] as bool? ?? false,
-          isSynced: properties['isSynced'] as bool? ?? false,
-          message: properties['message'] as String?,
-        ),
-        'ValidationIndicator' => phase7.ValidationIndicator(
-          isValid: properties['isValid'] as bool? ?? true,
-          errorMessage: properties['errorMessage'] as String?,
-          successMessage: properties['successMessage'] as String?,
-        ),
-        'WarningBanner' => phase7.WarningBanner(
-          message: properties['message'] as String? ?? 'Warning',
-          onDismiss: null,
-          icon: _parseIconData(properties['icon'] as String? ?? 'warning'),
-          backgroundColor: _parseColor(properties['backgroundColor']),
-        ),
-        'InfoPanel' => phase7.InfoPanel(
-          title: properties['title'] as String? ?? 'Information',
-          message: properties['message'] as String? ?? 'Info message',
-          onAction: null,
-          actionLabel: properties['actionLabel'] as String?,
-          backgroundColor: _parseColor(properties['backgroundColor']),
-        ),
-        'ToastNotification' => phase7.ToastNotification(
-          message: properties['message'] as String? ?? 'Message',
-          duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 3000),
-          backgroundColor: _parseColor(properties['backgroundColor']),
-          textColor: _parseColor(properties['textColor']),
-          onDismiss: null,
-        ),
+        'LoadingStateWidget' => Phase7Widgets.buildLoadingStateWidget(properties, childrenData),
+        'ErrorStateWidget' => Phase7Widgets.buildErrorStateWidget(properties, childrenData),
+        'EmptyStateWidget' => Phase7Widgets.buildEmptyStateWidget(properties, childrenData),
+        'SkeletonLoader' => Phase7Widgets.buildSkeletonLoader(properties, childrenData),
+        'SuccessStateWidget' => Phase7Widgets.buildSuccessStateWidget(properties, childrenData),
+        'RetryButton' => Phase7Widgets.buildRetryButton(properties, childrenData),
+        'ProgressIndicatorCustom' => Phase7Widgets.buildProgressIndicator(properties, childrenData),
+        'StatusBadge' => Phase7Widgets.buildStatusBadge(properties, childrenData),
+        'StateTransitionWidget' => Phase7Widgets.buildStateTransitionWidget(properties, childrenData),
+        'DataRefreshWidget' => Phase7Widgets.buildDataRefreshWidget(properties, childrenData),
+        'OfflineIndicator' => Phase7Widgets.buildOfflineIndicator(properties, childrenData),
+        'SyncStatusWidget' => Phase7Widgets.buildSyncStatusWidget(properties, childrenData),
+        'ValidationIndicator' => Phase7Widgets.buildValidationIndicator(properties, childrenData),
+        'WarningBanner' => Phase7Widgets.buildWarningBanner(properties, childrenData),
+        'InfoPanel' => Phase7Widgets.buildInfoPanel(properties, childrenData),
+        'ToastNotification' => Phase7Widgets.buildToastNotification(properties, childrenData),
         
         _ => const Placeholder(),
       };
@@ -1554,16 +1475,5 @@ class UIRenderer {
     if (value == null) return null;
     if (value is num) return BorderRadius.circular(value.toDouble());
     return null;
-  }
-
-  static phase7.StatusType _parseStatusType(dynamic value) {
-    return switch (value) {
-      'active' => phase7.StatusType.active,
-      'inactive' => phase7.StatusType.inactive,
-      'pending' => phase7.StatusType.pending,
-      'error' => phase7.StatusType.error,
-      'success' => phase7.StatusType.success,
-      _ => phase7.StatusType.active,
-    };
   }
 }

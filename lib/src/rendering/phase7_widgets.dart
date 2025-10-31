@@ -848,3 +848,194 @@ class _ToastNotificationState extends State<ToastNotification>
     );
   }
 }
+
+// ===== PHASE 7 WIDGETS BUILDER CLASS =====
+class Phase7Widgets {
+  static Widget buildLoadingStateWidget(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return LoadingStateWidget(
+      size: (properties['size'] as num?)?.toDouble(),
+      color: _parseColor(properties['color']),
+      message: properties['message'] as String?,
+    );
+  }
+
+  static Widget buildErrorStateWidget(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return ErrorStateWidget(
+      title: properties['title'] as String? ?? 'Error',
+      message: properties['message'] as String? ?? 'Something went wrong',
+      onRetry: null,
+      icon: _parseIconData(properties['icon'] as String? ?? 'error_outline'),
+    );
+  }
+
+  static Widget buildEmptyStateWidget(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return EmptyStateWidget(
+      title: properties['title'] as String? ?? 'No Data',
+      message: properties['message'] as String? ?? 'Nothing to display yet',
+      icon: _parseIconData(properties['icon'] as String? ?? 'inbox'),
+      onAction: null,
+      actionLabel: properties['actionLabel'] as String? ?? 'Create',
+    );
+  }
+
+  static Widget buildSkeletonLoader(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return SkeletonLoader(
+      itemCount: (properties['itemCount'] as num?)?.toInt() ?? 3,
+      height: (properties['height'] as num?)?.toDouble() ?? 16,
+      width: (properties['width'] as num?)?.toDouble() ?? double.infinity,
+      borderRadius: (properties['borderRadius'] as num?)?.toDouble() ?? 8,
+    );
+  }
+
+  static Widget buildSuccessStateWidget(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return SuccessStateWidget(
+      title: properties['title'] as String? ?? 'Success',
+      message: properties['message'] as String? ?? 'Operation completed',
+      onDismiss: null,
+      duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 3000),
+    );
+  }
+
+  static Widget buildRetryButton(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return RetryButton(
+      onPressed: () {},
+      label: properties['label'] as String? ?? 'Retry',
+      isLoading: properties['isLoading'] as bool? ?? false,
+      icon: _parseIconData(properties['icon'] as String? ?? 'refresh'),
+    );
+  }
+
+  static Widget buildProgressIndicator(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return ProgressIndicator(
+      progress: (properties['progress'] as num?)?.toDouble() ?? 0.0,
+      label: properties['label'] as String?,
+      showPercentage: properties['showPercentage'] as bool? ?? true,
+      backgroundColor: _parseColor(properties['backgroundColor']),
+      progressColor: _parseColor(properties['progressColor']),
+      height: (properties['height'] as num?)?.toDouble() ?? 8,
+    );
+  }
+
+  static Widget buildStatusBadge(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return StatusBadge(
+      label: properties['label'] as String? ?? 'Status',
+      type: _parseStatusType(properties['type'] as String?),
+      icon: properties['icon'] != null ? _parseIconData(properties['icon'] as String) : null,
+      padding: _parseEdgeInsets(properties['padding']) ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+    );
+  }
+
+  static Widget buildStateTransitionWidget(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return StateTransitionWidget(
+      child: const SizedBox(),
+      duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 300),
+    );
+  }
+
+  static Widget buildDataRefreshWidget(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return DataRefreshWidget(
+      label: properties['label'] as String? ?? 'Refresh Data',
+      onRefresh: () {},
+      isRefreshing: properties['isRefreshing'] as bool? ?? false,
+      lastRefreshTime: null,
+    );
+  }
+
+  static Widget buildOfflineIndicator(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return OfflineIndicator(
+      isOnline: properties['isOnline'] as bool? ?? true,
+      onlineMessage: properties['onlineMessage'] as String? ?? 'Online',
+      offlineMessage: properties['offlineMessage'] as String? ?? 'Offline',
+    );
+  }
+
+  static Widget buildSyncStatusWidget(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return SyncStatusWidget(
+      isSyncing: properties['isSyncing'] as bool? ?? false,
+      isSynced: properties['isSynced'] as bool? ?? false,
+      message: properties['message'] as String?,
+    );
+  }
+
+  static Widget buildValidationIndicator(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return ValidationIndicator(
+      isValid: properties['isValid'] as bool? ?? true,
+      errorMessage: properties['errorMessage'] as String?,
+      successMessage: properties['successMessage'] as String?,
+    );
+  }
+
+  static Widget buildWarningBanner(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return WarningBanner(
+      message: properties['message'] as String? ?? 'Warning',
+      onDismiss: null,
+      icon: _parseIconData(properties['icon'] as String? ?? 'warning'),
+      backgroundColor: _parseColor(properties['backgroundColor']),
+    );
+  }
+
+  static Widget buildInfoPanel(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return InfoPanel(
+      title: properties['title'] as String? ?? 'Information',
+      message: properties['message'] as String? ?? 'Info message',
+      onAction: null,
+      actionLabel: properties['actionLabel'] as String?,
+      backgroundColor: _parseColor(properties['backgroundColor']),
+    );
+  }
+
+  static Widget buildToastNotification(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return ToastNotification(
+      message: properties['message'] as String? ?? 'Message',
+      duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 3000),
+      backgroundColor: _parseColor(properties['backgroundColor']),
+      textColor: _parseColor(properties['textColor']),
+      onDismiss: null,
+    );
+  }
+
+  // ===== HELPER METHODS =====
+  static Color? _parseColor(dynamic value) {
+    if (value == null) return null;
+    if (value is Color) return value;
+    if (value is String) {
+      try {
+        return Color(int.parse(value.replaceFirst('#', '0xff')));
+      } catch (_) {
+        return null;
+      }
+    }
+    return null;
+  }
+
+  static IconData _parseIconData(String iconName) {
+    return switch (iconName) {
+      'error_outline' => Icons.error_outline,
+      'inbox' => Icons.inbox,
+      'refresh' => Icons.refresh,
+      'warning' => Icons.warning,
+      'check_circle' => Icons.check_circle,
+      'sync' => Icons.sync,
+      'cloud_off' => Icons.cloud_off,
+      'info' => Icons.info,
+      _ => Icons.help,
+    };
+  }
+
+  static EdgeInsets? _parseEdgeInsets(dynamic value) {
+    if (value == null) return null;
+    if (value is EdgeInsets) return value;
+    return null;
+  }
+
+  static StatusType _parseStatusType(dynamic value) {
+    return switch (value) {
+      'active' => StatusType.active,
+      'inactive' => StatusType.inactive,
+      'pending' => StatusType.pending,
+      'error' => StatusType.error,
+      'success' => StatusType.success,
+      _ => StatusType.active,
+    };
+  }
+}

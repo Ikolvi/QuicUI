@@ -43,9 +43,6 @@ dependencies:
   # Serialization
   json_annotation: ^4.9.0
   
-  # Backend Integration
-  supabase_flutter: ^2.10.3
-  
   # Utilities
   uuid: ^4.5.1
   intl: ^0.20.2

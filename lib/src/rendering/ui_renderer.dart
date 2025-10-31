@@ -141,6 +141,7 @@ import 'animation_widgets.dart';
 import 'data_display_widgets.dart';
 import 'state_management_widgets.dart';
 import 'gesture_widgets.dart';
+import 'gesture_helpers.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///

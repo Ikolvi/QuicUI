@@ -130,10 +130,8 @@ library;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import '../models/callback_actions.dart' as callback_actions;
 import '../utils/logger_util.dart';
 import '../utils/error_handler.dart';
-import 'display_widgets.dart';
 import 'widget_factory_registry.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
@@ -161,9 +159,6 @@ import 'widget_factory_registry.dart';
 /// );
 /// ```
 class UIRenderer {
-  /// Global map to store field values from TextFields
-  static final Map<String, TextEditingController> _fieldControllers = {};
-  
   /// Render a widget tree from JSON configuration
   static Widget render(Map<String, dynamic> config, {BuildContext? context}) {
     try {

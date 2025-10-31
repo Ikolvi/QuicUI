@@ -129,6 +129,7 @@
 import 'package:flutter/material.dart';
 import '../models/callback_actions.dart' as callback_actions;
 import 'phase1_widgets.dart';
+import 'phase2_widgets.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///
@@ -287,6 +288,19 @@ class UIRenderer {
         'DataTable' => Phase1Widgets.buildDataTable(properties, childrenData),
         'PageView' => Phase1Widgets.buildPageView(properties, childrenData, context),
         'SnackBar' => Phase1Widgets.buildSnackBar(properties),
+        
+        // ===== PHASE 2: INPUT WIDGETS (NEW) =====
+        'TextArea' => Phase2Widgets.buildTextArea(properties),
+        'NumberInput' => Phase2Widgets.buildNumberInput(properties),
+        'DatePicker' => Phase2Widgets.buildDatePicker(properties),
+        'TimePicker' => Phase2Widgets.buildTimePicker(properties),
+        'ColorPicker' => Phase2Widgets.buildColorPicker(properties),
+        'DropdownButtonForm' => Phase2Widgets.buildDropdownButtonForm(properties),
+        'MultiSelect' => Phase2Widgets.buildMultiSelect(properties),
+        'SearchBox' => Phase2Widgets.buildSearchBox(properties),
+        'FileUpload' => Phase2Widgets.buildFileUpload(properties),
+        'Rating' => Phase2Widgets.buildRating(properties),
+        'OtpInput' => Phase2Widgets.buildOtpInput(properties),
         
         _ => const Placeholder(),
       };

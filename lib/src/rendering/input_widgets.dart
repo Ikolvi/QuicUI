@@ -276,22 +276,27 @@ class InputWidgets {
   /// Properties:
   /// - value: String (radio value)
   /// - groupValue: String (current selected value)
-  /// - activeThumbColor: String (hex color)
+  /// - activeThumbColor: String (hex color - mapped to fillColor)
+  /// Uses RadioGroup pattern for Flutter 3.32+ compatibility
   static Widget buildRadio(
     Map<String, dynamic> properties, {
     List<dynamic>? childrenData,
     BuildContext? context,
     Function(String)? onChanged,
   }) {
-    return Radio<String>(
-      value: properties['value'] as String? ?? '',
-      groupValue: properties['groupValue'] as String?,
-      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
-      onChanged: (String? value) {
-        if (onChanged != null && value != null) {
-          onChanged(value);
+    final value = properties['value'] as String? ?? '';
+    final color = ParseUtils.parseColor(properties['activeColor']) ?? Colors.blue;
+
+    return RadioGroup<String>(
+      onChanged: (newValue) {
+        if (onChanged != null && newValue != null) {
+          onChanged(newValue);
         }
       },
+      child: Radio<String>(
+        value: value,
+        fillColor: WidgetStateProperty.all(color),
+      ),
     );
   }
 
@@ -301,27 +306,32 @@ class InputWidgets {
   /// - label: String (tile label)
   /// - value: String (radio value)
   /// - groupValue: String (current selected value)
-  /// - activeThumbColor: String (hex color)
+  /// - activeThumbColor: String (hex color - mapped to fillColor)
   /// - subtitle: String (optional subtitle)
+  /// Uses RadioGroup pattern for Flutter 3.32+ compatibility
   static Widget buildRadioListTile(
     Map<String, dynamic> properties, {
     List<dynamic>? childrenData,
     BuildContext? context,
     Function(String)? onChanged,
   }) {
-    return RadioListTile<String>(
-      title: Text(properties['label'] as String? ?? ''),
-      subtitle: properties['subtitle'] != null
-          ? Text(properties['subtitle'] as String)
-          : null,
-      value: properties['value'] as String? ?? '',
-      groupValue: properties['groupValue'] as String?,
-      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
-      onChanged: (String? value) {
-        if (onChanged != null && value != null) {
-          onChanged(value);
+    final value = properties['value'] as String? ?? '';
+    final color = ParseUtils.parseColor(properties['activeColor']) ?? Colors.blue;
+    final label = properties['label'] as String? ?? '';
+    final subtitle = properties['subtitle'] as String?;
+
+    return RadioGroup<String>(
+      onChanged: (newValue) {
+        if (onChanged != null && newValue != null) {
+          onChanged(newValue);
         }
       },
+      child: RadioListTile<String>(
+        title: Text(label),
+        subtitle: subtitle != null ? Text(subtitle) : null,
+        value: value,
+        fillColor: WidgetStateProperty.all(color),
+      ),
     );
   }
 
@@ -407,8 +417,8 @@ class InputWidgets {
       min: min,
       max: max,
       divisions: (properties['divisions'] as num?)?.toInt(),
-      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
-      inactiveThumbColor: ParseUtils.parseColor(properties['inactiveColor']),
+      thumbColor: ParseUtils.parseColor(properties['activeColor']),
+      inactiveColor: ParseUtils.parseColor(properties['inactiveColor']),
       onChanged: (double value) {
         if (onChanged != null) {
           onChanged(value);
@@ -441,8 +451,8 @@ class InputWidgets {
       values: RangeValues(start, end),
       min: min,
       max: max,
-      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
-      inactiveThumbColor: ParseUtils.parseColor(properties['inactiveColor']),
+      activeColor: ParseUtils.parseColor(properties['activeColor']),
+      inactiveColor: ParseUtils.parseColor(properties['inactiveColor']),
       onChanged: (RangeValues values) {
         if (onChanged != null) {
           onChanged(values);

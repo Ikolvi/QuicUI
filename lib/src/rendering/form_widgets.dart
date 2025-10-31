@@ -226,7 +226,7 @@ class FormWidgets {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       ),
-      value: selectedValue,
+      initialValue: selectedValue,
       items: items.map((value) {
         return DropdownMenuItem<String>(
           value: value,
@@ -282,7 +282,7 @@ class FormWidgets {
       builder: (BuildContext context, SearchController controller) {
         return SearchBar(
           controller: controller,
-          padding: MaterialStateProperty.all(
+          padding: WidgetStateProperty.all(
             EdgeInsets.symmetric(horizontal: 16),
           ),
           onTap: () => controller.openView(),

@@ -140,6 +140,7 @@ class FormWidgetBuilders {
   /// - value: Radio value
   /// - groupValue: Current group value
   /// - onChanged: Change callback (optional)
+  /// Uses RadioGroup pattern for Flutter 3.32+ compatibility
   static Widget buildRadioField(
     Map<String, dynamic> properties,
     List<dynamic> childrenData,
@@ -149,16 +150,17 @@ class FormWidgetBuilders {
     try {
       final label = properties['label'] ?? '';
       final value = properties['value'] ?? '';
-      final groupValue = properties['groupValue'] ?? '';
 
-      return RadioListTile(
-        title: Text(label),
-        value: value,
-        groupValue: groupValue,
+      return RadioGroup<String>(
         onChanged: (newValue) {
           // Update form state if needed
         },
-        dense: true,
+        child: RadioListTile(
+          title: Text(label),
+          value: value,
+          dense: true,
+          fillColor: WidgetStateProperty.all(Colors.blue),
+        ),
       );
     } catch (e, stackTrace) {
       LoggerUtil.error('Error building RadioField widget', e, stackTrace);
@@ -191,7 +193,7 @@ class FormWidgetBuilders {
           border: const OutlineInputBorder(),
           isDense: true,
         ),
-        value: value,
+        initialValue: value,
         items: optionsList
             .map<DropdownMenuItem<String>>((option) => DropdownMenuItem(
                   value: option['value']?.toString() ?? option.toString(),

@@ -499,19 +499,22 @@ class UIRenderer {
     Map<String, dynamic> config,
     BuildContext? context,
   ) {
-    // Pass navigation callback to child widgets
-    final childConfig = childrenData.isNotEmpty
-        ? Map<String, dynamic>.from(childrenData.first as Map<String, dynamic>)
-        : <String, dynamic>{};
-    
-    // Inject navigation callback if present
-    if (config['onNavigateTo'] != null) {
-      childConfig['onNavigateTo'] = config['onNavigateTo'];
+    // Check for explicit "home" key in config first
+    Widget? home;
+    if (config['home'] is Map<String, dynamic>) {
+      final homeConfig = Map<String, dynamic>.from(config['home'] as Map<String, dynamic>);
+      if (config['onNavigateTo'] != null) {
+        homeConfig['onNavigateTo'] = config['onNavigateTo'];
+      }
+      home = render(homeConfig, context: context);
+    } else if (childrenData.isNotEmpty) {
+      // Fallback to children if no explicit home
+      final childConfig = Map<String, dynamic>.from(childrenData.first as Map<String, dynamic>);
+      if (config['onNavigateTo'] != null) {
+        childConfig['onNavigateTo'] = config['onNavigateTo'];
+      }
+      home = render(childConfig, context: context);
     }
-    
-    final home = childrenData.isNotEmpty
-        ? render(childConfig, context: context)
-        : null;
     
     // Theme configuration
     final themeConfig = config['theme'] as Map<String, dynamic>?;
@@ -536,7 +539,7 @@ class UIRenderer {
         primarySwatch: Colors.blue,
         useMaterial3: true,
       ),
-      home: home,
+      home: home ?? const Scaffold(body: Placeholder()),
       debugShowCheckedModeBanner: properties['debugShowCheckedModeBanner'] as bool? ?? false,
     );
   }

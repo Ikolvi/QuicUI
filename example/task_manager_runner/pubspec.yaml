@@ -65,6 +65,9 @@ flutter:
   assets:
     - assets/screens.json
     - assets/test_screen.json
+    - assets/flow_config.json
+    - assets/flows/auth.json
+    - assets/flows/dashboard.json
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

@@ -221,10 +221,26 @@ class UIRenderer {
         try {
           // Inject parent config callbacks into child if not already present
           final childData = Map<String, dynamic>.from(data);
-          if (parentConfig != null && parentConfig['onNavigateTo'] != null) {
-            if (childData['onNavigateTo'] == null) {
+          if (parentConfig != null) {
+            if (childData['onNavigateTo'] == null && parentConfig['onNavigateTo'] != null) {
               childData['onNavigateTo'] = parentConfig['onNavigateTo'];
               LoggerUtil.debug('✅ renderList injected onNavigateTo to child type: ${childData['type']}');
+            }
+            if (childData['onFlowNavigate'] == null && parentConfig['onFlowNavigate'] != null) {
+              childData['onFlowNavigate'] = parentConfig['onFlowNavigate'];
+              LoggerUtil.debug('✅ renderList injected onFlowNavigate to child type: ${childData['type']}');
+            }
+            if (childData['onExecuteCallback'] == null && parentConfig['onExecuteCallback'] != null) {
+              childData['onExecuteCallback'] = parentConfig['onExecuteCallback'];
+              LoggerUtil.debug('✅ renderList injected onExecuteCallback to child type: ${childData['type']}');
+            }
+            if (childData['onUpdateNavigationData'] == null && parentConfig['onUpdateNavigationData'] != null) {
+              childData['onUpdateNavigationData'] = parentConfig['onUpdateNavigationData'];
+              LoggerUtil.debug('✅ renderList injected onUpdateNavigationData to child type: ${childData['type']}');
+            }
+            if (childData['onGoBack'] == null && parentConfig['onGoBack'] != null) {
+              childData['onGoBack'] = parentConfig['onGoBack'];
+              LoggerUtil.debug('✅ renderList injected onGoBack to child type: ${childData['type']}');
             }
             if (childData['navigationData'] == null && parentConfig['navigationData'] != null) {
               childData['navigationData'] = parentConfig['navigationData'];
@@ -274,6 +290,22 @@ class UIRenderer {
       data['onNavigateTo'] = parentConfig['onNavigateTo'];
       LoggerUtil.debug('✅ renderChild injected onNavigateTo to type: ${data['type']}');
     }
+    if (parentConfig['onFlowNavigate'] != null && data['onFlowNavigate'] == null) {
+      data['onFlowNavigate'] = parentConfig['onFlowNavigate'];
+      LoggerUtil.debug('✅ renderChild injected onFlowNavigate to type: ${data['type']}');
+    }
+    if (parentConfig['onExecuteCallback'] != null && data['onExecuteCallback'] == null) {
+      data['onExecuteCallback'] = parentConfig['onExecuteCallback'];
+      LoggerUtil.debug('✅ renderChild injected onExecuteCallback to type: ${data['type']}');
+    }
+    if (parentConfig['onUpdateNavigationData'] != null && data['onUpdateNavigationData'] == null) {
+      data['onUpdateNavigationData'] = parentConfig['onUpdateNavigationData'];
+      LoggerUtil.debug('✅ renderChild injected onUpdateNavigationData to type: ${data['type']}');
+    }
+    if (parentConfig['onGoBack'] != null && data['onGoBack'] == null) {
+      data['onGoBack'] = parentConfig['onGoBack'];
+      LoggerUtil.debug('✅ renderChild injected onGoBack to type: ${data['type']}');
+    }
     if (parentConfig['navigationData'] != null && data['navigationData'] == null) {
       data['navigationData'] = parentConfig['navigationData'];
     }
@@ -298,6 +330,22 @@ class UIRenderer {
       if (config['onNavigateTo'] != null) {
         properties['onNavigateTo'] = config['onNavigateTo'];
         LoggerUtil.debug('✅ Injected onNavigateTo into properties');
+      }
+      if (config['onFlowNavigate'] != null) {
+        properties['onFlowNavigate'] = config['onFlowNavigate'];
+        LoggerUtil.debug('✅ Injected onFlowNavigate into properties');
+      }
+      if (config['onExecuteCallback'] != null) {
+        properties['onExecuteCallback'] = config['onExecuteCallback'];
+        LoggerUtil.debug('✅ Injected onExecuteCallback into properties');
+      }
+      if (config['onUpdateNavigationData'] != null) {
+        properties['onUpdateNavigationData'] = config['onUpdateNavigationData'];
+        LoggerUtil.debug('✅ Injected onUpdateNavigationData into properties');
+      }
+      if (config['onGoBack'] != null) {
+        properties['onGoBack'] = config['onGoBack'];
+        LoggerUtil.debug('✅ Injected onGoBack into properties');
       }
       if (config['navigationData'] != null) {
         properties['navigationData'] = config['navigationData'];
@@ -650,9 +698,21 @@ class UIRenderer {
     for (final child in childrenData) {
       final childMap = Map<String, dynamic>.from(child as Map<String, dynamic>);
       
-      // Pass navigation callback and data to all children
+      // Pass navigation callbacks and data to all children
       if (config['onNavigateTo'] != null) {
         childMap['onNavigateTo'] = config['onNavigateTo'];
+      }
+      if (config['onFlowNavigate'] != null) {
+        childMap['onFlowNavigate'] = config['onFlowNavigate'];
+      }
+      if (config['onExecuteCallback'] != null) {
+        childMap['onExecuteCallback'] = config['onExecuteCallback'];
+      }
+      if (config['onUpdateNavigationData'] != null) {
+        childMap['onUpdateNavigationData'] = config['onUpdateNavigationData'];
+      }
+      if (config['onGoBack'] != null) {
+        childMap['onGoBack'] = config['onGoBack'];
       }
       if (config['navigationData'] != null) {
         childMap['navigationData'] = config['navigationData'];

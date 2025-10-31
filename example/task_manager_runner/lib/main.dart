@@ -5,18 +5,107 @@ import 'package:quicui/quicui.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Load flow configuration
-  final configJson = await rootBundle.loadString('assets/flow_config.json');
-  final config = jsonDecode(configJson) as Map<String, dynamic>;
+  runApp(const MyApp());
+}
 
-  runApp(
-    QuicUIMultiFlowApp(
-      initialFlowId: config['initialFlow'] ?? 'auth',
-      flowConfigs: Map<String, String>.from(config['flows'] ?? {}),
-      globalCallbacks: config['globalCallbacks'] ?? {},
-    ),
-  );
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late Future<Map<String, dynamic>> _configFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _configFuture = _loadConfig();
+  }
+
+  Future<Map<String, dynamic>> _loadConfig() async {
+    try {
+      final configJson = await rootBundle.loadString('assets/flow_config.json');
+      final decoded = jsonDecode(configJson) as Map;
+      final config = <String, dynamic>{};
+      decoded.forEach((key, value) {
+        config[key.toString()] = value;
+      });
+      return config;
+    } catch (e) {
+      return {
+        'initialFlow': 'auth',
+        'flows': {'auth': 'flows/auth.json', 'dashboard': 'flows/dashboard.json'},
+        'globalCallbacks': {},
+      };
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<dynamic>(
+      future: _configFuture,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || snapshot.hasError) {
+          return MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const CircularProgressIndicator(),
+                    const SizedBox(height: 16),
+                    if (snapshot.hasError)
+                      Text('Error: ${snapshot.error}')
+                    else
+                      const Text('Loading configuration...'),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        // Safely cast the dynamic data to Map<String, dynamic>
+        final rawConfig = snapshot.data;
+        if (rawConfig is! Map) {
+          return MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(Icons.error, size: 48, color: Colors.red),
+                    const SizedBox(height: 16),
+                    const Text('Invalid configuration format'),
+                  ],
+                ),
+              ),
+            ),
+          );
+        }
+
+        final config = <String, dynamic>{};
+        rawConfig.forEach((key, value) {
+          config[key.toString()] = value;
+        });
+
+        final flowsData = config['flows'];
+        final flows = (flowsData is Map)
+            ? Map<String, String>.from(flowsData.map((k, v) => MapEntry(k.toString(), v.toString())))
+            : <String, String>{'auth': 'flows/auth.json', 'dashboard': 'flows/dashboard.json'};
+        
+        return QuicUIMultiFlowApp(
+          initialFlowId: config['initialFlow']?.toString() ?? 'auth',
+          flowConfigs: flows,
+          globalCallbacks: (config['globalCallbacks'] is Map) 
+              ? Map<String, dynamic>.from((config['globalCallbacks'] as Map).map((k, v) => MapEntry(k.toString(), v)))
+              : {},
+        );
+      },
+    );
+  }
 }
 
 class QuicUIMultiFlowApp extends StatefulWidget {
@@ -50,6 +139,9 @@ class _QuicUIMultiFlowAppState extends State<QuicUIMultiFlowApp> {
     try {
       _flowManager = JSONFlowManager();
 
+      // Register flow configurations so the manager can load flows on demand
+      _flowManager.registerFlowConfigs(widget.flowConfigs);
+
       // Register global callbacks
       widget.globalCallbacks.forEach((name, callback) {
         if (callback is Function) {
@@ -57,24 +149,29 @@ class _QuicUIMultiFlowAppState extends State<QuicUIMultiFlowApp> {
         }
       });
 
-      // Initialize with initial flow
-      await _flowManager.initializeApp(
+      // Load initial flow
+      await _flowManager.loadFlow(
         widget.initialFlowId,
         widget.flowConfigs[widget.initialFlowId]!,
-        additionalFlowConfigs: widget.flowConfigs,
       );
 
-      // Register flow navigation callback
+      // Register screen change callback to trigger UI updates
       _flowManager.onScreenChange((screenId, data) {
-        setState(() {});
+        if (mounted) {
+          setState(() {});
+        }
       });
 
       // Preload other flows for faster navigation
       final otherFlows = widget.flowConfigs.keys
           .where((id) => id != widget.initialFlowId)
           .toList();
-      if (otherFlows.isNotEmpty) {
-        await _flowManager.preloadFlows(otherFlows);
+      for (final flowId in otherFlows) {
+        try {
+          await _flowManager.loadFlow(flowId, widget.flowConfigs[flowId]!);
+        } catch (e) {
+          // Silently skip failed preloads
+        }
       }
 
       setState(() {
@@ -82,9 +179,11 @@ class _QuicUIMultiFlowAppState extends State<QuicUIMultiFlowApp> {
       });
     } catch (e) {
       LoggerUtil.error('Failed to initialize flow manager', e, StackTrace.current);
-      setState(() {
-        _error = e.toString();
-      });
+      if (mounted) {
+        setState(() {
+          _error = e.toString();
+        });
+      }
     }
   }
 
@@ -119,7 +218,10 @@ class _QuicUIMultiFlowAppState extends State<QuicUIMultiFlowApp> {
       final currentScreenId = _flowManager.getCurrentScreenId();
       final navigationData = _flowManager.getNavigationData();
 
-      return FutureBuilder<Map<String, dynamic>>(
+      LoggerUtil.info('🏗️ Building UI - currentFlowId: $currentFlowId, currentScreenId: $currentScreenId');
+
+      return FutureBuilder<Map<String, dynamic>?>(
+        key: ValueKey('$currentFlowId-$currentScreenId'),
         future: _flowManager.getFlow(currentFlowId),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
@@ -142,7 +244,24 @@ class _QuicUIMultiFlowAppState extends State<QuicUIMultiFlowApp> {
             );
           }
 
-          final flowData = snapshot.data!;
+          final flowData = snapshot.data;
+          if (flowData == null) {
+            return MaterialApp(
+              home: Scaffold(
+                body: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.error, size: 48, color: Colors.red),
+                      const SizedBox(height: 16),
+                      Text('Flow not found: $currentFlowId'),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }
+
           final screens = (flowData['screens'] as Map<String, dynamic>?) ?? {};
           final screenConfig = screens[currentScreenId] as Map<String, dynamic>?;
 
@@ -179,12 +298,16 @@ class _QuicUIMultiFlowAppState extends State<QuicUIMultiFlowApp> {
           final enhancedConfig = Map<String, dynamic>.from(screenConfig);
           enhancedConfig['onNavigateTo'] = (String screenId, {Map<String, dynamic>? data}) {
             _flowManager.navigateToScreen(screenId, data: data);
-            setState(() {});
+            if (mounted) {
+              setState(() {});
+            }
           };
           enhancedConfig['onFlowNavigate'] =
               (String flowId, String screenId, Map<String, dynamic>? data) {
             _flowManager.navigateToFlow(flowId, screenId, data: data).then((_) {
-              setState(() {});
+              if (mounted) {
+                setState(() {});
+              }
             });
           };
           enhancedConfig['onExecuteCallback'] =
@@ -203,11 +326,15 @@ class _QuicUIMultiFlowAppState extends State<QuicUIMultiFlowApp> {
               NavigationDataManager.clearAllSessionData();
               _flowManager.updateNavigationData(data);
             }
-            setState(() {});
+            if (mounted) {
+              setState(() {});
+            }
           };
           enhancedConfig['onGoBack'] = (int steps, bool clearData) {
             _flowManager.goBack(steps: steps, clearData: clearData).then((_) {
-              setState(() {});
+              if (mounted) {
+                setState(() {});
+              }
             });
           };
           enhancedConfig['navigationData'] = navigationData;

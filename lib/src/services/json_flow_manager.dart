@@ -7,15 +7,15 @@ import '../utils/logger_util.dart';
 /// Central manager for handling flow transitions, screen rendering, and data passing
 class JSONFlowManager {
   // Current flow and screen state
-  late String _currentFlowId;
-  late String _currentScreenId;
-  late Map<String, String> _flowConfigs; // {flowId: jsonPath}
+  String _currentFlowId = '';
+  String _currentScreenId = '';
+  Map<String, String> _flowConfigs = {}; // {flowId: jsonPath}
 
   // Cached loaded flows
   final Map<String, Map<String, dynamic>> _loadedFlows = {};
 
   // Navigation callbacks
-  late Function(String screenId, Map<String, dynamic>? data)? _onScreenChangeCallback;
+  Function(String screenId, Map<String, dynamic>? data)? _onScreenChangeCallback;
 
   /// Initialize the flow manager with initial flow
   Future<void> initializeApp(
@@ -71,12 +71,35 @@ class JSONFlowManager {
       // Check if already loaded
       if (_loadedFlows.containsKey(flowId)) {
         LoggerUtil.info('JSONFlowManager: Using cached flow: $flowId');
+        // Set as current if not set yet
+        if (!_isInitialized()) {
+          _currentFlowId = flowId;
+          final flow = _loadedFlows[flowId]!;
+          if (flow['screens'] != null) {
+            final screensMap = flow['screens'] as Map<String, dynamic>;
+            _currentScreenId = screensMap.keys.first;
+            NavigationDataManager.pushNavigation(_currentFlowId, _currentScreenId);
+          }
+        }
         return Map<String, dynamic>.from(_loadedFlows[flowId]!);
       }
 
       // Load from JSONLoader
       final flowJson = await JSONLoader.loadJsonFromAssets(jsonPath);
       _loadedFlows[flowId] = flowJson;
+
+      // Set as current if this is the first load
+      if (!_isInitialized()) {
+        _currentFlowId = flowId;
+        if (flowJson['screens'] != null) {
+          final screensMap = flowJson['screens'] as Map<String, dynamic>;
+          _currentScreenId = screensMap.keys.first;
+          NavigationDataManager.pushNavigation(_currentFlowId, _currentScreenId);
+          LoggerUtil.info(
+            'JSONFlowManager: Set current flow: $_currentFlowId/$_currentScreenId',
+          );
+        }
+      }
 
       LoggerUtil.info('JSONFlowManager: Flow loaded successfully: $flowId');
       return Map<String, dynamic>.from(flowJson);
@@ -309,6 +332,13 @@ class JSONFlowManager {
     CallbackRegistry.registerCallback(name, callback);
   }
 
+  /// Register flow configurations (flowId -> jsonPath mappings)
+  void registerFlowConfigs(Map<String, String> flowConfigs) {
+    LoggerUtil.info('JSONFlowManager: Registering ${flowConfigs.length} flow configs');
+    _flowConfigs.addAll(flowConfigs);
+    LoggerUtil.info('JSONFlowManager: Registered flows: ${_flowConfigs.keys.toList()}');
+  }
+
   /// Preload flows
   Future<void> preloadFlows(List<String> flowIds) async {
     try {
@@ -363,5 +393,10 @@ class JSONFlowManager {
     LoggerUtil.info('JSONFlowManager: Resetting to initial state');
     _loadedFlows.clear();
     NavigationDataManager.clearAll();
+  }
+
+  /// Check if fields have been initialized
+  bool _isInitialized() {
+    return _currentFlowId.isNotEmpty && _currentScreenId.isNotEmpty;
   }
 }

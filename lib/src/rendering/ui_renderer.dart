@@ -132,6 +132,7 @@ import 'phase1_widgets.dart';
 import 'phase2_widgets.dart';
 import 'phase3_widgets.dart';
 import 'phase4_widgets.dart';
+import 'phase5_widgets.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///
@@ -334,6 +335,36 @@ class UIRenderer {
         'TabBarEnhanced' => Phase4Widgets.buildTabBarEnhanced(properties, childrenData),
         'AnimatedDrawer' => Phase4Widgets.buildAnimatedDrawer(properties, childrenData),
         'PaginationNav' => Phase4Widgets.buildPaginationNav(properties, childrenData),
+
+        // ===== PHASE 5: ANIMATION & TRANSITION WIDGETS =====
+        'AnimatedOpacityCustom' => Phase5Widgets.buildAnimatedOpacity(properties, childrenData),
+        'AnimatedScaleCustom' => Phase5Widgets.buildAnimatedScale(properties, childrenData),
+        'AnimatedRotationCustom' => Phase5Widgets.buildAnimatedRotation(properties, childrenData),
+        'AnimatedPositionedCustom' => Phase5Widgets.buildAnimatedPositioned(properties, childrenData),
+        'AnimatedAlignCustom' => Phase5Widgets.buildAnimatedAlign(properties, childrenData),
+        'HeroCustom' => Phase5Widgets.buildHero(properties, childrenData),
+        'TweenAnimationBuilderCustom' => Phase5Widgets.buildTweenAnimationBuilder(properties, childrenData),
+        'AnimatedContainerCustom' => Phase5Widgets.buildAnimatedContainer(properties, childrenData),
+        'AnimatedDefaultTextStyleCustom' => Phase5Widgets.buildAnimatedDefaultTextStyle(properties, childrenData),
+        'AnimatedPhysicalModelCustom' => Phase5Widgets.buildAnimatedPhysicalModel(properties, childrenData),
+        'AnimatedSwitcherCustom' => Phase5Widgets.buildAnimatedSwitcher(properties, childrenData),
+        'SlideAnimation' => Phase5Widgets.buildSlideAnimation(properties, childrenData),
+        'FadeAnimation' => Phase5Widgets.buildFadeAnimation(properties, childrenData),
+        'RotationAnimation' => Phase5Widgets.buildRotationAnimation(properties, childrenData),
+        'ScaleAnimation' => Phase5Widgets.buildScaleAnimation(properties, childrenData),
+        'SizeAnimation' => Phase5Widgets.buildSizeAnimation(properties, childrenData),
+        'SkewAnimation' => Phase5Widgets.buildSkewAnimation(properties, childrenData),
+        'PerspectiveAnimation' => Phase5Widgets.buildPerspectiveAnimation(properties, childrenData),
+        'ShakeAnimation' => Phase5Widgets.buildShakeAnimation(properties, childrenData),
+        'PulseAnimation' => Phase5Widgets.buildPulseAnimation(properties, childrenData),
+        'FlipAnimation' => Phase5Widgets.buildFlipAnimation(properties, childrenData),
+        'BounceAnimation' => Phase5Widgets.buildBounceAnimation(properties, childrenData),
+        'FloatingAnimation' => Phase5Widgets.buildFloatingAnimation(properties, childrenData),
+        'GlowAnimation' => Phase5Widgets.buildGlowAnimation(properties, childrenData),
+        'ProgressAnimation' => Phase5Widgets.buildProgressAnimation(properties, childrenData),
+        'WaveAnimation' => Phase5Widgets.buildWaveAnimation(properties, childrenData),
+        'ColorAnimation' => Phase5Widgets.buildColorAnimation(properties, childrenData),
+        'BlurAnimation' => Phase5Widgets.buildBlurAnimation(properties, childrenData),
         
         _ => const Placeholder(),
       };

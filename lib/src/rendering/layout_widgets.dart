@@ -801,4 +801,102 @@ class LayoutWidgets {
     }
     return const Placeholder();
   }
+
+  /// Build Column widget with children
+  static Widget buildColumn(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(dynamic) render,
+  ) {
+    final children = childrenData.map((child) => render(child)).toList().cast<Widget>();
+    return Column(
+      mainAxisSize: properties['mainAxisSize'] == 'min' ? MainAxisSize.min : MainAxisSize.max,
+      children: children,
+    );
+  }
+
+  /// Build Row widget with children
+  static Widget buildRow(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(dynamic) render,
+  ) {
+    final children = childrenData.map((child) => render(child)).toList().cast<Widget>();
+    final mainAxisSize = properties['mainAxisSize'] == 'max' ? MainAxisSize.max : MainAxisSize.min;
+    return Row(
+      mainAxisSize: mainAxisSize,
+      children: children,
+    );
+  }
+
+  /// Build Container widget
+  static Widget buildContainer(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(dynamic) render,
+  ) {
+    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
+    return Container(
+      width: _parseDouble(properties['width']),
+      height: _parseDouble(properties['height']),
+      color: _parseColor(properties['color']),
+      child: child,
+    );
+  }
+
+  /// Build Stack widget with children
+  static Widget buildStack(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(dynamic) render,
+  ) {
+    final children = childrenData.map((child) => render(child)).toList().cast<Widget>();
+    return Stack(
+      fit: properties['fit'] == 'expand' ? StackFit.expand : StackFit.loose,
+      children: children,
+    );
+  }
+
+  /// Build Center widget
+  static Widget buildCenter(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(dynamic) render,
+  ) {
+    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
+    return Center(child: child ?? const Placeholder());
+  }
+
+  /// Build Padding widget
+  static Widget buildPadding(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(dynamic) render,
+  ) {
+    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
+    return Padding(
+      padding: EdgeInsets.all((properties['padding'] as num?)?.toDouble() ?? 0.0),
+      child: child ?? const Placeholder(),
+    );
+  }
+
+  /// Build Align widget
+  static Widget buildAlign(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(dynamic) render,
+  ) {
+    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
+    return Align(
+      alignment: Alignment.center,
+      child: child ?? const Placeholder(),
+    );
+  }
 }

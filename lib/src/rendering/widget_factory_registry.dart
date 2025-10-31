@@ -412,13 +412,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    return Column(
-      mainAxisAlignment: _parseMainAxisAlignment(properties['mainAxisAlignment']),
-      crossAxisAlignment: _parseCrossAxisAlignment(properties['crossAxisAlignment']),
-      mainAxisSize: properties['mainAxisSize'] == 'min' ? MainAxisSize.min : MainAxisSize.max,
-      children: children as List<Widget>,
-    );
+    return layout_widgets.LayoutWidgets.buildColumn(properties, childrenData, context, render as Widget Function(dynamic));
   }
 
   static Widget _buildRow(
@@ -427,14 +421,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    final mainAxisSize = properties['mainAxisSize'] == 'max' ? MainAxisSize.max : MainAxisSize.min;
-    return Row(
-      mainAxisAlignment: _parseMainAxisAlignment(properties['mainAxisAlignment']),
-      crossAxisAlignment: _parseCrossAxisAlignment(properties['crossAxisAlignment']),
-      mainAxisSize: mainAxisSize,
-      children: children as List<Widget>,
-    );
+    return layout_widgets.LayoutWidgets.buildRow(properties, childrenData, context, render as Widget Function(dynamic));
   }
 
   static Widget _buildContainer(
@@ -443,16 +430,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return Container(
-      width: _parseDouble(properties['width']),
-      height: _parseDouble(properties['height']),
-      color: _parseColor(properties['color']),
-      padding: _parseEdgeInsets(properties['padding']),
-      margin: _parseEdgeInsets(properties['margin']),
-      decoration: _parseBoxDecoration(properties['decoration']),
-      child: child as Widget?,
-    );
+    return layout_widgets.LayoutWidgets.buildContainer(properties, childrenData, context, render as Widget Function(dynamic));
   }
 
   static Widget _buildStack(
@@ -461,12 +439,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    return Stack(
-      alignment: _parseAlignment(properties['alignment']),
-      fit: properties['fit'] == 'expand' ? StackFit.expand : StackFit.loose,
-      children: children as List<Widget>,
-    );
+    return layout_widgets.LayoutWidgets.buildStack(properties, childrenData, context, render as Widget Function(dynamic));
   }
 
   static Widget _buildPositioned(
@@ -491,8 +464,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return Center(child: child as Widget? ?? const Placeholder());
+    return layout_widgets.LayoutWidgets.buildCenter(properties, childrenData, context, render as Widget Function(dynamic));
   }
 
   static Widget _buildPadding(
@@ -501,11 +473,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return Padding(
-      padding: _parseEdgeInsets(properties['padding']) ?? EdgeInsets.zero,
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return layout_widgets.LayoutWidgets.buildPadding(properties, childrenData, context, render as Widget Function(dynamic));
   }
 
   static Widget _buildAlign(
@@ -514,11 +482,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return Align(
-      alignment: _parseAlignment(properties['alignment']),
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return layout_widgets.LayoutWidgets.buildAlign(properties, childrenData, context, render as Widget Function(dynamic));
   }
 
   static Widget _buildExpanded(
@@ -527,12 +491,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    final flex = (properties['flex'] as num?)?.toInt() ?? 1;
-    return Expanded(
-      flex: flex,
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return layout_widgets.LayoutWidgets.buildExpanded(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildFlexible(
@@ -541,13 +500,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    final flex = (properties['flex'] as num?)?.toInt() ?? 1;
-    return Flexible(
-      flex: flex,
-      fit: properties['fit'] == 'tight' ? FlexFit.tight : FlexFit.loose,
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return layout_widgets.LayoutWidgets.buildFlexible(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildSizedBox(
@@ -556,12 +509,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return SizedBox(
-      width: _parseDouble(properties['width']),
-      height: _parseDouble(properties['height']),
-      child: child as Widget?,
-    );
+    return layout_widgets.LayoutWidgets.buildSizedBox(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildSingleChildScrollView(
@@ -570,11 +518,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return SingleChildScrollView(
-      scrollDirection: properties['scrollDirection'] == 'horizontal' ? Axis.horizontal : Axis.vertical,
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return layout_widgets.LayoutWidgets.buildSingleChildScrollView(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildListView(
@@ -583,12 +527,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    return ListView(
-      scrollDirection: properties['scrollDirection'] == 'horizontal' ? Axis.horizontal : Axis.vertical,
-      shrinkWrap: properties['shrinkWrap'] as bool? ?? false,
-      children: children as List<Widget>,
-    );
+    return layout_widgets.LayoutWidgets.buildListView(properties, childrenData, context, render as List<Widget> Function(List<dynamic>));
   }
 
   static Widget _buildGridView(
@@ -597,13 +536,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    final crossAxisCount = (properties['crossAxisCount'] as num?)?.toInt() ?? 2;
-    return GridView.count(
-      crossAxisCount: crossAxisCount,
-      shrinkWrap: properties['shrinkWrap'] as bool? ?? false,
-      children: children as List<Widget>,
-    );
+    return layout_widgets.LayoutWidgets.buildGridView(properties, childrenData, context, render as List<Widget> Function(List<dynamic>));
   }
 
   static Widget _buildWrap(
@@ -612,12 +545,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    return Wrap(
-      spacing: (properties['spacing'] as num?)?.toDouble() ?? 8.0,
-      runSpacing: (properties['runSpacing'] as num?)?.toDouble() ?? 8.0,
-      children: children as List<Widget>,
-    );
+    return layout_widgets.LayoutWidgets.buildWrap(properties, childrenData, context, render as List<Widget> Function(List<dynamic>));
   }
 
   static Widget _buildSpacer(
@@ -636,12 +564,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    final aspectRatio = (properties['aspectRatio'] as num?)?.toDouble() ?? 1.0;
-    return AspectRatio(
-      aspectRatio: aspectRatio,
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return layout_widgets.LayoutWidgets.buildAspectRatio(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildFractionallySizedBox(
@@ -650,12 +573,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return FractionallySizedBox(
-      widthFactor: _parseDouble(properties['widthFactor']),
-      heightFactor: _parseDouble(properties['heightFactor']),
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return layout_widgets.LayoutWidgets.buildFractionallySizedBox(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildIntrinsicHeight(
@@ -664,8 +582,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return IntrinsicHeight(child: child as Widget? ?? const Placeholder());
+    return layout_widgets.LayoutWidgets.buildIntrinsicHeight(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildIntrinsicWidth(
@@ -674,8 +591,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return IntrinsicWidth(child: child as Widget? ?? const Placeholder());
+    return layout_widgets.LayoutWidgets.buildIntrinsicWidth(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildTransform(
@@ -684,14 +600,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return Transform.translate(
-      offset: Offset(
-        (properties['offsetX'] as num?)?.toDouble() ?? 0,
-        (properties['offsetY'] as num?)?.toDouble() ?? 0,
-      ),
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return layout_widgets.LayoutWidgets.buildTransform(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildOpacity(
@@ -700,9 +609,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    final opacity = (properties['opacity'] as num?)?.toDouble() ?? 1.0;
-    return Opacity(opacity: opacity, child: child as Widget? ?? const Placeholder());
+    return layout_widgets.LayoutWidgets.buildOpacity(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildDecoratedBox(
@@ -711,11 +618,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return DecoratedBox(
-      decoration: _parseBoxDecoration(properties['decoration']) ?? const BoxDecoration(),
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return layout_widgets.LayoutWidgets.buildDecoratedBox(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildClipRect(
@@ -724,8 +627,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return ClipRect(child: child as Widget? ?? const Placeholder());
+    return layout_widgets.LayoutWidgets.buildClipRect(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildClipRRect(
@@ -734,12 +636,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    final radius = (properties['radius'] as num?)?.toDouble() ?? 8.0;
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(radius),
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return layout_widgets.LayoutWidgets.buildClipRRect(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildClipOval(
@@ -748,8 +645,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return ClipOval(child: child as Widget? ?? const Placeholder());
+    return layout_widgets.LayoutWidgets.buildClipOval(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildMaterial(
@@ -758,11 +654,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return Material(
-      color: _parseColor(properties['color']) ?? Colors.white,
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return layout_widgets.LayoutWidgets.buildMaterial(properties, childrenData, context, render as Widget Function(Map<String, dynamic>));
   }
 
   static Widget _buildTable(
@@ -771,10 +663,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Table(
-      columnWidths: const <int, TableColumnWidth>{},
-      children: [],
-    );
+    return layout_widgets.LayoutWidgets.buildTable(properties, childrenData);
   }
 
   // DISPLAY BUILDERS

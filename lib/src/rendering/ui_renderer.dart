@@ -186,7 +186,8 @@ class UIRenderer {
     Map<String, dynamic> config,
     BuildContext? context,
   ) {
-    final properties = config['properties'] as Map<String, dynamic>? ?? {};
+    dynamic propsRaw = config['properties'];
+    final Map<String, dynamic> properties = propsRaw is Map ? Map<String, dynamic>.from(propsRaw) : {};
     final childrenData = config['children'] as List? ?? [];
 
     try {

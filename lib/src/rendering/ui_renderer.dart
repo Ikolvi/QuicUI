@@ -1758,7 +1758,7 @@ class UIRenderer {
                 final processedData = _processDataVariables(data ?? {}, properties);
                 LoggerUtil.info('Processed data: $processedData');
                 LoggerUtil.info('Calling onNavigateTo with screen: $screen, data: $processedData');
-                onNavigateTo(screen, processedData);
+                onNavigateTo(screen, data: processedData);
               } else {
                 LoggerUtil.warning('onNavigateTo is not a function: $onNavigateTo');
               }

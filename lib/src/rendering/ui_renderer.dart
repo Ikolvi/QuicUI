@@ -133,6 +133,7 @@ import 'phase2_widgets.dart';
 import 'phase3_widgets.dart';
 import 'phase4_widgets.dart';
 import 'phase5_widgets.dart';
+import 'phase6_widgets.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///
@@ -365,6 +366,23 @@ class UIRenderer {
         'WaveAnimation' => Phase5Widgets.buildWaveAnimation(properties, childrenData),
         'ColorAnimation' => Phase5Widgets.buildColorAnimation(properties, childrenData),
         'BlurAnimation' => Phase5Widgets.buildBlurAnimation(properties, childrenData),
+        
+        // ===== PHASE 6: DATA DISPLAY & VISUALIZATION WIDGETS =====
+        'LineChart' => Phase6Widgets.buildLineChart(properties, childrenData),
+        'BarChart' => Phase6Widgets.buildBarChart(properties, childrenData),
+        'PieChart' => Phase6Widgets.buildPieChart(properties, childrenData),
+        'ScatterChart' => Phase6Widgets.buildScatterChart(properties, childrenData),
+        'AreaChart' => Phase6Widgets.buildAreaChart(properties, childrenData),
+        'Timeline' => Phase6Widgets.buildTimeline(properties, childrenData),
+        'Calendar' => Phase6Widgets.buildCalendar(properties, childrenData),
+        'ProgressRing' => Phase6Widgets.buildProgressRing(properties, childrenData),
+        'StatisticCard' => Phase6Widgets.buildStatisticCard(properties, childrenData),
+        'TableView' => Phase6Widgets.buildTableView(properties, childrenData),
+        'InfiniteList' => Phase6Widgets.buildInfiniteList(properties, childrenData),
+        'VirtualGrid' => Phase6Widgets.buildVirtualGrid(properties, childrenData),
+        'MasonryGrid' => Phase6Widgets.buildMasonryGrid(properties, childrenData),
+        'TimelineView' => Phase6Widgets.buildTimelineView(properties, childrenData),
+        'DataGrid' => Phase6Widgets.buildDataGrid(properties, childrenData),
         
         _ => const Placeholder(),
       };

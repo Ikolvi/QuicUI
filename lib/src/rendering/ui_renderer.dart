@@ -1249,6 +1249,11 @@ class UIRenderer {
   // ===== INPUT WIDGETS =====
 
   static Widget _buildElevatedButton(Map<String, dynamic> properties) {
+    final childrenData = properties['children'] as List? ?? [];
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : Text(properties['label'] as String? ?? 'Button');
+    
     return ElevatedButton(
       onPressed: () {
         final events = properties['events'] as Map<String, dynamic>?;
@@ -1256,11 +1261,16 @@ class UIRenderer {
           _handleCallback(events['onPressed'], properties);
         }
       },
-      child: Text(properties['label'] as String? ?? 'Button'),
+      child: child,
     );
   }
 
   static Widget _buildTextButton(Map<String, dynamic> properties) {
+    final childrenData = properties['children'] as List? ?? [];
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : Text(properties['label'] as String? ?? 'Button');
+    
     return TextButton(
       onPressed: () {
         final events = properties['events'] as Map<String, dynamic>?;
@@ -1268,7 +1278,7 @@ class UIRenderer {
           _handleCallback(events['onPressed'], properties);
         }
       },
-      child: Text(properties['label'] as String? ?? 'Button'),
+      child: child,
     );
   }
 
@@ -1285,6 +1295,11 @@ class UIRenderer {
   }
 
   static Widget _buildOutlinedButton(Map<String, dynamic> properties) {
+    final childrenData = properties['children'] as List? ?? [];
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : Text(properties['label'] as String? ?? 'Button');
+    
     return OutlinedButton(
       onPressed: () {
         final events = properties['events'] as Map<String, dynamic>?;
@@ -1292,7 +1307,7 @@ class UIRenderer {
           _handleCallback(events['onPressed'], properties);
         }
       },
-      child: Text(properties['label'] as String? ?? 'Button'),
+      child: child,
     );
   }
 

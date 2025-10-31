@@ -1159,7 +1159,15 @@ class UIRenderer {
       'Text',
       properties,
       () {
-        final text = properties['text'] as String? ?? '';
+        var text = properties['text'] as String? ?? '';
+        
+        // Process data variables like ${navigationData.x}
+        if (text.contains('\${navigationData.') || text.contains('\${now}') || text.contains('\${fields.')) {
+          final processedData = _processDataVariables({'_text': text}, properties);
+          text = processedData['_text'] as String? ?? text;
+          LoggerUtil.debug('Text variable processing: $text');
+        }
+        
         return Text(
           text,
           style: TextStyle(

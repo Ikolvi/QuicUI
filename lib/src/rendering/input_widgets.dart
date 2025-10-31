@@ -221,17 +221,19 @@ class InputWidgets {
   /// 
   /// Properties:
   /// - value: bool (checked state)
-  /// - activeThumbColor: String (hex color)
-  /// - checkColor: String (hex color)
+  /// - activeColor: String (hex color for checkbox fill when checked)
+  /// - checkColor: String (hex color for checkmark)
   static Widget buildCheckbox(
     Map<String, dynamic> properties, {
     List<dynamic>? childrenData,
     BuildContext? context,
     Function(bool)? onChanged,
   }) {
+    final fillColor = ParseUtils.parseColor(properties['activeColor']) ?? Colors.blue;
+    
     return Checkbox(
       value: properties['value'] as bool? ?? false,
-      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
+      fillColor: WidgetStateProperty.all(fillColor),
       checkColor: ParseUtils.parseColor(properties['checkColor']),
       onChanged: (bool? value) {
         if (onChanged != null && value != null) {
@@ -246,7 +248,7 @@ class InputWidgets {
   /// Properties:
   /// - label: String (tile label)
   /// - value: bool (checked state)
-  /// - activeThumbColor: String (hex color)
+  /// - activeColor: String (hex color for checkbox fill when checked)
   /// - subtitle: String (optional subtitle)
   static Widget buildCheckboxListTile(
     Map<String, dynamic> properties, {
@@ -254,13 +256,15 @@ class InputWidgets {
     BuildContext? context,
     Function(bool)? onChanged,
   }) {
+    final fillColor = ParseUtils.parseColor(properties['activeColor']) ?? Colors.blue;
+    
     return CheckboxListTile(
       title: Text(properties['label'] as String? ?? ''),
       subtitle: properties['subtitle'] != null
           ? Text(properties['subtitle'] as String)
           : null,
       value: properties['value'] as bool? ?? false,
-      activeThumbColor: ParseUtils.parseColor(properties['activeColor']),
+      fillColor: WidgetStateProperty.all(fillColor),
       onChanged: (bool? value) {
         if (onChanged != null && value != null) {
           onChanged(value);

@@ -24,7 +24,19 @@
 
 ## 📦 What's New
 
-**v1.0.5 (October 31, 2025) - Enhanced Padding/Margin & Task Manager** ✨ NEW
+**v1.0.5+ (October 31, 2025) - Comprehensive Error Handling System** ✨ NEW
+- ✅ **Multi-Layer Error Handling**: Runtime recovery with graceful fallbacks
+- ✅ **Build-Time Validation**: JSON schema checking before deployment
+- ✅ **CLI Validation Tool**: Project-wide validation with watch mode
+- ✅ **Dependency Analysis**: Detect missing assets and broken references
+- ✅ **Performance Analysis**: Identify deep nesting and excessive children
+- ✅ **Accessibility Checking**: Ensure compliance with accessibility standards
+- ✅ **Security Scanning**: Detect potential security vulnerabilities
+- ✅ **Comprehensive Logging**: Detailed error context for debugging
+- ✅ **Zero Production Impact**: Error handling compiled out in release builds
+- ✅ **IDE Ready**: Real-time validation support for future IDE integrations
+
+**v1.0.5 (October 31, 2025) - Enhanced Padding/Margin & Task Manager** ✨
 - ✅ **Enhanced Padding/Margin Support**: `{"all": 16}`, `{"horizontal": 20, "vertical": 10}` syntax
 - ✅ **Improved Container Rendering**: Better support for complex decoration patterns
 - ✅ **Task Manager Example**: Complete production-ready task management app
@@ -337,7 +349,82 @@ CallbackRegistry.register('validateEmail', (context, params) async {
 - Advanced patterns
 - Testing examples
 
-## 📝 JSON Schema Example
+## �️ Comprehensive Error Handling System ✨ NEW
+
+QuicUI includes a **robust error handling and JSON validation system** that ensures your apps are resilient and debuggable:
+
+### Multi-Layer Error Handling
+
+**Runtime Error Recovery**
+- Graceful error handling with automatic fallback widgets
+- Detailed error context and debugging information
+- Production-friendly error displays for users
+- Debug mode with full error details for developers
+
+**Build-Time Validation**
+- JSON schema validation before deployment
+- Dependency checking (missing assets, broken references)
+- Performance analysis (deep nesting, excessive children)
+- Accessibility compliance checking
+- Security vulnerability scanning
+
+**CLI Validation Tool**
+```bash
+# Validate entire project
+dart run quicui:validate
+
+# Validate specific file
+dart run quicui:validate --file assets/screens/login.json
+
+# Watch mode for real-time feedback
+dart run quicui:validate --watch
+
+# Generate JSON report
+dart run quicui:validate --output report.json --strict
+```
+
+### Key Features
+
+✅ **Automatic Error Handling** - No crashes from JSON errors
+✅ **Detailed Logging** - Rich context for debugging issues
+✅ **Graceful Fallbacks** - Users see appropriate error messages
+✅ **Performance Optimized** - Minimal runtime overhead
+✅ **Comprehensive Validation** - Catch errors early in development
+✅ **IDE Integration** - Real-time validation support
+
+### Usage Examples
+
+```dart
+// Error handling is automatic - no try/catch needed
+final widget = UIRenderer.render(jsonData);
+// Errors are logged, fallback widgets shown, app stays stable
+```
+
+```dart
+// Validate JSON programmatically
+final validator = BuildTimeValidator();
+final result = await validator.validateJson(jsonString);
+
+if (!result.isValid) {
+  for (final issue in result.issues) {
+    print('${issue.severity}: ${issue.message}');
+  }
+}
+```
+
+### Learn More
+
+📖 **[Complete Error Handling Guide](./ERROR_HANDLING.md)** - 1,000+ lines with:
+- Runtime error handling patterns
+- Build-time validation setup
+- CLI tool usage
+- Best practices
+- Troubleshooting guide
+- Performance tips
+
+---
+
+## �📝 JSON Schema Example
 
 ### Enhanced Padding & Margin Support ✨ NEW
 

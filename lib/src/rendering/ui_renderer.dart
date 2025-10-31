@@ -131,6 +131,7 @@ library;
 import 'package:flutter/material.dart';
 import '../models/callback_actions.dart' as callback_actions;
 import '../utils/logger_util.dart';
+import '../utils/error_handler.dart';
 import 'layout_widgets.dart';
 import 'form_widgets.dart';
 import 'scrolling_widgets.dart';
@@ -166,21 +167,74 @@ import 'state_management_widgets.dart';
 class UIRenderer {
   /// Render a widget tree from JSON configuration
   static Widget render(Map<String, dynamic> config, {BuildContext? context}) {
-    final type = config['type'] as String?;
-    if (type == null) return const Placeholder();
-    
-    final shouldRender = config['shouldRender'] as bool? ?? true;
-    if (!shouldRender) return const SizedBox.shrink();
-    
-    return _renderWidgetByType(type, config, context);
+    try {
+      // Validate JSON structure
+      final validation = JsonValidator.validateWidgetJson(config);
+      if (!validation.isValid) {
+        ErrorHandler.handleValidationErrors(validation.errors, config);
+        // Continue with rendering but log validation issues
+      }
+
+      final type = config['type'] as String?;
+      if (type == null) {
+        LoggerUtil.warning('Widget type is null, rendering placeholder', config);
+        return const Placeholder();
+      }
+      
+      final shouldRender = config['shouldRender'] as bool? ?? true;
+      if (!shouldRender) return const SizedBox.shrink();
+      
+      return _renderWidgetByType(type, config, context);
+    } catch (error, stackTrace) {
+      return ErrorHandler.handleRenderingError(
+        error,
+        config,
+        context: {
+          'method': 'UIRenderer.render',
+          'widget_type': config['type'],
+        },
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   /// Render a list of widgets from JSON array
   static List<Widget> renderList(List<dynamic> widgetsData, {BuildContext? context}) {
-    return widgetsData
-        .whereType<Map<String, dynamic>>()
-        .map((data) => render(data, context: context))
-        .toList();
+    final widgets = <Widget>[];
+    
+    for (int i = 0; i < widgetsData.length; i++) {
+      final data = widgetsData[i];
+      if (data is Map<String, dynamic>) {
+        try {
+          final widget = render(data, context: context);
+          widgets.add(widget);
+        } catch (error, stackTrace) {
+          LoggerUtil.error(
+            'Failed to render widget at index $i',
+            error,
+            stackTrace,
+          );
+          // Add error widget but continue with other widgets
+          widgets.add(ErrorHandler.handleRenderingError(
+            error,
+            data,
+            context: {
+              'method': 'UIRenderer.renderList',
+              'widget_index': i,
+              'total_widgets': widgetsData.length,
+            },
+            stackTrace: stackTrace,
+          ));
+        }
+      } else {
+        LoggerUtil.warning(
+          'Invalid widget data at index $i: expected Map, got ${data.runtimeType}',
+          data,
+        );
+      }
+    }
+    
+    return widgets;
   }
 
   /// Render widget by type - 70+ widgets supported
@@ -189,11 +243,18 @@ class UIRenderer {
     Map<String, dynamic> config,
     BuildContext? context,
   ) {
-    dynamic propsRaw = config['properties'];
-    final Map<String, dynamic> properties = propsRaw is Map ? Map<String, dynamic>.from(propsRaw) : {};
-    final childrenData = config['children'] as List? ?? [];
-
     try {
+      dynamic propsRaw = config['properties'];
+      final Map<String, dynamic> properties = propsRaw is Map ? Map<String, dynamic>.from(propsRaw) : {};
+      final childrenData = config['children'] as List? ?? [];
+
+      // Log debug information for widget rendering
+      LoggerUtil.debug('Rendering widget: $type', {
+        'properties_count': properties.length,
+        'children_count': childrenData.length,
+        'config_keys': config.keys.toList(),
+      });
+
       return switch (type) {
         // ===== APP-LEVEL WIDGETS =====
         'MaterialApp' => _buildMaterialApp(properties, childrenData, config, context),
@@ -410,10 +471,20 @@ class UIRenderer {
         'InfoPanel' => StateManagementWidgets.buildInfoPanel(properties, childrenData),
         'ToastNotification' => StateManagementWidgets.buildToastNotification(properties, childrenData),
         
-        _ => const Placeholder(),
+        _ => _buildUnsupportedWidget(type, config),
       };
-    } catch (e) {
-      return _buildErrorWidget(e.toString());
+    } catch (error, stackTrace) {
+      return ErrorHandler.handleRenderingError(
+        error,
+        config,
+        context: {
+          'method': '_renderWidgetByType',
+          'widget_type': type,
+          'properties_count': config['properties'] != null ? (config['properties'] as Map).length : 0,
+          'children_count': config['children'] != null ? (config['children'] as List).length : 0,
+        },
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -603,12 +674,24 @@ class UIRenderer {
     List<dynamic> childrenData,
     BuildContext? context,
   ) {
-    final children = renderList(childrenData, context: context);
-    return Column(
-      mainAxisAlignment: _parseMainAxisAlignment(properties['mainAxisAlignment']),
-      crossAxisAlignment: _parseCrossAxisAlignment(properties['crossAxisAlignment']),
-      mainAxisSize: properties['mainAxisSize'] == 'min' ? MainAxisSize.min : MainAxisSize.max,
-      children: children,
+    return _safeWidgetBuilder(
+      'Column',
+      properties,
+      () {
+        final children = renderList(childrenData, context: context);
+        return Column(
+          mainAxisAlignment: _parseMainAxisAlignment(properties['mainAxisAlignment']),
+          crossAxisAlignment: _parseCrossAxisAlignment(properties['crossAxisAlignment']),
+          mainAxisSize: properties['mainAxisSize'] == 'min' ? MainAxisSize.min : MainAxisSize.max,
+          children: children,
+        );
+      },
+      fallbackBuilder: (error) {
+        // Fallback to basic column if property parsing fails
+        LoggerUtil.warning('Column fallback used due to error', error);
+        final children = renderList(childrenData, context: context);
+        return Column(children: children);
+      },
     );
   }
 
@@ -618,10 +701,16 @@ class UIRenderer {
     BuildContext? context,
   ) {
     final children = renderList(childrenData, context: context);
+    
+    // Default to MainAxisSize.min to prevent unbounded constraints in scrollable contexts
+    final mainAxisSize = properties['mainAxisSize'] == 'max' 
+        ? MainAxisSize.max 
+        : MainAxisSize.min;
+        
     return Row(
       mainAxisAlignment: _parseMainAxisAlignment(properties['mainAxisAlignment']),
       crossAxisAlignment: _parseCrossAxisAlignment(properties['crossAxisAlignment']),
-      mainAxisSize: properties['mainAxisSize'] == 'min' ? MainAxisSize.min : MainAxisSize.max,
+      mainAxisSize: mainAxisSize,
       children: children,
     );
   }
@@ -992,16 +1081,30 @@ class UIRenderer {
   // ===== DISPLAY WIDGETS =====
 
   static Widget _buildText(Map<String, dynamic> properties) {
-    final text = properties['text'] as String? ?? '';
-    return Text(
-      text,
-      style: TextStyle(
-        fontSize: (properties['fontSize'] as num?)?.toDouble(),
-        fontWeight: _parseFontWeight(properties['fontWeight']),
-        color: _parseColor(properties['color']),
-      ),
-      textAlign: _parseTextAlign(properties['textAlign']),
-      maxLines: (properties['maxLines'] as num?)?.toInt(),
+    return _safeWidgetBuilder(
+      'Text',
+      properties,
+      () {
+        final text = properties['text'] as String? ?? '';
+        return Text(
+          text,
+          style: TextStyle(
+            fontSize: (properties['fontSize'] as num?)?.toDouble(),
+            fontWeight: _parseFontWeight(properties['fontWeight']),
+            color: _parseColor(properties['color']),
+          ),
+          textAlign: _parseTextAlign(properties['textAlign']),
+          maxLines: (properties['maxLines'] as num?)?.toInt(),
+        );
+      },
+      fallbackBuilder: (error) {
+        // Fallback to simple text with basic styling if complex styling fails
+        final text = properties['text']?.toString() ?? 'Text Error';
+        return Text(
+          text,
+          style: const TextStyle(color: Colors.red, fontSize: 12),
+        );
+      },
     );
   }
 
@@ -1391,19 +1494,91 @@ class UIRenderer {
 
   // ===== HELPER METHODS =====
 
-  static Widget _buildErrorWidget(String error) {
+  /// Build widget for unsupported widget types
+  ///
+  /// Creates a placeholder widget with debug information for unsupported
+  /// widget types, helping developers identify missing widget implementations.
+  static Widget _buildUnsupportedWidget(String type, Map<String, dynamic> config) {
+    LoggerUtil.warning(
+      'Unsupported widget type: $type',
+      {
+        'widget_type': type,
+        'available_properties': config.keys.toList(),
+        'suggestion': 'Check widget type spelling or implement missing widget renderer',
+      },
+    );
+
     return Container(
-      color: Colors.red[50],
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.orange[50],
+        border: Border.all(color: Colors.orange, width: 1),
+        borderRadius: BorderRadius.circular(4),
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(Icons.error, color: Colors.red),
-          const SizedBox(height: 8),
-          Text('Error: $error', style: const TextStyle(color: Colors.red, fontSize: 12)),
+          Icon(Icons.warning, color: Colors.orange[700], size: 16),
+          const SizedBox(height: 4),
+          Text(
+            'Unsupported: $type',
+            style: TextStyle(
+              color: Colors.orange[800],
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  /// Safe widget builder with error handling
+  ///
+  /// Wraps widget builders with comprehensive error handling to ensure
+  /// graceful degradation and detailed error reporting.
+  ///
+  /// ## Parameters
+  /// - [widgetType]: The type of widget being built
+  /// - [properties]: Widget properties from JSON
+  /// - [builder]: The widget builder function
+  /// - [fallbackBuilder]: Optional fallback builder for specific errors
+  ///
+  /// ## Returns
+  /// Widget from builder or error widget if building fails
+  static Widget _safeWidgetBuilder(
+    String widgetType,
+    Map<String, dynamic> properties,
+    Widget Function() builder, {
+    Widget Function(dynamic error)? fallbackBuilder,
+  }) {
+    try {
+      return builder();
+    } catch (error, stackTrace) {
+      // Try fallback builder first
+      if (fallbackBuilder != null) {
+        try {
+          return fallbackBuilder(error);
+        } catch (fallbackError) {
+          LoggerUtil.error(
+            'Fallback builder also failed for $widgetType',
+            fallbackError,
+          );
+        }
+      }
+
+      // Use error handler for comprehensive error reporting
+      return ErrorHandler.handleRenderingError(
+        error,
+        {'type': widgetType, 'properties': properties},
+        context: {
+          'method': '_safeWidgetBuilder',
+          'widget_type': widgetType,
+          'properties_keys': properties.keys.toList(),
+        },
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   static void _handleButtonPress(dynamic actionData) {

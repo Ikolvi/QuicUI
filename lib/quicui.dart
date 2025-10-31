@@ -244,3 +244,5 @@ export 'src/services/storage_service.dart';
 export 'src/utils/logger_util.dart';
 export 'src/utils/validators.dart';
 export 'src/utils/extensions.dart';
+export 'src/utils/error_handler.dart';
+export 'src/utils/build_time_validator.dart';

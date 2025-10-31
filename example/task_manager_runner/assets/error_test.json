@@ -1,0 +1,27 @@
+{
+  "type": "Column",
+  "children": [
+    {
+      "type": "Text",
+      "properties": {
+        "fontSize": "invalid_number",
+        "color": "#ZZZ"
+      }
+    },
+    {
+      "properties": {
+        "text": "Hello World"
+      }
+    },
+    {
+      "type": "Image",
+      "properties": {
+        "src": "assets/non_existent_image.png"
+      }
+    },
+    {
+      "type": "UnsupportedWidget",
+      "properties": {}
+    }
+  ]
+}

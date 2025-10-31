@@ -1,0 +1,75 @@
+{
+  "appName": "TaskManager Pro Test",
+  "appVersion": "2.0.0",
+  "description": "Simple test to verify QuicUI rendering",
+  "screens": [
+    {
+      "id": "test_screen",
+      "name": "Test Screen",
+      "type": "Scaffold",
+      "properties": {},
+      "children": [
+        {
+          "type": "AppBar",
+          "properties": {
+            "title": "Test Screen",
+            "centerTitle": true,
+            "backgroundColor": "#1E88E5",
+            "elevation": 4.0
+          }
+        },
+        {
+          "type": "Center",
+          "properties": {},
+          "children": [
+            {
+              "type": "Column",
+              "properties": {
+                "mainAxisAlignment": "center",
+                "crossAxisAlignment": "center"
+              },
+              "children": [
+                {
+                  "type": "Text",
+                  "properties": {
+                    "text": "QuicUI Test Screen",
+                    "style": {
+                      "fontSize": 24,
+                      "fontWeight": "bold",
+                      "color": "#1E88E5"
+                    }
+                  }
+                },
+                {
+                  "type": "SizedBox",
+                  "properties": {
+                    "height": 20
+                  }
+                },
+                {
+                  "type": "Container",
+                  "properties": {
+                    "padding": {"all": 16},
+                    "decoration": {
+                      "color": "#E3F2FD",
+                      "borderRadius": 8
+                    }
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "This is a simple test to verify that QuicUI is working correctly. If you can see this message, the basic rendering is functional.",
+                        "textAlign": "center"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

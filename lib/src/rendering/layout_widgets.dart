@@ -29,7 +29,7 @@ import 'package:flutter/material.dart';
 
 /// Extended widget rendering for Phase 1 widgets
 /// Provides implementations for 20+ essential widgets
-class Phase1Widgets {
+class LayoutWidgets {
   /// Build SliverAppBar for scrollable content
   static Widget buildSliverAppBar(Map<String, dynamic> properties, List<dynamic> childrenData) {
     final title = properties['title'] as String? ?? 'App Bar';

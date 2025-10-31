@@ -5,7 +5,7 @@ import 'dart:ui' as ui;
 /// Includes implicit animations, explicit transitions, hero animations, and custom animations
 /// Note: Does NOT duplicate existing animation widgets
 
-class Phase5Widgets {
+class AnimationWidgets {
   /// AnimatedOpacity with custom duration and curve
   static Widget buildAnimatedOpacity(Map<String, dynamic> properties, List<dynamic>? children) {
     final opacity = (properties['opacity'] as num?)?.toDouble() ?? 1.0;

@@ -850,7 +850,7 @@ class _ToastNotificationState extends State<ToastNotification>
 }
 
 // ===== PHASE 7 WIDGETS BUILDER CLASS =====
-class Phase7Widgets {
+class StateManagementWidgets {
   static Widget buildLoadingStateWidget(Map<String, dynamic> properties, List<dynamic> childrenData) {
     return LoadingStateWidget(
       size: (properties['size'] as num?)?.toDouble(),

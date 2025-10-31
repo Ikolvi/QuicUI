@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// Includes: NavigationRail, Breadcrumb, StackedNavigation, MenuBar, SideBar, ContextMenu, etc.
 /// Note: Does NOT duplicate existing NavigationBar, TabBar, Drawer - creates advanced variants instead
 
-class Phase4Widgets {
+class NavigationWidgets {
   /// NavigationRail with enhanced features, icons, and multiple destinations
   static Widget buildNavigationRail(Map<String, dynamic> properties, List<dynamic>? children) {
     final destinations = (properties['destinations'] as List?)?.map((e) {

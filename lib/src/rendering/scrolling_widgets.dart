@@ -5,7 +5,7 @@
 
 import 'package:flutter/material.dart';
 
-class Phase3Widgets {
+class ScrollingWidgets {
   /// CustomScrollView - Advanced scrolling with mixed scroll effects
   static Widget buildCustomScrollView(Map<String, dynamic> properties, List<dynamic> childrenData) {
     final slivers = childrenData.isEmpty ? <Widget>[] : childrenData.map((child) {

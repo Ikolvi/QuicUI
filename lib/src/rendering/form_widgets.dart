@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 
 /// Extended widget rendering for Phase 2 input widgets
 /// Provides implementations for 12+ form and input widgets
-class Phase2Widgets {
+class FormWidgets {
   /// Build TextFormField with validation
   static Widget buildTextFormField(Map<String, dynamic> properties) {
     final label = properties['label'] as String? ?? 'Input';

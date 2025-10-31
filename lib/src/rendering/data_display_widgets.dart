@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// 15+ widgets for displaying complex data in engaging formats
 /// Uses fl_chart package for advanced chart implementations
 
-class Phase6Widgets {
+class DataDisplayWidgets {
   /// LineChart - Display data as connected line graph with grid
   static Widget buildLineChart(Map<String, dynamic> properties, List<dynamic>? children) {
     final title = properties['title'] as String? ?? 'Line Chart';

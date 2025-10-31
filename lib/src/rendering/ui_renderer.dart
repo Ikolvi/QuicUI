@@ -136,6 +136,8 @@ import '../utils/error_handler.dart';
 import 'display_widgets.dart';
 import 'layout_widgets.dart';
 import 'form_widgets.dart';
+import 'form_widget_builders.dart';
+import 'widget_factory_registry.dart';
 import 'scrolling_widgets.dart';
 import 'navigation_widgets.dart';
 import 'animation_widgets.dart';
@@ -366,243 +368,52 @@ class UIRenderer {
         'has_callback': properties['onNavigateTo'] != null,
       });
 
-      return switch (type) {
-        // ===== APP-LEVEL WIDGETS =====
-        'MaterialApp' => _buildMaterialApp(properties, childrenData, config, context),
-        
-        // ===== SCAFFOLD & APP-LEVEL WIDGETS =====
-        'Scaffold' => _buildScaffold(properties, childrenData, config, context),
-        'AppBar' => _buildAppBar(properties, childrenData, context),
-        'BottomAppBar' => _buildBottomAppBar(properties, childrenData, context),
-        'Drawer' => _buildDrawer(properties, childrenData, context),
-        'FloatingActionButton' => _buildFloatingActionButton(properties),
-        'NavigationBar' => _buildNavigationBar(properties),
-        'TabBar' => _buildTabBar(properties),
-        
-        // ===== LAYOUT WIDGETS =====
-        'Column' => _buildColumn(properties, childrenData, context, config),
-        'Row' => _buildRow(properties, childrenData, context, config),
-        'Container' => _buildContainer(properties, childrenData, context, config),
-        'Stack' => _buildStack(properties, childrenData, context),
-        'Positioned' => _buildPositioned(properties, childrenData, context),
-        'Center' => _buildCenter(properties, childrenData, context, config),
-        'Padding' => _buildPadding(properties, childrenData, context, config),
-        'Align' => _buildAlign(properties, childrenData, context),
-        'Expanded' => _buildExpanded(properties, childrenData, context),
-        'Flexible' => _buildFlexible(properties, childrenData, context),
-        'SizedBox' => _buildSizedBox(properties, childrenData, context),
-        'SingleChildScrollView' => _buildSingleChildScrollView(properties, childrenData, context, config),
-        'ListView' => _buildListView(properties, childrenData, context),
-        'GridView' => _buildGridView(properties, childrenData, context),
-        'Wrap' => _buildWrap(properties, childrenData, context),
-        'Spacer' => _buildSpacer(properties),
-        'AspectRatio' => _buildAspectRatio(properties, childrenData, context),
-        'FractionallySizedBox' => _buildFractionallySizedBox(properties, childrenData, context),
-        'IntrinsicHeight' => _buildIntrinsicHeight(properties, childrenData, context),
-        'IntrinsicWidth' => _buildIntrinsicWidth(properties, childrenData, context),
-        'Transform' => _buildTransform(properties, childrenData, context),
-        'Opacity' => _buildOpacity(properties, childrenData, context),
-        'DecoratedBox' => _buildDecoratedBox(properties, childrenData, context),
-        'ClipRect' => _buildClipRect(properties, childrenData, context),
-        'ClipRRect' => _buildClipRRect(properties, childrenData, context),
-        'ClipOval' => _buildClipOval(properties, childrenData, context),
-        'Material' => _buildMaterial(properties, childrenData, context),
-        'Table' => _buildTable(properties, childrenData),
-        
-        // ===== DISPLAY WIDGETS =====
-        'Text' => _buildText(properties),
-        'RichText' => _buildRichText(properties),
-        'Image' => _buildImage(properties),
-        'Icon' => _buildIcon(properties),
-        'Card' => _buildCard(properties, childrenData, context),
-        'Divider' => _buildDivider(properties),
-        'VerticalDivider' => _buildVerticalDivider(properties),
-        'Badge' => _buildBadge(properties, childrenData, context),
-        'Chip' => _buildChip(properties),
-        'ActionChip' => _buildActionChip(properties),
-        'FilterChip' => _buildFilterChip(properties),
-        'InputChip' => _buildInputChip(properties),
-        'ChoiceChip' => _buildChoiceChip(properties),
-        'Tooltip' => _buildTooltip(properties, childrenData, context),
-        'ListTile' => _buildListTile(properties, childrenData, context),
-        
-        // ===== INPUT WIDGETS =====
-        'ElevatedButton' => _buildElevatedButton(properties),
-        'TextButton' => _buildTextButton(properties),
-        'IconButton' => _buildIconButton(properties),
-        'OutlinedButton' => _buildOutlinedButton(properties),
-        'TextField' => _buildTextField(properties),
-        'TextFormField' => _buildTextFormField(properties),
-        'Checkbox' => _buildCheckbox(properties),
-        'CheckboxListTile' => _buildCheckboxListTile(properties),
-        'Radio' => _buildRadio(properties),
-        'RadioListTile' => _buildRadioListTile(properties),
-        'Switch' => _buildSwitch(properties),
-        'SwitchListTile' => _buildSwitchListTile(properties),
-        'Slider' => _buildSlider(properties),
-        'RangeSlider' => _buildRangeSlider(properties),
-        'DropdownButton' => _buildDropdownButton(properties),
-        'PopupMenuButton' => _buildPopupMenuButton(properties),
-        'SegmentedButton' => _buildSegmentedButton(properties),
-        'SearchBar' => _buildSearchBar(properties),
-        'Form' => _buildForm(properties, childrenData, context),
-        
-        // ===== GESTURE WIDGETS =====
-        'GestureDetector' => buildGestureDetector(config, _handleCallback),
-        'InkWell' => buildInkWell(config, _handleCallback),
-        'InkResponse' => buildInkResponse(config, _handleCallback),
-        
-        // ===== DRAG & DROP WIDGETS (Phase 2) =====
-        'Draggable' => buildDraggable(config, _handleCallback),
-        'LongPressDraggable' => buildLongPressDraggable(config, _handleCallback),
-        'DragTarget' => buildDragTarget(config, _handleCallback),
-        
-        // ===== ADVANCED GESTURE WIDGETS (Phase 4) =====
-        'SwipeDetector' => buildSwipeDetector(config, _handleCallback),
-        'RotationGestureDetector' => buildRotationGestureDetector(config, _handleCallback),
-        'ScaleGestureDetector' => buildScaleGestureDetector(config, _handleCallback),
-        'MultiTouchGestureDetector' => buildMultiTouchGestureDetector(config, _handleCallback),
-        
-        // ===== DIALOG & OVERLAY WIDGETS =====
-        'Dialog' => _buildDialog(properties, childrenData, context),
-        'AlertDialog' => _buildAlertDialog(properties, childrenData, context),
-        'SimpleDialog' => _buildSimpleDialog(properties, childrenData, context),
-        'Offstage' => _buildOffstage(properties, childrenData, context),
-        
-        // ===== ANIMATION & VISIBILITY =====
-        'AnimatedContainer' => _buildAnimatedContainer(properties, childrenData, context),
-        'AnimatedOpacity' => _buildAnimatedOpacity(properties, childrenData, context),
-        'FadeInImage' => _buildFadeInImage(properties),
-        'Visibility' => _buildVisibility(properties, childrenData, context),
-        
-        // ===== LAYOUT WIDGETS =====
-        'SliverAppBar' => LayoutWidgets.buildSliverAppBar(properties, childrenData),
-        'BottomSheet' => LayoutWidgets.buildBottomSheet(properties, childrenData, context),
-        'Avatar' => LayoutWidgets.buildAvatar(properties),
-        'ProgressBar' => LayoutWidgets.buildProgressBar(properties),
-        'CircularProgress' => LayoutWidgets.buildCircularProgress(properties),
-        'Tag' => LayoutWidgets.buildTag(properties),
-        'FittedBox' => LayoutWidgets.buildFittedBox(properties, childrenData),
-        'ExpansionTile' => LayoutWidgets.buildExpansionTile(properties, childrenData),
-        'Stepper' => LayoutWidgets.buildStepper(properties, childrenData),
-        'DataTable' => LayoutWidgets.buildDataTable(properties, childrenData),
-        'PageView' => LayoutWidgets.buildPageView(properties, childrenData, context),
-        'SnackBar' => LayoutWidgets.buildSnackBar(properties),
-        
-        // ===== FORM WIDGETS (NEW) =====
-        'TextArea' => FormWidgets.buildTextArea(properties),
-        'NumberInput' => FormWidgets.buildNumberInput(properties),
-        'DatePicker' => FormWidgets.buildDatePicker(properties),
-        'TimePicker' => FormWidgets.buildTimePicker(properties),
-        'ColorPicker' => FormWidgets.buildColorPicker(properties),
-        'DropdownButtonForm' => FormWidgets.buildDropdownButtonForm(properties),
-        'MultiSelect' => FormWidgets.buildMultiSelect(properties),
-        'SearchBox' => FormWidgets.buildSearchBox(properties),
-        'FileUpload' => FormWidgets.buildFileUpload(properties),
-        'Rating' => FormWidgets.buildRating(properties),
-        'OtpInput' => FormWidgets.buildOtpInput(properties),
-        
-        // ===== SCROLLING WIDGETS =====
-        'CustomScrollView' => ScrollingWidgets.buildCustomScrollView(properties, childrenData),
-        'SliverList' => ScrollingWidgets.buildSliverList(properties, childrenData),
-        'SliverGrid' => ScrollingWidgets.buildSliverGrid(properties, childrenData),
-        'Flow' => ScrollingWidgets.buildFlow(properties, childrenData),
-        'LayoutBuilder' => ScrollingWidgets.buildLayoutBuilder(properties, childrenData),
-        'MediaQueryHelper' => ScrollingWidgets.buildMediaQueryHelper(properties, childrenData),
-        'ResponsiveWidget' => ScrollingWidgets.buildResponsiveWidget(properties, childrenData),
-        'AdvancedSliverAppBar' => ScrollingWidgets.buildAdvancedSliverAppBar(properties, childrenData),
-        'NestedScrollView' => ScrollingWidgets.buildNestedScrollView(properties, childrenData),
-        'AnimatedBuilder' => ScrollingWidgets.buildAnimatedBuilder(properties, childrenData),
-        'TabBarViewAdvanced' => ScrollingWidgets.buildTabBarViewAdvanced(properties, childrenData),
-        'PinchZoom' => ScrollingWidgets.buildPinchZoom(properties, childrenData),
-        'VirtualizedList' => ScrollingWidgets.buildVirtualizedList(properties, childrenData),
-        'StickyHeaders' => ScrollingWidgets.buildStickyHeaders(properties, childrenData),
-        
-        // ===== NAVIGATION WIDGETS =====
-        'NavigationRail' => NavigationWidgets.buildNavigationRail(properties, childrenData),
-        'Breadcrumb' => NavigationWidgets.buildBreadcrumb(properties, childrenData),
-        'BreadcrumbItem' => NavigationWidgets.buildBreadcrumbItem(properties, childrenData),
-        'StackedNavigation' => NavigationWidgets.buildStackedNavigation(properties, childrenData),
-        'NavigationStack' => NavigationWidgets.buildNavigationStack(properties, childrenData),
-        'DrawerNavigation' => NavigationWidgets.buildDrawerNavigation(properties, childrenData),
-        'MenuBar' => NavigationWidgets.buildMenuBar(properties, childrenData),
-        'SideBar' => NavigationWidgets.buildSideBar(properties, childrenData),
-        'ContextMenu' => NavigationWidgets.buildContextMenu(properties, childrenData),
-        'AdvancedBottomNav' => NavigationWidgets.buildAdvancedBottomNav(properties, childrenData),
-        'TabBarEnhanced' => NavigationWidgets.buildTabBarEnhanced(properties, childrenData),
-        'AnimatedDrawer' => NavigationWidgets.buildAnimatedDrawer(properties, childrenData),
-        'PaginationNav' => NavigationWidgets.buildPaginationNav(properties, childrenData),
+      // Try registry first for consolidated widgets
+      final registryBuilder = WidgetFactoryRegistry.getBuilder(type);
+      if (registryBuilder != null) {
+        LoggerUtil.debug('✅ Using WidgetFactoryRegistry for widget: $type');
+        if (context != null) {
+          return registryBuilder(properties, childrenData, context, render);
+        } else {
+          LoggerUtil.warning('Registry builder called without BuildContext for type: $type');
+          return const Placeholder();
+        }
+      }
 
-        // ===== ANIMATION WIDGETS =====
-        'AnimatedOpacityCustom' => AnimationWidgets.buildAnimatedOpacity(properties, childrenData),
-        'AnimatedScaleCustom' => AnimationWidgets.buildAnimatedScale(properties, childrenData),
-        'AnimatedRotationCustom' => AnimationWidgets.buildAnimatedRotation(properties, childrenData),
-        'AnimatedPositionedCustom' => AnimationWidgets.buildAnimatedPositioned(properties, childrenData),
-        'AnimatedAlignCustom' => AnimationWidgets.buildAnimatedAlign(properties, childrenData),
-        'HeroCustom' => AnimationWidgets.buildHero(properties, childrenData),
-        'TweenAnimationBuilderCustom' => AnimationWidgets.buildTweenAnimationBuilder(properties, childrenData),
-        'AnimatedContainerCustom' => AnimationWidgets.buildAnimatedContainer(properties, childrenData),
-        'AnimatedDefaultTextStyleCustom' => AnimationWidgets.buildAnimatedDefaultTextStyle(properties, childrenData),
-        'AnimatedPhysicalModelCustom' => AnimationWidgets.buildAnimatedPhysicalModel(properties, childrenData),
-        'AnimatedSwitcherCustom' => AnimationWidgets.buildAnimatedSwitcher(properties, childrenData),
-        'SlideAnimation' => AnimationWidgets.buildSlideAnimation(properties, childrenData),
-        'FadeAnimation' => AnimationWidgets.buildFadeAnimation(properties, childrenData),
-        'RotationAnimation' => AnimationWidgets.buildRotationAnimation(properties, childrenData),
-        'ScaleAnimation' => AnimationWidgets.buildScaleAnimation(properties, childrenData),
-        'SizeAnimation' => AnimationWidgets.buildSizeAnimation(properties, childrenData),
-        'SkewAnimation' => AnimationWidgets.buildSkewAnimation(properties, childrenData),
-        'PerspectiveAnimation' => AnimationWidgets.buildPerspectiveAnimation(properties, childrenData),
-        'ShakeAnimation' => AnimationWidgets.buildShakeAnimation(properties, childrenData),
-        'PulseAnimation' => AnimationWidgets.buildPulseAnimation(properties, childrenData),
-        'FlipAnimation' => AnimationWidgets.buildFlipAnimation(properties, childrenData),
-        'BounceAnimation' => AnimationWidgets.buildBounceAnimation(properties, childrenData),
-        'FloatingAnimation' => AnimationWidgets.buildFloatingAnimation(properties, childrenData),
-        'GlowAnimation' => AnimationWidgets.buildGlowAnimation(properties, childrenData),
-        'ProgressAnimation' => AnimationWidgets.buildProgressAnimation(properties, childrenData),
-        'WaveAnimation' => AnimationWidgets.buildWaveAnimation(properties, childrenData),
-        'ColorAnimation' => AnimationWidgets.buildColorAnimation(properties, childrenData),
-        'BlurAnimation' => AnimationWidgets.buildBlurAnimation(properties, childrenData),
-        
-        // ===== DATA DISPLAY WIDGETS =====
-        'LineChart' => DataDisplayWidgets.buildLineChart(properties, childrenData),
-        'BarChart' => DataDisplayWidgets.buildBarChart(properties, childrenData),
-        'PieChart' => DataDisplayWidgets.buildPieChart(properties, childrenData),
-        'ScatterChart' => DataDisplayWidgets.buildScatterChart(properties, childrenData),
-        'AreaChart' => DataDisplayWidgets.buildAreaChart(properties, childrenData),
-        'Timeline' => DataDisplayWidgets.buildTimeline(properties, childrenData),
-        'Calendar' => DataDisplayWidgets.buildCalendar(properties, childrenData),
-        'ProgressRing' => DataDisplayWidgets.buildProgressRing(properties, childrenData),
-        'StatisticCard' => DataDisplayWidgets.buildStatisticCard(properties, childrenData),
-        'TableView' => DataDisplayWidgets.buildTableView(properties, childrenData),
-        'InfiniteList' => DataDisplayWidgets.buildInfiniteList(properties, childrenData),
-        'VirtualGrid' => DataDisplayWidgets.buildVirtualGrid(properties, childrenData),
-        'MasonryGrid' => DataDisplayWidgets.buildMasonryGrid(properties, childrenData),
-        'TimelineView' => DataDisplayWidgets.buildTimelineView(properties, childrenData),
-        'DataGrid' => DataDisplayWidgets.buildDataGrid(properties, childrenData),
-        
-        // ===== STATE MANAGEMENT WIDGETS =====
-        'LoadingStateWidget' => StateManagementWidgets.buildLoadingStateWidget(properties, childrenData),
-        'ErrorStateWidget' => StateManagementWidgets.buildErrorStateWidget(properties, childrenData),
-        'EmptyStateWidget' => StateManagementWidgets.buildEmptyStateWidget(properties, childrenData),
-        'SkeletonLoader' => StateManagementWidgets.buildSkeletonLoader(properties, childrenData),
-        'SuccessStateWidget' => StateManagementWidgets.buildSuccessStateWidget(properties, childrenData),
-        'RetryButton' => StateManagementWidgets.buildRetryButton(properties, childrenData),
-        'ProgressIndicatorCustom' => StateManagementWidgets.buildProgressIndicator(properties, childrenData),
-        'StatusBadge' => StateManagementWidgets.buildStatusBadge(properties, childrenData),
-        'StateTransitionWidget' => StateManagementWidgets.buildStateTransitionWidget(properties, childrenData),
-        'DataRefreshWidget' => StateManagementWidgets.buildDataRefreshWidget(properties, childrenData),
-        'OfflineIndicator' => StateManagementWidgets.buildOfflineIndicator(properties, childrenData),
-        'SyncStatusWidget' => StateManagementWidgets.buildSyncStatusWidget(properties, childrenData),
-        'ValidationIndicator' => StateManagementWidgets.buildValidationIndicator(properties, childrenData),
-        'WarningBanner' => StateManagementWidgets.buildWarningBanner(properties, childrenData),
-        'InfoPanel' => StateManagementWidgets.buildInfoPanel(properties, childrenData),
-        'ToastNotification' => StateManagementWidgets.buildToastNotification(properties, childrenData),
-        
-        // ===== DATA BINDING WIDGETS =====
-        'DataBinding' => _buildDataBinding(properties, childrenData, context, config),
-        
-        _ => _buildUnsupportedWidget(type, config),
-      };
+      // All basic widgets are handled by registry.
+      // Fallback to error widget for unknown types
+      LoggerUtil.warning(
+        'Unsupported widget type: $type (not in registry)',
+        {
+          'widget_type': type,
+          'available_properties': properties.keys.toList(),
+          'suggestion': 'Check widget type spelling or register widget in WidgetFactoryRegistry',
+        },
+      );
+
+      return Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.orange[50],
+          border: Border.all(color: Colors.orange, width: 1),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.warning, color: Colors.orange[700], size: 16),
+            const SizedBox(height: 4),
+            Text(
+              'Unsupported: $type',
+              style: TextStyle(
+                color: Colors.orange[800],
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
     } catch (error, stackTrace) {
       return ErrorHandler.handleRenderingError(
         error,
@@ -1470,16 +1281,6 @@ class UIRenderer {
     );
   }
 
-  static Widget _buildTextFormField(Map<String, dynamic> properties) {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: properties['label'] as String?,
-        hintText: properties['hint'] as String?,
-        border: const OutlineInputBorder(),
-      ),
-      obscureText: properties['obscureText'] as bool? ?? false,
-    );
-  }
 
   static Widget _buildCheckbox(Map<String, dynamic> properties) {
     return Checkbox(
@@ -1572,17 +1373,6 @@ class UIRenderer {
   static Widget _buildSearchBar(Map<String, dynamic> properties) {
     return SearchBar(
       hintText: properties['hint'] as String? ?? 'Search',
-    );
-  }
-
-  static Widget _buildForm(
-    Map<String, dynamic> properties,
-    List<dynamic> childrenData,
-    BuildContext? context,
-  ) {
-    final children = renderList(childrenData, context: context);
-    return Form(
-      child: Column(children: children),
     );
   }
 
@@ -1688,44 +1478,79 @@ class UIRenderer {
 
   // ===== HELPER METHODS =====
 
-  /// Build widget for unsupported widget types
+  /// Try to build widget using WidgetFactoryRegistry
   ///
-  /// Creates a placeholder widget with debug information for unsupported
-  /// widget types, helping developers identify missing widget implementations.
-  static Widget _buildUnsupportedWidget(String type, Map<String, dynamic> config) {
-    LoggerUtil.warning(
-      'Unsupported widget type: $type',
-      {
-        'widget_type': type,
-        'available_properties': config.keys.toList(),
-        'suggestion': 'Check widget type spelling or implement missing widget renderer',
-      },
-    );
+  /// Falls back to registry when widget type is not in the main switch statement.
+  /// This enables dynamic widget registration and extensibility.
+  static Widget _tryRegistryBuilder(
+    String type,
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext? context,
+  ) {
+    try {
+      // Try to get builder from registry
+      final builder = WidgetFactoryRegistry.getBuilder(type);
+      
+      if (builder != null) {
+        LoggerUtil.debug('✅ Using WidgetFactoryRegistry for widget type: $type');
+        // For registry builders, we need a non-null context but can use a dummy if needed
+        // Most builders work fine with null context, but registry requires it for signature compatibility
+        if (context != null) {
+          return builder(properties, childrenData, context, render);
+        } else {
+          LoggerUtil.warning('Registry builder called without BuildContext for type: $type');
+          return const Placeholder();
+        }
+      }
+      
+      // Not in registry either - unsupported widget
+      LoggerUtil.warning(
+        'Unsupported widget type: $type (not in registry)',
+        {
+          'widget_type': type,
+          'available_properties': properties.keys.toList(),
+          'suggestion': 'Check widget type spelling or register widget in WidgetFactoryRegistry',
+        },
+      );
 
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.orange[50],
-        border: Border.all(color: Colors.orange, width: 1),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.warning, color: Colors.orange[700], size: 16),
-          const SizedBox(height: 4),
-          Text(
-            'Unsupported: $type',
-            style: TextStyle(
-              color: Colors.orange[800],
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
+      return Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.orange[50],
+          border: Border.all(color: Colors.orange, width: 1),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.warning, color: Colors.orange[700], size: 16),
+            const SizedBox(height: 4),
+            Text(
+              'Unsupported: $type',
+              style: TextStyle(
+                color: Colors.orange[800],
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ),
+      );
+    } catch (e, stackTrace) {
+      LoggerUtil.error('Error in _tryRegistryBuilder for type: $type', e, stackTrace);
+      return Container(
+        color: Colors.red[50],
+        padding: const EdgeInsets.all(8),
+        child: Text(
+          'Error rendering $type: $e',
+          style: TextStyle(color: Colors.red[800], fontSize: 10),
+        ),
+      );
+    }
   }
+
+  /// Build widget for unsupported widget types (deprecated - use _tryRegistryBuilder instead)
 
   /// Safe widget builder with error handling
   ///

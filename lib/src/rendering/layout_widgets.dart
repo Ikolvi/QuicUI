@@ -367,7 +367,393 @@ class LayoutWidgets {
     );
   }
 
+  // ===== CORE LAYOUT WIDGETS (Phase 3 Part 2) =====
+  
+  /// Build Expanded widget
+  static Widget buildExpanded(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    final flex = (properties['flex'] as num?)?.toInt() ?? 1;
+    return Expanded(
+      flex: flex,
+      child: child ?? const Placeholder(),
+    );
+  }
+
+  /// Build Flexible widget
+  static Widget buildFlexible(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    final flex = (properties['flex'] as num?)?.toInt() ?? 1;
+    return Flexible(
+      flex: flex,
+      fit: properties['fit'] == 'tight' ? FlexFit.tight : FlexFit.loose,
+      child: child ?? const Placeholder(),
+    );
+  }
+
+  /// Build SizedBox widget
+  static Widget buildSizedBox(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    return SizedBox(
+      width: _parseDouble(properties['width']),
+      height: _parseDouble(properties['height']),
+      child: child,
+    );
+  }
+
+  /// Build SingleChildScrollView widget
+  static Widget buildSingleChildScrollView(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    return SingleChildScrollView(
+      scrollDirection: properties['scrollDirection'] == 'horizontal' ? Axis.horizontal : Axis.vertical,
+      child: child ?? const Placeholder(),
+    );
+  }
+
+  /// Build ListView widget
+  static Widget buildListView(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    List<Widget> Function(List<dynamic>) renderList,
+  ) {
+    final children = renderList(childrenData);
+    return ListView(
+      scrollDirection: properties['scrollDirection'] == 'horizontal' ? Axis.horizontal : Axis.vertical,
+      shrinkWrap: properties['shrinkWrap'] as bool? ?? false,
+      children: children,
+    );
+  }
+
+  /// Build GridView widget
+  static Widget buildGridView(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    List<Widget> Function(List<dynamic>) renderList,
+  ) {
+    final children = renderList(childrenData);
+    final crossAxisCount = (properties['crossAxisCount'] as num?)?.toInt() ?? 2;
+    return GridView.count(
+      crossAxisCount: crossAxisCount,
+      shrinkWrap: properties['shrinkWrap'] as bool? ?? false,
+      children: children,
+    );
+  }
+
+  /// Build Wrap widget
+  static Widget buildWrap(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    List<Widget> Function(List<dynamic>) renderList,
+  ) {
+    final children = renderList(childrenData);
+    return Wrap(
+      spacing: (properties['spacing'] as num?)?.toDouble() ?? 8.0,
+      runSpacing: (properties['runSpacing'] as num?)?.toDouble() ?? 8.0,
+      children: children,
+    );
+  }
+
+  /// Build Spacer widget
+  static Widget buildSpacer(Map<String, dynamic> properties) {
+    final flex = (properties['flex'] as num?)?.toInt() ?? 1;
+    return Spacer(flex: flex);
+  }
+
+  /// Build AspectRatio widget
+  static Widget buildAspectRatio(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    final aspectRatio = (properties['aspectRatio'] as num?)?.toDouble() ?? 1.0;
+    return AspectRatio(
+      aspectRatio: aspectRatio,
+      child: child ?? const Placeholder(),
+    );
+  }
+
+  /// Build FractionallySizedBox widget
+  static Widget buildFractionallySizedBox(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    return FractionallySizedBox(
+      widthFactor: _parseDouble(properties['widthFactor']),
+      heightFactor: _parseDouble(properties['heightFactor']),
+      child: child ?? const Placeholder(),
+    );
+  }
+
+  /// Build IntrinsicHeight widget
+  static Widget buildIntrinsicHeight(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    return IntrinsicHeight(child: child ?? const Placeholder());
+  }
+
+  /// Build IntrinsicWidth widget
+  static Widget buildIntrinsicWidth(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    return IntrinsicWidth(child: child ?? const Placeholder());
+  }
+
+  /// Build Transform widget
+  static Widget buildTransform(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    return Transform.translate(
+      offset: Offset(
+        (properties['offsetX'] as num?)?.toDouble() ?? 0,
+        (properties['offsetY'] as num?)?.toDouble() ?? 0,
+      ),
+      child: child ?? const Placeholder(),
+    );
+  }
+
+  /// Build Opacity widget
+  static Widget buildOpacity(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    final opacity = (properties['opacity'] as num?)?.toDouble() ?? 1.0;
+    return Opacity(opacity: opacity, child: child ?? const Placeholder());
+  }
+
+  /// Build DecoratedBox widget
+  static Widget buildDecoratedBox(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    return DecoratedBox(
+      decoration: _parseBoxDecoration(properties['decoration']) ?? const BoxDecoration(),
+      child: child ?? const Placeholder(),
+    );
+  }
+
+  /// Build ClipRect widget
+  static Widget buildClipRect(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    return ClipRect(child: child ?? const Placeholder());
+  }
+
+  /// Build ClipRRect widget
+  static Widget buildClipRRect(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    final radius = (properties['radius'] as num?)?.toDouble() ?? 8.0;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(radius),
+      child: child ?? const Placeholder(),
+    );
+  }
+
+  /// Build ClipOval widget
+  static Widget buildClipOval(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    return ClipOval(child: child ?? const Placeholder());
+  }
+
+  /// Build Material widget
+  static Widget buildMaterial(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    Widget Function(Map<String, dynamic>) render,
+  ) {
+    final child = childrenData.isNotEmpty
+        ? render(childrenData.first as Map<String, dynamic>)
+        : null;
+    return Material(
+      color: _parseColor(properties['color']) ?? Colors.white,
+      child: child ?? const Placeholder(),
+    );
+  }
+
+  /// Build Table widget
+  static Widget buildTable(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+  ) {
+    return Table(
+      columnWidths: const <int, TableColumnWidth>{},
+      children: [],
+    );
+  }
+
   // ===== HELPER METHODS =====
+
+  /// Parse double value from number or string
+  static double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) return double.tryParse(value);
+    return null;
+  }
+
+  /// Parse box decoration from JSON
+  static BoxDecoration? _parseBoxDecoration(dynamic value) {
+    if (value == null) return null;
+    if (value is Map) {
+      return BoxDecoration(
+        color: _parseColor(value['color']),
+        border: _parseBorder(value['border']),
+        borderRadius: _parseBorderRadius(value['borderRadius']),
+        boxShadow: _parseBoxShadow(value['boxShadow']),
+      );
+    }
+    return null;
+  }
+
+  /// Parse border from JSON
+  static Border? _parseBorder(dynamic value) {
+    if (value == null) return null;
+    if (value is Map) {
+      return Border(
+        left: _parseBorderSide(value['left']),
+        right: _parseBorderSide(value['right']),
+        top: _parseBorderSide(value['top']),
+        bottom: _parseBorderSide(value['bottom']),
+      );
+    }
+    return null;
+  }
+
+  /// Parse border side from JSON
+  static BorderSide _parseBorderSide(dynamic value) {
+    if (value is Map) {
+      return BorderSide(
+        color: _parseColor(value['color']) ?? Colors.black,
+        width: (value['width'] as num?)?.toDouble() ?? 1.0,
+      );
+    }
+    return const BorderSide();
+  }
+
+  /// Parse border radius from JSON
+  static BorderRadius? _parseBorderRadius(dynamic value) {
+    if (value == null) return null;
+    if (value is num) {
+      return BorderRadius.circular(value.toDouble());
+    }
+    if (value is Map) {
+      final all = (value['all'] as num?)?.toDouble();
+      if (all != null) return BorderRadius.circular(all);
+      return BorderRadius.only(
+        topLeft: Radius.circular((value['topLeft'] as num?)?.toDouble() ?? 0),
+        topRight: Radius.circular((value['topRight'] as num?)?.toDouble() ?? 0),
+        bottomLeft: Radius.circular((value['bottomLeft'] as num?)?.toDouble() ?? 0),
+        bottomRight: Radius.circular((value['bottomRight'] as num?)?.toDouble() ?? 0),
+      );
+    }
+    return null;
+  }
+
+  /// Parse box shadow from JSON
+  static List<BoxShadow>? _parseBoxShadow(dynamic value) {
+    if (value == null) return null;
+    if (value is List) {
+      return value
+          .map((shadow) => BoxShadow(
+                color: _parseColor(shadow['color']) ?? Colors.black.withOpacity(0.1),
+                blurRadius: (shadow['blurRadius'] as num?)?.toDouble() ?? 0,
+                spreadRadius: (shadow['spreadRadius'] as num?)?.toDouble() ?? 0,
+                offset: Offset(
+                  (shadow['offset']?['dx'] as num?)?.toDouble() ?? 0,
+                  (shadow['offset']?['dy'] as num?)?.toDouble() ?? 0,
+                ),
+              ))
+          .toList();
+    }
+    return null;
+  }
 
   /// Parse color from hex string
   static Color? _parseColor(String? colorString) {

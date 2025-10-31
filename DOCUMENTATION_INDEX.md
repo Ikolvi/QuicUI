@@ -6,7 +6,35 @@ This file provides a quick reference to all QuicUI documentation.
 
 ---
 
-## 🎯 Start Here
+## � Widget Registry - NEW MODULAR ARCHITECTURE
+
+### ⭐ Quick Start: Widget Registry Delegation
+1. **[REGISTRY_SETUP_FINAL.md](./REGISTRY_SETUP_FINAL.md)** ← **START HERE** (10-15 min)
+   - Complete overview of what was set up
+   - Current status and compilation
+   - Adapter implementation roadmap
+   - Quick reference guide
+
+2. **[lib/src/rendering/DELEGATION_IMPLEMENTATION_GUIDE.md](./lib/src/rendering/DELEGATION_IMPLEMENTATION_GUIDE.md)** (20-30 min)
+   - Step-by-step implementation guide
+   - Adapter pattern examples
+   - Complete code patterns
+   - Implementation phases with checklists
+
+3. **[lib/src/rendering/REGISTRY_ARCHITECTURE.md](./lib/src/rendering/REGISTRY_ARCHITECTURE.md)** (10-15 min)
+   - Modular architecture overview
+   - 13 widget categories
+   - 207+ total widgets
+   - Building process flow
+
+### Context & History
+- **[CRITICAL_FIX_WIDGET_REGISTRY.md](./CRITICAL_FIX_WIDGET_REGISTRY.md)** - Why 50+ widgets were missing and how they were restored
+- **[WIDGET_REGISTRY_SETUP_COMPLETE.md](./WIDGET_REGISTRY_SETUP_COMPLETE.md)** - Setup summary with implementation examples
+- **[REGISTRY_DELEGATION_SETUP.md](./REGISTRY_DELEGATION_SETUP.md)** - Infrastructure overview
+
+---
+
+## �🎯 Start Here
 
 ### For First-Time Users
 1. **[README.md](./README.md)** (5 min read)

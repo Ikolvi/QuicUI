@@ -241,9 +241,18 @@ export 'src/services/quicui_service.dart';
 export 'src/services/storage_service.dart';
 export 'src/services/services.dart';
 
+// Form System (Phase 4)
+export 'src/forms/field_types.dart';
+export 'src/forms/form_controller.dart';
+export 'src/forms/form_builder.dart';
+export 'src/forms/validators/base_validator.dart' show BaseValidator, AsyncValidator, CustomValidator, ValidationContext;
+export 'src/forms/validators/base_validator.dart' show ValidatorChain, OrValidator, AndValidator, NotValidator, ConditionalValidator;
+export 'src/forms/validators/base_validator.dart' show ValidationResult;
+export 'src/forms/validators/built_in_validators.dart';
+
 // Utilities
 export 'src/utils/logger_util.dart';
 export 'src/utils/validators.dart';
 export 'src/utils/extensions.dart';
-export 'src/utils/error_handler.dart';
+export 'src/utils/error_handler.dart' hide ValidationResult;
 export 'src/utils/build_time_validator.dart';

@@ -1341,16 +1341,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: ExpansionTile(
-        title: Text(properties['title'] as String? ?? 'Expansion Panel'),
-        children: children as List<Widget>,
-      ),
+    return dialog_widgets.DialogWidgets.buildExpansionPanel(
+      properties,
+      childrenData: childrenData,
+      context: context,
+      render: (cfg, {childrenData, context}) => render(cfg),
     );
   }
 
@@ -2000,11 +1995,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return NavigationRail(
-      onDestinationSelected: (int index) {},
-      selectedIndex: 0,
-      destinations: [],
-    );
+    return navigation_widgets.NavigationWidgets.buildNavigationRail(properties, childrenData);
   }
 
   static Widget _buildBreadcrumb(
@@ -2013,8 +2004,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    return Row(children: children as List<Widget>);
+    return navigation_widgets.NavigationWidgets.buildBreadcrumb(properties, childrenData);
   }
 
   static Widget _buildMenuBar(
@@ -2023,8 +2013,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    return Row(children: children as List<Widget>);
+    return navigation_widgets.NavigationWidgets.buildMenuBar(properties, childrenData);
   }
 
   static Widget _buildSideBar(
@@ -2062,14 +2051,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(icon: const Icon(Icons.chevron_left), onPressed: () {}),
-        Text(properties['currentPage'] as String? ?? 'Page 1'),
-        IconButton(icon: const Icon(Icons.chevron_right), onPressed: () {}),
-      ],
-    );
+    return navigation_widgets.NavigationWidgets.buildPaginationNav(properties, childrenData);
   }
 
   static Widget _buildDrawerNavigation(
@@ -2087,10 +2069,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return BottomNavigationBar(
-      items: [],
-      onTap: (index) {},
-    );
+    return navigation_widgets.NavigationWidgets.buildAdvancedBottomNav(properties, childrenData);
   }
 
   static Widget _buildAdvancedSliverAppBar(
@@ -2099,10 +2078,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return SliverAppBar(
-      title: Text(properties['title'] as String? ?? ''),
-      pinned: true,
-    );
+    return scrolling_widgets.ScrollingWidgets.buildAdvancedSliverAppBar(properties, childrenData);
   }
 
   static Widget _buildTabBarEnhanced(
@@ -2111,7 +2087,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return const TabBar(tabs: []);
+    return navigation_widgets.NavigationWidgets.buildTabBarEnhanced(properties, childrenData);
   }
 
   static Widget _buildTabBarViewAdvanced(
@@ -2177,8 +2153,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    return ListView(children: children as List<Widget>);
+    return scrolling_widgets.ScrollingWidgets.buildInfiniteList(properties, childrenData);
   }
 
   static Widget _buildVirtualizedList(
@@ -2196,11 +2171,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    return GridView.count(
-      crossAxisCount: (properties['columns'] as num?)?.toInt() ?? 2,
-      children: children as List<Widget>,
-    );
+    return scrolling_widgets.ScrollingWidgets.buildVirtualGrid(properties, childrenData);
   }
 
   static Widget _buildMasonryGrid(
@@ -2209,11 +2180,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    return GridView.count(
-      crossAxisCount: (properties['columns'] as num?)?.toInt() ?? 2,
-      children: children as List<Widget>,
-    );
+    return scrolling_widgets.ScrollingWidgets.buildMasonryGrid(properties, childrenData);
   }
 
   static Widget _buildStickyHeaders(
@@ -2233,11 +2200,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container(
-      height: 200,
-      color: Colors.grey[100],
-      child: const Center(child: Text('LineChart')),
-    );
+    return data_display_widgets.DataDisplayWidgets.buildLineChart(properties, childrenData);
   }
 
   static Widget _buildBarChart(
@@ -2246,11 +2209,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container(
-      height: 200,
-      color: Colors.grey[100],
-      child: const Center(child: Text('BarChart')),
-    );
+    return data_display_widgets.DataDisplayWidgets.buildBarChart(properties, childrenData);
   }
 
   static Widget _buildPieChart(
@@ -2259,11 +2218,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container(
-      height: 200,
-      color: Colors.grey[100],
-      child: const Center(child: Text('PieChart')),
-    );
+    return data_display_widgets.DataDisplayWidgets.buildPieChart(properties, childrenData);
   }
 
   static Widget _buildAreaChart(
@@ -2272,11 +2227,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container(
-      height: 200,
-      color: Colors.grey[100],
-      child: const Center(child: Text('AreaChart')),
-    );
+    return data_display_widgets.DataDisplayWidgets.buildAreaChart(properties, childrenData);
   }
 
   static Widget _buildScatterChart(
@@ -2285,11 +2236,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container(
-      height: 200,
-      color: Colors.grey[100],
-      child: const Center(child: Text('ScatterChart')),
-    );
+    return data_display_widgets.DataDisplayWidgets.buildScatterChart(properties, childrenData);
   }
 
   static Widget _buildTimeline(
@@ -2316,12 +2263,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return DataTable(
-      columns: [
-        const DataColumn(label: Text('Column 1')),
-      ],
-      rows: [],
-    );
+    return data_display_widgets.DataDisplayWidgets.buildDataGrid(properties, childrenData);
   }
 
   static Widget _buildTableView(
@@ -2330,15 +2272,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
-        columns: [
-          const DataColumn(label: Text('Column 1')),
-        ],
-        rows: [],
-      ),
-    );
+    return data_display_widgets.DataDisplayWidgets.buildTableView(properties, childrenData);
   }
 
   static Widget _buildMediaQueryHelper(
@@ -2570,16 +2504,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container(
-      height: 48,
-      color: Colors.grey[800],
-      child: Center(
-        child: Text(
-          properties['message'] as String? ?? 'SnackBar',
-          style: const TextStyle(color: Colors.white),
-        ),
-      ),
-    );
+    return dialog_widgets.DialogWidgets.buildSnackBar(properties, childrenData: childrenData, context: context);
   }
 
   // ===== HELPER METHODS =====

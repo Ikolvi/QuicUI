@@ -150,4 +150,89 @@ class DialogWidgets {
       child: child ?? const Placeholder(),
     );
   }
+
+  /// Builds a SnackBar widget - notification at bottom of screen
+  /// 
+  /// Properties:
+  /// - message: String (notification text)
+  /// - duration: int (milliseconds, default 4000)
+  /// - actionLabel: String (action button text)
+  /// - backgroundColor: String (hex color)
+  static Widget buildSnackBar(
+    Map<String, dynamic> properties, {
+    List<dynamic>? childrenData,
+    BuildContext? context,
+  }) {
+    final message = properties['message'] as String? ?? 'SnackBar';
+    final backgroundColor = _parseColor(properties['backgroundColor'] as String?) ?? Colors.grey[800]!;
+    final actionLabel = properties['actionLabel'] as String?;
+
+    return Container(
+      height: 48,
+      color: backgroundColor,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(color: Colors.white),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          if (actionLabel != null)
+            TextButton(
+              onPressed: () {},
+              child: Text(
+                actionLabel,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  /// Builds an ExpansionPanel - collapsible panel widget
+  /// 
+  /// Properties:
+  /// - title: String (header text)
+  /// - isExpanded: bool (whether expanded by default)
+  /// - backgroundColor: String (hex color)
+  static Widget buildExpansionPanel(
+    Map<String, dynamic> properties, {
+    List<dynamic>? childrenData,
+    BuildContext? context,
+    Widget Function(Map<String, dynamic>, {List<dynamic>? childrenData, BuildContext? context})? render,
+  }) {
+    final title = properties['title'] as String? ?? 'Expansion Panel';
+    final children = childrenData != null && render != null
+        ? (render as Function)(childrenData) as List<Widget>
+        : <Widget>[];
+    final backgroundColor = _parseColor(properties['backgroundColor'] as String?) ?? Colors.white;
+
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(4),
+        color: backgroundColor,
+      ),
+      child: ExpansionTile(
+        title: Text(title),
+        children: children.cast<Widget>(),
+      ),
+    );
+  }
+
+  // Helper methods
+  static Color? _parseColor(String? colorHex) {
+    if (colorHex == null || colorHex.isEmpty) return null;
+    try {
+      return Color(int.parse(colorHex.replaceFirst('#', '0xff')));
+    } catch (e) {
+      return null;
+    }
+  }
 }

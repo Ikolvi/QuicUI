@@ -307,29 +307,56 @@ class ScrollingWidgets {
 
   /// Sticky Headers - Headers that stick to top while scrolling
   static Widget buildStickyHeaders(Map<String, dynamic> properties, List<dynamic> childrenData) {
-    final sections = (properties['sections'] as List? ?? []).cast<Map<String, dynamic>>();
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Container(
+            color: Colors.blue.shade100,
+            padding: const EdgeInsets.all(16),
+            child: const Text('Sticky Header'),
+          ),
+          ...childrenData.map((e) => Text(e.toString())).toList(),
+        ],
+      ),
+    );
+  }
+
+  /// InfiniteList - scrollable list with lazy loading support
+  static Widget buildInfiniteList(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    return ListView(
+      children: childrenData is List<Widget> 
+        ? childrenData 
+        : childrenData.map((e) => e as Widget).toList(),
+    );
+  }
+
+  /// VirtualGrid - virtual grid with dynamic column count from properties
+  static Widget buildVirtualGrid(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    final crossAxisCount = (properties['columns'] as num?)?.toInt() ?? 2;
+    final childAspectRatio = (properties['childAspectRatio'] as num?)?.toDouble() ?? 1.0;
     
-    return ListView.builder(
-      itemCount: sections.length * 11, // 1 header + 10 items per section
-      itemBuilder: (context, index) {
-        final sectionIndex = index ~/ 11;
-        final itemInSection = index % 11;
-        
-        if (itemInSection == 0) {
-          return Container(
-            color: Colors.grey[300],
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Text(
-              'Section ${sectionIndex + 1}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-          );
-        }
-        
-        return ListTile(
-          title: Text('Item ${itemInSection} - Section ${sectionIndex + 1}'),
-        );
-      },
+    return GridView.count(
+      crossAxisCount: crossAxisCount,
+      childAspectRatio: childAspectRatio,
+      children: childrenData is List<Widget> 
+        ? childrenData 
+        : childrenData.map((e) => e as Widget).toList(),
+    );
+  }
+
+  /// MasonryGrid - masonry layout with dynamic columns
+  static Widget buildMasonryGrid(Map<String, dynamic> properties, List<dynamic> childrenData) {
+    final crossAxisCount = (properties['columns'] as num?)?.toInt() ?? 2;
+    final mainAxisSpacing = (properties['mainAxisSpacing'] as num?)?.toDouble() ?? 8.0;
+    final crossAxisSpacing = (properties['crossAxisSpacing'] as num?)?.toDouble() ?? 8.0;
+    
+    return GridView.count(
+      crossAxisCount: crossAxisCount,
+      mainAxisSpacing: mainAxisSpacing,
+      crossAxisSpacing: crossAxisSpacing,
+      children: childrenData is List<Widget> 
+        ? childrenData 
+        : childrenData.map((e) => e as Widget).toList(),
     );
   }
 

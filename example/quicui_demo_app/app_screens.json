@@ -1,0 +1,844 @@
+{
+  "appName": "QuicUI Demo App",
+  "appVersion": "1.0.0",
+  "theme": {
+    "primaryColor": "#2196F3",
+    "secondaryColor": "#FF5722",
+    "backgroundColor": "#F5F5F5",
+    "textColor": "#212121",
+    "accentColor": "#00BCD4"
+  },
+  "screens": [
+    {
+      "id": "home",
+      "name": "Home",
+      "type": "Scaffold",
+      "properties": {},
+      "children": [
+        {
+          "type": "AppBar",
+          "properties": {
+            "title": "QuicUI Demo",
+            "centerTitle": true,
+            "backgroundColor": "#2196F3",
+            "elevation": 4.0
+          }
+        },
+        {
+          "type": "Column",
+          "properties": {
+            "mainAxisAlignment": "start",
+            "crossAxisAlignment": "center"
+          },
+          "children": [
+            {
+              "type": "Container",
+              "properties": {
+                "height": 200,
+                "width": "100%",
+                "color": "#2196F3",
+                "padding": {"all": 16}
+              },
+              "children": [
+                {
+                  "type": "Column",
+                  "properties": {
+                    "mainAxisAlignment": "center",
+                    "crossAxisAlignment": "center"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "Welcome to QuicUI",
+                        "fontSize": 28,
+                        "fontWeight": "bold",
+                        "color": "#FFFFFF"
+                      }
+                    },
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "Build UI with Pure JSON",
+                        "fontSize": 16,
+                        "color": "#E3F2FD"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "Container",
+              "properties": {
+                "height": 1,
+                "width": "100%",
+                "color": "#BDBDBD"
+              }
+            },
+            {
+              "type": "Padding",
+              "properties": {
+                "padding": {"all": 16}
+              },
+              "children": [
+                {
+                  "type": "GridView",
+                  "properties": {
+                    "crossAxisCount": 2,
+                    "spacing": 16,
+                    "mainAxisSpacing": 16
+                  },
+                  "children": [
+                    {
+                      "type": "Container",
+                      "properties": {
+                        "color": "#FF6B6B",
+                        "padding": {"all": 16}
+                      },
+                      "children": [
+                        {
+                          "type": "Column",
+                          "properties": {
+                            "mainAxisAlignment": "center",
+                            "crossAxisAlignment": "center"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "properties": {
+                                "icon": "notifications",
+                                "size": 48,
+                                "color": "#FFFFFF"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "properties": {
+                                "text": "Analytics",
+                                "fontSize": 16,
+                                "fontWeight": "bold",
+                                "color": "#FFFFFF"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Container",
+                      "properties": {
+                        "color": "#4ECDC4",
+                        "padding": {"all": 16}
+                      },
+                      "children": [
+                        {
+                          "type": "Column",
+                          "properties": {
+                            "mainAxisAlignment": "center",
+                            "crossAxisAlignment": "center"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "properties": {
+                                "icon": "shopping_cart",
+                                "size": 48,
+                                "color": "#FFFFFF"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "properties": {
+                                "text": "Products",
+                                "fontSize": 16,
+                                "fontWeight": "bold",
+                                "color": "#FFFFFF"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Container",
+                      "properties": {
+                        "color": "#95E1D3",
+                        "padding": {"all": 16}
+                      },
+                      "children": [
+                        {
+                          "type": "Column",
+                          "properties": {
+                            "mainAxisAlignment": "center",
+                            "crossAxisAlignment": "center"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "properties": {
+                                "icon": "settings",
+                                "size": 48,
+                                "color": "#FFFFFF"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "properties": {
+                                "text": "Settings",
+                                "fontSize": 16,
+                                "fontWeight": "bold",
+                                "color": "#FFFFFF"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "Container",
+                      "properties": {
+                        "color": "#F38181",
+                        "padding": {"all": 16}
+                      },
+                      "children": [
+                        {
+                          "type": "Column",
+                          "properties": {
+                            "mainAxisAlignment": "center",
+                            "crossAxisAlignment": "center"
+                          },
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "properties": {
+                                "icon": "person",
+                                "size": 48,
+                                "color": "#FFFFFF"
+                              }
+                            },
+                            {
+                              "type": "Text",
+                              "properties": {
+                                "text": "Profile",
+                                "fontSize": 16,
+                                "fontWeight": "bold",
+                                "color": "#FFFFFF"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dashboard",
+      "name": "Dashboard",
+      "type": "Scaffold",
+      "properties": {},
+      "children": [
+        {
+          "type": "AppBar",
+          "properties": {
+            "title": "Dashboard",
+            "centerTitle": true,
+            "backgroundColor": "#00BCD4",
+            "elevation": 4.0
+          }
+        },
+        {
+          "type": "SingleChildScrollView",
+          "properties": {},
+          "children": [
+            {
+              "type": "Column",
+              "properties": {
+                "mainAxisAlignment": "start",
+                "crossAxisAlignment": "stretch"
+              },
+              "children": [
+                {
+                  "type": "Container",
+                  "properties": {
+                    "color": "#00BCD4",
+                    "padding": {"all": 16},
+                    "margin": {"all": 8}
+                  },
+                  "children": [
+                    {
+                      "type": "Column",
+                      "properties": {
+                        "crossAxisAlignment": "start"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "Performance Metrics",
+                            "fontSize": 20,
+                            "fontWeight": "bold",
+                            "color": "#FFFFFF"
+                          }
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 8}
+                        },
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "Real-time analytics and insights",
+                            "fontSize": 14,
+                            "color": "#E0F2F1"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Container",
+                  "properties": {
+                    "padding": {"all": 16}
+                  },
+                  "children": [
+                    {
+                      "type": "Column",
+                      "properties": {
+                        "mainAxisAlignment": "start",
+                        "crossAxisAlignment": "stretch"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "Sales This Month",
+                            "fontSize": 16,
+                            "fontWeight": "bold"
+                          }
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 12}
+                        },
+                        {
+                          "type": "ProgressBar",
+                          "properties": {
+                            "value": 0.75,
+                            "color": "#4CAF50"
+                          }
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 8}
+                        },
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "$75,000 of $100,000 target",
+                            "fontSize": 13,
+                            "color": "#666666"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Container",
+                  "properties": {
+                    "padding": {"all": 16},
+                    "margin": {"left": 8, "right": 8, "bottom": 8}
+                  },
+                  "children": [
+                    {
+                      "type": "Column",
+                      "properties": {
+                        "mainAxisAlignment": "start",
+                        "crossAxisAlignment": "stretch"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "Team Productivity",
+                            "fontSize": 16,
+                            "fontWeight": "bold"
+                          }
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 12}
+                        },
+                        {
+                          "type": "ProgressBar",
+                          "properties": {
+                            "value": 0.85,
+                            "color": "#2196F3"
+                          }
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 8}
+                        },
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "85% tasks completed",
+                            "fontSize": 13,
+                            "color": "#666666"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "Container",
+                  "properties": {
+                    "padding": {"all": 16},
+                    "margin": {"all": 8}
+                  },
+                  "children": [
+                    {
+                      "type": "Column",
+                      "properties": {
+                        "mainAxisAlignment": "start",
+                        "crossAxisAlignment": "stretch"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "User Engagement",
+                            "fontSize": 16,
+                            "fontWeight": "bold"
+                          }
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 12}
+                        },
+                        {
+                          "type": "CircularProgress",
+                          "properties": {
+                            "value": 0.65,
+                            "size": 100
+                          }
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 8}
+                        },
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "65% of active users engaged",
+                            "fontSize": 13,
+                            "color": "#666666"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "widgets_showcase",
+      "name": "Widgets",
+      "type": "Scaffold",
+      "properties": {},
+      "children": [
+        {
+          "type": "AppBar",
+          "properties": {
+            "title": "Widget Showcase",
+            "centerTitle": true,
+            "backgroundColor": "#FF5722",
+            "elevation": 4.0
+          }
+        },
+        {
+          "type": "SingleChildScrollView",
+          "properties": {},
+          "children": [
+            {
+              "type": "Column",
+              "properties": {
+                "mainAxisAlignment": "start",
+                "crossAxisAlignment": "stretch"
+              },
+              "children": [
+                {
+                  "type": "Container",
+                  "properties": {
+                    "padding": {"all": 16}
+                  },
+                  "children": [
+                    {
+                      "type": "Column",
+                      "properties": {
+                        "mainAxisAlignment": "start",
+                        "crossAxisAlignment": "stretch"
+                      },
+                      "children": [
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "Loading States",
+                            "fontSize": 18,
+                            "fontWeight": "bold"
+                          }
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 16}
+                        },
+                        {
+                          "type": "LoadingStateWidget",
+                          "properties": {
+                            "size": 50,
+                            "color": "#2196F3",
+                            "message": "Loading data..."
+                          }
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 24}
+                        },
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "Status Indicators",
+                            "fontSize": 18,
+                            "fontWeight": "bold"
+                          }
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 16}
+                        },
+                        {
+                          "type": "Row",
+                          "properties": {
+                            "mainAxisAlignment": "space_around"
+                          },
+                          "children": [
+                            {
+                              "type": "StatusBadge",
+                              "properties": {
+                                "label": "Active",
+                                "type": "active"
+                              }
+                            },
+                            {
+                              "type": "StatusBadge",
+                              "properties": {
+                                "label": "Pending",
+                                "type": "pending"
+                              }
+                            },
+                            {
+                              "type": "StatusBadge",
+                              "properties": {
+                                "label": "Error",
+                                "type": "error"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 24}
+                        },
+                        {
+                          "type": "Text",
+                          "properties": {
+                            "text": "Tags & Badges",
+                            "fontSize": 18,
+                            "fontWeight": "bold"
+                          }
+                        },
+                        {
+                          "type": "SizedBox",
+                          "properties": {"height": 16}
+                        },
+                        {
+                          "type": "Wrap",
+                          "properties": {
+                            "spacing": 8,
+                            "runSpacing": 8
+                          },
+                          "children": [
+                            {
+                              "type": "Tag",
+                              "properties": {
+                                "label": "Flutter",
+                                "color": "#4CAF50"
+                              }
+                            },
+                            {
+                              "type": "Tag",
+                              "properties": {
+                                "label": "Dart",
+                                "color": "#2196F3"
+                              }
+                            },
+                            {
+                              "type": "Tag",
+                              "properties": {
+                                "label": "JSON",
+                                "color": "#FF9800"
+                              }
+                            },
+                            {
+                              "type": "Tag",
+                              "properties": {
+                                "label": "UI",
+                                "color": "#E91E63"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "forms",
+      "name": "Forms",
+      "type": "Scaffold",
+      "properties": {},
+      "children": [
+        {
+          "type": "AppBar",
+          "properties": {
+            "title": "Form Example",
+            "centerTitle": true,
+            "backgroundColor": "#9C27B0",
+            "elevation": 4.0
+          }
+        },
+        {
+          "type": "SingleChildScrollView",
+          "properties": {},
+          "children": [
+            {
+              "type": "Container",
+              "properties": {
+                "padding": {"all": 16}
+              },
+              "children": [
+                {
+                  "type": "Column",
+                  "properties": {
+                    "mainAxisAlignment": "start",
+                    "crossAxisAlignment": "stretch"
+                  },
+                  "children": [
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "User Registration",
+                        "fontSize": 24,
+                        "fontWeight": "bold"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 24}
+                    },
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "Full Name",
+                        "fontSize": 14,
+                        "fontWeight": "bold"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 8}
+                    },
+                    {
+                      "type": "TextField",
+                      "properties": {
+                        "label": "Enter your full name",
+                        "hintText": "John Doe"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 16}
+                    },
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "Email",
+                        "fontSize": 14,
+                        "fontWeight": "bold"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 8}
+                    },
+                    {
+                      "type": "TextField",
+                      "properties": {
+                        "label": "Enter your email",
+                        "hintText": "john@example.com",
+                        "keyboardType": "email"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 16}
+                    },
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "Phone",
+                        "fontSize": 14,
+                        "fontWeight": "bold"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 8}
+                    },
+                    {
+                      "type": "NumberInput",
+                      "properties": {
+                        "label": "Enter phone number",
+                        "hintText": "+1234567890"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 16}
+                    },
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "Select Country",
+                        "fontSize": 14,
+                        "fontWeight": "bold"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 8}
+                    },
+                    {
+                      "type": "DropdownButtonForm",
+                      "properties": {
+                        "label": "Choose country",
+                        "options": ["USA", "Canada", "UK", "Australia", "India"]
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 16}
+                    },
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "Rate Your Experience",
+                        "fontSize": 14,
+                        "fontWeight": "bold"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 8}
+                    },
+                    {
+                      "type": "Rating",
+                      "properties": {
+                        "initialRating": 4,
+                        "maxRating": 5
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 24}
+                    },
+                    {
+                      "type": "ElevatedButton",
+                      "properties": {
+                        "label": "Submit Registration",
+                        "backgroundColor": "#9C27B0",
+                        "onPressed": "submitForm"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 12}
+                    },
+                    {
+                      "type": "InfoPanel",
+                      "properties": {
+                        "title": "Form Status",
+                        "message": "Fill all fields to submit"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "navigation": {
+    "type": "BottomTabBar",
+    "tabs": [
+      {
+        "label": "Home",
+        "icon": "home",
+        "screenId": "home"
+      },
+      {
+        "label": "Dashboard",
+        "icon": "dashboard",
+        "screenId": "dashboard"
+      },
+      {
+        "label": "Widgets",
+        "icon": "widgets",
+        "screenId": "widgets_showcase"
+      },
+      {
+        "label": "Forms",
+        "icon": "description",
+        "screenId": "forms"
+      }
+    ]
+  },
+  "animations": {
+    "screenTransition": {
+      "duration": 300,
+      "type": "fade"
+    }
+  }
+}

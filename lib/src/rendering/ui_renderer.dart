@@ -130,6 +130,7 @@ import 'package:flutter/material.dart';
 import '../models/callback_actions.dart' as callback_actions;
 import 'phase1_widgets.dart';
 import 'phase2_widgets.dart';
+import 'phase3_widgets.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///
@@ -301,6 +302,22 @@ class UIRenderer {
         'FileUpload' => Phase2Widgets.buildFileUpload(properties),
         'Rating' => Phase2Widgets.buildRating(properties),
         'OtpInput' => Phase2Widgets.buildOtpInput(properties),
+        
+        // ===== PHASE 3: LAYOUT & ADVANCED WIDGETS =====
+        'CustomScrollView' => Phase3Widgets.buildCustomScrollView(properties, childrenData),
+        'SliverList' => Phase3Widgets.buildSliverList(properties, childrenData),
+        'SliverGrid' => Phase3Widgets.buildSliverGrid(properties, childrenData),
+        'Flow' => Phase3Widgets.buildFlow(properties, childrenData),
+        'LayoutBuilder' => Phase3Widgets.buildLayoutBuilder(properties, childrenData),
+        'MediaQueryHelper' => Phase3Widgets.buildMediaQueryHelper(properties, childrenData),
+        'ResponsiveWidget' => Phase3Widgets.buildResponsiveWidget(properties, childrenData),
+        'AdvancedSliverAppBar' => Phase3Widgets.buildAdvancedSliverAppBar(properties, childrenData),
+        'NestedScrollView' => Phase3Widgets.buildNestedScrollView(properties, childrenData),
+        'AnimatedBuilder' => Phase3Widgets.buildAnimatedBuilder(properties, childrenData),
+        'TabBarViewAdvanced' => Phase3Widgets.buildTabBarViewAdvanced(properties, childrenData),
+        'PinchZoom' => Phase3Widgets.buildPinchZoom(properties, childrenData),
+        'VirtualizedList' => Phase3Widgets.buildVirtualizedList(properties, childrenData),
+        'StickyHeaders' => Phase3Widgets.buildStickyHeaders(properties, childrenData),
         
         _ => const Placeholder(),
       };

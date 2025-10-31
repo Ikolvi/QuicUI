@@ -749,8 +749,8 @@ class UIRenderer {
     }
     
     return Container(
-      width: (properties['width'] as num?)?.toDouble(),
-      height: (properties['height'] as num?)?.toDouble(),
+      width: _parseDouble(properties['width']),
+      height: _parseDouble(properties['height']),
       color: finalColor,
       padding: _parseEdgeInsets(properties['padding']),
       margin: _parseEdgeInsets(properties['margin']),
@@ -868,8 +868,8 @@ class UIRenderer {
         ? render(childrenData.first as Map<String, dynamic>, context: context)
         : null;
     return SizedBox(
-      width: (properties['width'] as num?)?.toDouble(),
-      height: (properties['height'] as num?)?.toDouble(),
+      width: _parseDouble(properties['width']),
+      height: _parseDouble(properties['height']),
       child: child,
     );
   }
@@ -957,8 +957,8 @@ class UIRenderer {
         ? render(childrenData.first as Map<String, dynamic>, context: context)
         : null;
     return FractionallySizedBox(
-      widthFactor: (properties['widthFactor'] as num?)?.toDouble(),
-      heightFactor: (properties['heightFactor'] as num?)?.toDouble(),
+      widthFactor: _parseDouble(properties['widthFactor']),
+      heightFactor: _parseDouble(properties['heightFactor']),
       child: child ?? const Placeholder(),
     );
   }
@@ -1701,6 +1701,17 @@ class UIRenderer {
     }
 
     LoggerUtil.error('Invalid action format: $actionData');
+  }
+
+  /// Parse double value from number or string
+  static double? _parseDouble(dynamic value) {
+    if (value == null) return null;
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      // Handle string numbers
+      return double.tryParse(value);
+    }
+    return null;
   }
 
   static MainAxisAlignment _parseMainAxisAlignment(dynamic value) {

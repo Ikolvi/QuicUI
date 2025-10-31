@@ -22,7 +22,6 @@
             {
               "type": "Container",
               "properties": {
-                "height": "${screenHeight}",
                 "color": "#F8F9FA"
               },
               "children": [

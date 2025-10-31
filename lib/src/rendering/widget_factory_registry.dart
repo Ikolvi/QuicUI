@@ -278,20 +278,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    Widget? home;
-    if (childrenData.isNotEmpty) {
-      final childConfig = Map<String, dynamic>.from(childrenData.first as Map<String, dynamic>);
-      if (properties['onNavigateTo'] != null) {
-        childConfig['onNavigateTo'] = properties['onNavigateTo'];
-      }
-      home = render(childConfig, context: context);
-    }
-    
-    return MaterialApp(
-      title: properties['title'] as String? ?? 'QuicUI App',
-      home: home ?? const Scaffold(body: Placeholder()),
-      debugShowCheckedModeBanner: properties['debugShowCheckedModeBanner'] as bool? ?? false,
-    );
+    return app_level_widgets.AppLevelWidgets.buildMaterialApp(properties, childrenData, properties, context);
   }
 
   static Widget _buildScaffold(
@@ -300,37 +287,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    PreferredSizeWidget? appBar;
-    Widget? body;
-    Widget? floatingActionButton;
-    Widget? bottomNavigationBar;
-    
-    for (final child in childrenData) {
-      final childMap = Map<String, dynamic>.from(child as Map<String, dynamic>);
-      final type = childMap['type'] as String;
-      
-      switch (type) {
-        case 'AppBar':
-          appBar = render(childMap, context: context) as PreferredSizeWidget?;
-          break;
-        case 'FloatingActionButton':
-          floatingActionButton = render(childMap, context: context);
-          break;
-        case 'BottomNavigationBar':
-          bottomNavigationBar = render(childMap, context: context);
-          break;
-        default:
-          body = render(childMap, context: context);
-          break;
-      }
-    }
-    
-    return Scaffold(
-      appBar: appBar,
-      body: body,
-      floatingActionButton: floatingActionButton,
-      bottomNavigationBar: bottomNavigationBar,
-    );
+    return app_level_widgets.AppLevelWidgets.buildScaffold(properties, childrenData, properties, context);
   }
 
   static Widget _buildAppBar(
@@ -339,12 +296,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return AppBar(
-      title: Text(properties['title'] as String? ?? ''),
-      centerTitle: properties['centerTitle'] as bool? ?? false,
-      backgroundColor: _parseColor(properties['backgroundColor']),
-      elevation: (properties['elevation'] as num?)?.toDouble(),
-    );
+    return app_level_widgets.AppLevelWidgets.buildAppBar(properties, childrenData, context);
   }
 
   static Widget _buildBottomAppBar(
@@ -353,10 +305,16 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final children = (render as Function)(childrenData);
-    return BottomAppBar(
-      child: Row(children: children as List<Widget>),
-    );
+    return app_level_widgets.AppLevelWidgets.buildBottomAppBar(properties, childrenData, context);
+  }
+
+  static Widget _buildFloatingActionButton(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext context,
+    dynamic render,
+  ) {
+    return app_level_widgets.AppLevelWidgets.buildFloatingActionButton(properties);
   }
 
   static Widget _buildDrawer(
@@ -368,18 +326,6 @@ class WidgetFactoryRegistry {
     final children = (render as Function)(childrenData);
     return Drawer(
       child: ListView(children: children as List<Widget>),
-    );
-  }
-
-  static Widget _buildFloatingActionButton(
-    Map<String, dynamic> properties,
-    List<dynamic> childrenData,
-    BuildContext context,
-    dynamic render,
-  ) {
-    return FloatingActionButton(
-      onPressed: () => _handleButtonPress(properties['onPressed']),
-      child: Icon(_parseIconData(properties['icon'] as String? ?? 'add')),
     );
   }
 

@@ -239,6 +239,7 @@ export 'src/widgets/screen_view.dart';
 // Services
 export 'src/services/quicui_service.dart';
 export 'src/services/storage_service.dart';
+export 'src/services/services.dart';
 
 // Utilities
 export 'src/utils/logger_util.dart';

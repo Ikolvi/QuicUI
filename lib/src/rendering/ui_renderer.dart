@@ -269,6 +269,14 @@ class UIRenderer {
       final Map<String, dynamic> properties = propsRaw is Map ? Map<String, dynamic>.from(propsRaw) : {};
       final childrenData = config['children'] as List? ?? [];
 
+      // Inject callback functions into properties for buttons and interactive widgets
+      if (config['onNavigateTo'] != null) {
+        properties['onNavigateTo'] = config['onNavigateTo'];
+      }
+      if (config['navigationData'] != null) {
+        properties['navigationData'] = config['navigationData'];
+      }
+
       // Log debug information for widget rendering
       LoggerUtil.debug('Rendering widget: $type', {
         'properties_count': properties.length,
@@ -1279,7 +1287,7 @@ class UIRenderer {
         LoggerUtil.info('Events: $events');
         if (events != null) {
           LoggerUtil.info('Calling _handleCallback with onPressed event');
-          _handleCallback(events['onPressed'], config);
+          _handleCallback(events['onPressed'], properties);
         } else {
           LoggerUtil.warning('No events found for button');
         }
@@ -1301,7 +1309,7 @@ class UIRenderer {
       onPressed: () {
         final events = properties['events'] as Map<String, dynamic>?;
         if (events != null) {
-          _handleCallback(events['onPressed'], config);
+          _handleCallback(events['onPressed'], properties);
         }
       },
       child: child,
@@ -1333,7 +1341,7 @@ class UIRenderer {
       onPressed: () {
         final events = properties['events'] as Map<String, dynamic>?;
         if (events != null) {
-          _handleCallback(events['onPressed'], config);
+          _handleCallback(events['onPressed'], properties);
         }
       },
       child: child,

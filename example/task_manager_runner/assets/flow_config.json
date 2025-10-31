@@ -1,0 +1,9 @@
+{
+  "version": "2.0.0",
+  "initialFlow": "auth",
+  "flows": {
+    "auth": "flows/auth.json",
+    "dashboard": "flows/dashboard.json"
+  },
+  "globalCallbacks": {}
+}

@@ -528,6 +528,9 @@ class UIRenderer {
         'InfoPanel' => StateManagementWidgets.buildInfoPanel(properties, childrenData),
         'ToastNotification' => StateManagementWidgets.buildToastNotification(properties, childrenData),
         
+        // ===== DATA BINDING WIDGETS =====
+        'DataBinding' => _buildDataBinding(properties, childrenData, context, config),
+        
         _ => _buildUnsupportedWidget(type, config),
       };
     } catch (error, stackTrace) {
@@ -874,6 +877,54 @@ class UIRenderer {
     );
   }
 
+  /// DataBinding Widget
+  /// 
+  /// Provides elegant data binding without tight coupling to the rendering engine.
+  /// Automatically injects navigationData and fields context into child widgets.
+  /// 
+  /// Example:
+  /// ```json
+  /// {
+  ///   "type": "DataBinding",
+  ///   "children": [
+  ///     {
+  ///       "type": "Text",
+  ///       "properties": {
+  ///         "text": "Hello ${navigationData.username}!"
+  ///       }
+  ///     }
+  ///   ]
+  /// }
+  /// ```
+  static Widget _buildDataBinding(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    BuildContext? context,
+    Map<String, dynamic>? parentConfig,
+  ) {
+    LoggerUtil.info('🔗 DataBinding: Creating data binding context (children: ${childrenData.length})');
+
+    // If there's only one child, render it with parent config (which has navigationData)
+    if (childrenData.length == 1) {
+      final childData = childrenData.first as Map<String, dynamic>;
+      return parentConfig != null
+          ? renderChild(childData, parentConfig, context: context)
+          : render(childData, context: context);
+    }
+
+    // Multiple children: wrap in Column
+    final renderedChildren = childrenData.map<Widget>((child) {
+      final childData = child as Map<String, dynamic>;
+      return parentConfig != null
+          ? renderChild(childData, parentConfig, context: context)
+          : render(childData, context: context);
+    }).toList();
+
+    return Column(
+      children: renderedChildren,
+    );
+  }
+
   static Widget _buildAlign(
     Map<String, dynamic> properties,
     List<dynamic> childrenData,
@@ -1161,12 +1212,8 @@ class UIRenderer {
       () {
         var text = properties['text'] as String? ?? '';
         
-        // Process data variables like ${navigationData.x}
-        if (text.contains('\${navigationData.') || text.contains('\${now}') || text.contains('\${fields.')) {
-          final processedData = _processDataVariables({'_text': text}, properties);
-          text = processedData['_text'] as String? ?? text;
-          LoggerUtil.debug('Text variable processing: $text');
-        }
+        // Process data variables using the new elegant approach
+        text = _processVariableString(text, properties);
         
         return Text(
           text,
@@ -1834,6 +1881,45 @@ class UIRenderer {
     });
     
     LoggerUtil.info('Final processed data: $result');
+    return result;
+  }
+
+  /// Helper to process variable strings in Text and other widgets
+  /// Supports: ${navigationData.key}, ${fields.fieldId}, ${now}
+  static String _processVariableString(String text, Map<String, dynamic> context) {
+    if (!text.contains('\${')) {
+      return text;
+    }
+
+    var result = text;
+    
+    // Process ${navigationData.key} patterns
+    final navDataPattern = RegExp(r'\$\{navigationData\.(\w+)\}');
+    final navigationData = context['navigationData'] as Map<String, dynamic>? ?? {};
+    result = result.replaceAllMapped(navDataPattern, (match) {
+      final key = match.group(1)!;
+      final value = navigationData[key];
+      LoggerUtil.debug('Replaced ${match.group(0)} with $value');
+      return value?.toString() ?? match.group(0)!;
+    });
+    
+    // Process ${fields.fieldId} patterns
+    final fieldsPattern = RegExp(r'\$\{fields\.(\w+)\}');
+    result = result.replaceAllMapped(fieldsPattern, (match) {
+      final fieldId = match.group(1)!;
+      final controller = _fieldControllers[fieldId];
+      final value = controller?.text;
+      LoggerUtil.debug('Replaced ${match.group(0)} with $value');
+      return value ?? match.group(0)!;
+    });
+    
+    // Process ${now} pattern
+    if (result.contains('\${now}')) {
+      final now = DateTime.now().toIso8601String();
+      result = result.replaceAll('\${now}', now);
+      LoggerUtil.debug('Replaced \${now} with $now');
+    }
+    
     return result;
   }
 

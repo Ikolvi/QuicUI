@@ -438,7 +438,80 @@
             }
           ]
         }
-      ]
+      ],
+      "bottomNavigationBar": {
+        "type": "BottomNavigationBar",
+        "properties": {
+          "currentIndex": 0
+        },
+        "children": [
+          {
+            "type": "BottomNavigationBarItem",
+            "properties": {
+              "label": "Tasks",
+              "icon": "task_alt"
+            },
+            "events": {
+              "onTap": {
+                "action": "navigate",
+                "screen": "tasks_home"
+              }
+            }
+          },
+          {
+            "type": "BottomNavigationBarItem",
+            "properties": {
+              "label": "Add",
+              "icon": "add_box"
+            },
+            "events": {
+              "onTap": {
+                "action": "navigate",
+                "screen": "add_task"
+              }
+            }
+          },
+          {
+            "type": "BottomNavigationBarItem",
+            "properties": {
+              "label": "Calendar",
+              "icon": "calendar_today"
+            },
+            "events": {
+              "onTap": {
+                "action": "navigate",
+                "screen": "schedule"
+              }
+            }
+          },
+          {
+            "type": "BottomNavigationBarItem",
+            "properties": {
+              "label": "Analytics",
+              "icon": "trending_up"
+            },
+            "events": {
+              "onTap": {
+                "action": "navigate",
+                "screen": "analytics"
+              }
+            }
+          },
+          {
+            "type": "BottomNavigationBarItem",
+            "properties": {
+              "label": "Settings",
+              "icon": "settings"
+            },
+            "events": {
+              "onTap": {
+                "action": "navigate",
+                "screen": "settings"
+              }
+            }
+          }
+        ]
+      }
     },
     {
       "id": "add_task",

@@ -3,41 +3,34 @@ import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:quicui/quicui.dart';
 
-void main() {
-  runApp(const TaskManagerApp());
+void main() async {
+  final jsonString =
+      await rootBundle.loadString('example/task_manager_app/screens.json');
+  final appConfig = jsonDecode(jsonString);
+  runApp(QuicUIApp(config: appConfig));
 }
 
-class TaskManagerApp extends StatefulWidget {
-  const TaskManagerApp({Key? key}) : super(key: key);
+class QuicUIApp extends StatefulWidget {
+  final Map<String, dynamic> config;
+
+  const QuicUIApp({Key? key, required this.config}) : super(key: key);
 
   @override
-  State<TaskManagerApp> createState() => _TaskManagerAppState();
+  State<QuicUIApp> createState() => _QuicUIAppState();
 }
 
-class _TaskManagerAppState extends State<TaskManagerApp> {
-  Map<String, dynamic>? appConfig;
-  String currentScreenId = 'tasks_home';
+class _QuicUIAppState extends State<QuicUIApp> {
+  late String currentScreenId;
+  late List<dynamic> screens;
 
   @override
   void initState() {
     super.initState();
-    _loadConfig();
+    screens = widget.config['screens'] as List? ?? [];
+    currentScreenId = screens.isNotEmpty ? screens[0]['id'] : 'home';
   }
 
-  Future<void> _loadConfig() async {
-    try {
-      final jsonString =
-          await rootBundle.loadString('example/task_manager_app/screens.json');
-      final config = jsonDecode(jsonString);
-      setState(() {
-        appConfig = config;
-      });
-    } catch (e) {
-      print('Error loading config: $e');
-    }
-  }
-
-  void _onNavigation(String screenId) {
+  void _handleNavigation(String screenId) {
     setState(() {
       currentScreenId = screenId;
     });
@@ -45,55 +38,19 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
 
   @override
   Widget build(BuildContext context) {
-    if (appConfig == null) {
-      return MaterialApp(
-        title: 'TaskManager Pro',
-        debugShowCheckedModeBanner: false,
-        theme: _buildTheme(),
-        home: const Scaffold(
-          body: Center(child: CircularProgressIndicator()),
-        ),
-      );
-    }
-
-    // Get current screen config (already contains complete Scaffold)
-    final screens = appConfig!['screens'] as List? ?? [];
-    final screenConfig = screens.firstWhere(
+    // Get current screen
+    final currentScreen = screens.firstWhere(
       (s) => s['id'] == currentScreenId,
-      orElse: () => screens.isNotEmpty ? screens.first : {},
+      orElse: () => screens.isNotEmpty ? screens[0] : {},
     ) as Map<String, dynamic>;
 
-    // Add navigation callback to screen config
-    screenConfig['onNavigation'] = _onNavigation;
+    // Inject navigation callback into screen config
+    final screenWithNavigation = Map<String, dynamic>.from(currentScreen);
+    screenWithNavigation['onNavigateTo'] = (String screenId) {
+      _handleNavigation(screenId);
+    };
 
-    return MaterialApp(
-      title: appConfig!['appName'] ?? 'TaskManager Pro',
-      debugShowCheckedModeBanner: false,
-      theme: _buildTheme(),
-      home: UIRenderer.render(screenConfig),
-    );
-  }
-
-  ThemeData _buildTheme() {
-    final theme = appConfig!['theme'] as Map? ?? {};
-    final primaryColor = _parseColor(theme['primaryColor']);
-    
-    return ThemeData(
-      primaryColor: primaryColor,
-      useMaterial3: true,
-      colorScheme: ColorScheme.fromSeed(seedColor: primaryColor),
-    );
-  }
-
-  Color _parseColor(dynamic colorValue) {
-    if (colorValue == null) return Colors.blue;
-    if (colorValue is String) {
-      try {
-        return Color(int.parse(colorValue.replaceFirst('#', '0xFF')));
-      } catch (e) {
-        return Colors.blue;
-      }
-    }
-    return Colors.blue;
+    // Render entire app from JSON using UIRenderer
+    return UIRenderer.render(screenWithNavigation);
   }
 }

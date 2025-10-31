@@ -270,18 +270,25 @@ class UIRenderer {
       final childrenData = config['children'] as List? ?? [];
 
       // Inject callback functions into properties for buttons and interactive widgets
+      LoggerUtil.debug('Before injection - properties keys: ${properties.keys.toList()}');
+      LoggerUtil.debug('Config has onNavigateTo: ${config['onNavigateTo'] != null}');
+      
       if (config['onNavigateTo'] != null) {
         properties['onNavigateTo'] = config['onNavigateTo'];
+        LoggerUtil.debug('✅ Injected onNavigateTo into properties');
       }
       if (config['navigationData'] != null) {
         properties['navigationData'] = config['navigationData'];
       }
+      
+      LoggerUtil.debug('After injection - properties keys: ${properties.keys.toList()}');
 
       // Log debug information for widget rendering
       LoggerUtil.debug('Rendering widget: $type', {
         'properties_count': properties.length,
         'children_count': childrenData.length,
         'config_keys': config.keys.toList(),
+        'has_callback': properties['onNavigateTo'] != null,
       });
 
       return switch (type) {
@@ -345,10 +352,10 @@ class UIRenderer {
         'ListTile' => _buildListTile(properties, childrenData, context),
         
         // ===== INPUT WIDGETS =====
-        'ElevatedButton' => _buildElevatedButton(properties, config),
-        'TextButton' => _buildTextButton(properties, config),
+        'ElevatedButton' => _buildElevatedButton(properties),
+        'TextButton' => _buildTextButton(properties),
         'IconButton' => _buildIconButton(properties),
-        'OutlinedButton' => _buildOutlinedButton(properties, config),
+        'OutlinedButton' => _buildOutlinedButton(properties),
         'TextField' => _buildTextField(properties),
         'TextFormField' => _buildTextFormField(properties),
         'Checkbox' => _buildCheckbox(properties),
@@ -1273,7 +1280,6 @@ class UIRenderer {
 
   static Widget _buildElevatedButton(
     Map<String, dynamic> properties,
-    Map<String, dynamic> config,
   ) {
     final childrenData = properties['children'] as List? ?? [];
     final child = childrenData.isNotEmpty
@@ -1282,11 +1288,13 @@ class UIRenderer {
     
     return ElevatedButton(
       onPressed: () {
-        LoggerUtil.info('🔘 ElevatedButton pressed');
+        LoggerUtil.info('🔘 ElevatedButton pressed - properties has onNavigateTo: ${properties.containsKey('onNavigateTo')}');
         final events = properties['events'] as Map<String, dynamic>?;
         LoggerUtil.info('Events: $events');
         if (events != null) {
           LoggerUtil.info('Calling _handleCallback with onPressed event');
+          LoggerUtil.info('Properties keys before callback: ${properties.keys.toList()}');
+          LoggerUtil.info('onNavigateTo in properties: ${properties['onNavigateTo']}');
           _handleCallback(events['onPressed'], properties);
         } else {
           LoggerUtil.warning('No events found for button');
@@ -1298,7 +1306,6 @@ class UIRenderer {
 
   static Widget _buildTextButton(
     Map<String, dynamic> properties,
-    Map<String, dynamic> config,
   ) {
     final childrenData = properties['children'] as List? ?? [];
     final child = childrenData.isNotEmpty
@@ -1330,7 +1337,6 @@ class UIRenderer {
 
   static Widget _buildOutlinedButton(
     Map<String, dynamic> properties,
-    Map<String, dynamic> config,
   ) {
     final childrenData = properties['children'] as List? ?? [];
     final child = childrenData.isNotEmpty

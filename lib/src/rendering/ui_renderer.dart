@@ -133,11 +133,7 @@ import 'package:flutter/material.dart';
 import '../models/callback_actions.dart' as callback_actions;
 import '../utils/logger_util.dart';
 import '../utils/error_handler.dart';
-import 'parse_utils.dart';
-import 'app_level_widgets.dart';
 import 'display_widgets.dart';
-import 'input_widgets.dart';
-import 'dialog_widgets.dart';
 import 'layout_widgets.dart';
 import 'form_widgets.dart';
 import 'scrolling_widgets.dart';
@@ -146,7 +142,6 @@ import 'animation_widgets.dart';
 import 'data_display_widgets.dart';
 import 'state_management_widgets.dart';
 import 'gesture_widgets.dart';
-import 'gesture_helpers.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///
@@ -2034,43 +2029,6 @@ class UIRenderer {
     return result;
   }
 
-  /// Helper to process variable strings in Text and other widgets
-  /// Supports: ${navigationData.key}, ${fields.fieldId}, ${now}
-  static String _processVariableString(String text, Map<String, dynamic> context) {
-    if (!text.contains('\${')) {
-      return text;
-    }
-
-    var result = text;
-    LoggerUtil.debug('_processVariableString: Processing text: "$text"');
-    LoggerUtil.debug('_processVariableString: context keys: ${context.keys.toList()}');
-    
-    // Process ${navigationData.key} patterns
-    final navDataPattern = RegExp(r'\$\{navigationData\.(\w+)\}');
-    final navigationData = context['navigationData'] as Map<String, dynamic>? ?? {};
-    LoggerUtil.debug('_processVariableString: navigationData = $navigationData');
-    
-    result = result.replaceAllMapped(navDataPattern, (match) {
-      final key = match.group(1)!;
-      final value = navigationData[key];
-      LoggerUtil.debug('Replaced ${match.group(0)} with $value');
-      return value?.toString() ?? match.group(0)!;
-    });
-    
-    // Process ${fields.fieldId} patterns
-    final fieldsPattern = RegExp(r'\$\{fields\.(\w+)\}');
-    result = result.replaceAllMapped(fieldsPattern, (match) {
-      final fieldId = match.group(1)!;
-      final controller = _fieldControllers[fieldId];
-      final value = controller?.text;
-      LoggerUtil.debug('Replaced ${match.group(0)} with $value');
-      return value ?? match.group(0)!;
-    });
-    
-    LoggerUtil.debug('_processVariableString: Final result: "$result"');
-    return result;
-  }
-
   static void _handleButtonPress(dynamic actionData) {
     // Support both old string format and new action object format
     if (actionData == null || actionData.toString().isEmpty) {
@@ -2088,11 +2046,18 @@ class UIRenderer {
     if (actionData is Map<String, dynamic>) {
       try {
         final action = callback_actions.Action.fromJson(actionData);
-        // TODO: Execute action with proper context
-        // For now, just log the action type
-        LoggerUtil.info('Action executed: ${action.action}');
-      } catch (e) {
-        LoggerUtil.error('Error parsing action: $e', e);
+        LoggerUtil.info('Executing action: ${action.action}');
+        
+        // The action type determines how it's processed
+        // NavigateAction -> uses context.navigate()
+        // SetStateAction -> uses context.updateState()
+        // ApiCallAction -> makes HTTP request
+        // CustomAction -> calls custom handler
+        // For now, log the action type and let the UI layer handle execution
+        LoggerUtil.info('Action prepared: ${action.action}');
+        LoggerUtil.info('Action properties: ${action.toJson()}');
+      } catch (e, stackTrace) {
+        LoggerUtil.error('Error parsing action: $e', e, stackTrace);
       }
       return;
     }
@@ -2129,29 +2094,6 @@ class UIRenderer {
       'stretch' => CrossAxisAlignment.stretch,
       'baseline' => CrossAxisAlignment.baseline,
       _ => CrossAxisAlignment.start,
-    };
-  }
-
-  static TextAlign _parseTextAlign(dynamic value) {
-    return switch (value) {
-      'center' => TextAlign.center,
-      'right' => TextAlign.right,
-      'justify' => TextAlign.justify,
-      'end' => TextAlign.end,
-      _ => TextAlign.left,
-    };
-  }
-
-  static FontWeight _parseFontWeight(dynamic value) {
-    return switch (value) {
-      'bold' => FontWeight.bold,
-      'w300' => FontWeight.w300,
-      'w400' => FontWeight.w400,
-      'w500' => FontWeight.w500,
-      'w600' => FontWeight.w600,
-      'w700' => FontWeight.w700,
-      'w900' => FontWeight.w900,
-      _ => FontWeight.normal,
     };
   }
 

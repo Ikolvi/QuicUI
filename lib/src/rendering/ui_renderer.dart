@@ -128,6 +128,7 @@
 
 import 'package:flutter/material.dart';
 import '../models/callback_actions.dart' as callback_actions;
+import 'phase1_widgets.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///
@@ -272,6 +273,20 @@ class UIRenderer {
         'AnimatedOpacity' => _buildAnimatedOpacity(properties, childrenData, context),
         'FadeInImage' => _buildFadeInImage(properties),
         'Visibility' => _buildVisibility(properties, childrenData, context),
+        
+        // ===== PHASE 1: CORE WIDGET EXPANSION =====
+        'SliverAppBar' => Phase1Widgets.buildSliverAppBar(properties, childrenData),
+        'BottomSheet' => Phase1Widgets.buildBottomSheet(properties, childrenData, context),
+        'Avatar' => Phase1Widgets.buildAvatar(properties),
+        'ProgressBar' => Phase1Widgets.buildProgressBar(properties),
+        'CircularProgress' => Phase1Widgets.buildCircularProgress(properties),
+        'Tag' => Phase1Widgets.buildTag(properties),
+        'FittedBox' => Phase1Widgets.buildFittedBox(properties, childrenData),
+        'ExpansionTile' => Phase1Widgets.buildExpansionTile(properties, childrenData),
+        'Stepper' => Phase1Widgets.buildStepper(properties, childrenData),
+        'DataTable' => Phase1Widgets.buildDataTable(properties, childrenData),
+        'PageView' => Phase1Widgets.buildPageView(properties, childrenData, context),
+        'SnackBar' => Phase1Widgets.buildSnackBar(properties),
         
         _ => const Placeholder(),
       };

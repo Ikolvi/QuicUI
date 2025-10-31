@@ -131,6 +131,7 @@ import '../models/callback_actions.dart' as callback_actions;
 import 'phase1_widgets.dart';
 import 'phase2_widgets.dart';
 import 'phase3_widgets.dart';
+import 'phase4_widgets.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///
@@ -318,6 +319,21 @@ class UIRenderer {
         'PinchZoom' => Phase3Widgets.buildPinchZoom(properties, childrenData),
         'VirtualizedList' => Phase3Widgets.buildVirtualizedList(properties, childrenData),
         'StickyHeaders' => Phase3Widgets.buildStickyHeaders(properties, childrenData),
+        
+        // ===== PHASE 4: NAVIGATION WIDGETS =====
+        'NavigationRail' => Phase4Widgets.buildNavigationRail(properties, childrenData),
+        'Breadcrumb' => Phase4Widgets.buildBreadcrumb(properties, childrenData),
+        'BreadcrumbItem' => Phase4Widgets.buildBreadcrumbItem(properties, childrenData),
+        'StackedNavigation' => Phase4Widgets.buildStackedNavigation(properties, childrenData),
+        'NavigationStack' => Phase4Widgets.buildNavigationStack(properties, childrenData),
+        'DrawerNavigation' => Phase4Widgets.buildDrawerNavigation(properties, childrenData),
+        'MenuBar' => Phase4Widgets.buildMenuBar(properties, childrenData),
+        'SideBar' => Phase4Widgets.buildSideBar(properties, childrenData),
+        'ContextMenu' => Phase4Widgets.buildContextMenu(properties, childrenData),
+        'AdvancedBottomNav' => Phase4Widgets.buildAdvancedBottomNav(properties, childrenData),
+        'TabBarEnhanced' => Phase4Widgets.buildTabBarEnhanced(properties, childrenData),
+        'AnimatedDrawer' => Phase4Widgets.buildAnimatedDrawer(properties, childrenData),
+        'PaginationNav' => Phase4Widgets.buildPaginationNav(properties, childrenData),
         
         _ => const Placeholder(),
       };

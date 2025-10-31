@@ -3,6 +3,7 @@
 /// This module provides utility functions and helpers for gesture widgets.
 /// Includes gesture event parsing, data routing, and callback management.
 
+import 'package:flutter/material.dart';
 import '../utils/logger_util.dart';
 
 // ============================================================================

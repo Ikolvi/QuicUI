@@ -134,7 +134,16 @@ import '../models/callback_actions.dart' as callback_actions;
 import '../utils/logger_util.dart';
 import '../utils/error_handler.dart';
 import 'display_widgets.dart';
+import 'layout_widgets.dart';
+import 'form_widgets.dart';
+import 'form_widget_builders.dart';
 import 'widget_factory_registry.dart';
+import 'scrolling_widgets.dart';
+import 'navigation_widgets.dart';
+import 'animation_widgets.dart';
+import 'data_display_widgets.dart';
+import 'state_management_widgets.dart';
+import 'gesture_widgets.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///

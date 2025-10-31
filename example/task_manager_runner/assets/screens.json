@@ -22,7 +22,8 @@
             {
               "type": "Container",
               "properties": {
-                "color": "#F8F9FA"
+                "color": "#F8F9FA",
+                "padding": {"left": 24, "right": 24, "top": 16, "bottom": 16}
               },
               "children": [
                 {
@@ -87,7 +88,6 @@
                     {
                       "type": "Container",
                       "properties": {
-                        "width": 320,
                         "padding": {"all": 24}
                       },
                       "children": [

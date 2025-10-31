@@ -166,14 +166,12 @@ import 'state_management_widgets.dart';
 /// );
 /// ```
 class UIRenderer {
+  /// Global map to store field values from TextFields
+  static final Map<String, TextEditingController> _fieldControllers = {};
+  
   /// Render a widget tree from JSON configuration
   static Widget render(Map<String, dynamic> config, {BuildContext? context}) {
     try {
-      // Set current context for callbacks
-      if (context != null) {
-        setCurrentContext(context);
-      }
-
       // Validate JSON structure only in debug mode for better performance in production
       if (kDebugMode) {
         final validation = JsonValidator.validateWidgetJson(config);
@@ -324,10 +322,10 @@ class UIRenderer {
         'ListTile' => _buildListTile(properties, childrenData, context),
         
         // ===== INPUT WIDGETS =====
-        'ElevatedButton' => _buildElevatedButton(properties),
-        'TextButton' => _buildTextButton(properties),
+        'ElevatedButton' => _buildElevatedButton(properties, config),
+        'TextButton' => _buildTextButton(properties, config),
         'IconButton' => _buildIconButton(properties),
-        'OutlinedButton' => _buildOutlinedButton(properties),
+        'OutlinedButton' => _buildOutlinedButton(properties, config),
         'TextField' => _buildTextField(properties),
         'TextFormField' => _buildTextFormField(properties),
         'Checkbox' => _buildCheckbox(properties),
@@ -1248,7 +1246,10 @@ class UIRenderer {
 
   // ===== INPUT WIDGETS =====
 
-  static Widget _buildElevatedButton(Map<String, dynamic> properties) {
+  static Widget _buildElevatedButton(
+    Map<String, dynamic> properties,
+    Map<String, dynamic> config,
+  ) {
     final childrenData = properties['children'] as List? ?? [];
     final child = childrenData.isNotEmpty
         ? render(childrenData.first as Map<String, dynamic>)
@@ -1258,14 +1259,17 @@ class UIRenderer {
       onPressed: () {
         final events = properties['events'] as Map<String, dynamic>?;
         if (events != null) {
-          _handleCallback(events['onPressed'], properties);
+          _handleCallback(events['onPressed'], config);
         }
       },
       child: child,
     );
   }
 
-  static Widget _buildTextButton(Map<String, dynamic> properties) {
+  static Widget _buildTextButton(
+    Map<String, dynamic> properties,
+    Map<String, dynamic> config,
+  ) {
     final childrenData = properties['children'] as List? ?? [];
     final child = childrenData.isNotEmpty
         ? render(childrenData.first as Map<String, dynamic>)
@@ -1275,7 +1279,7 @@ class UIRenderer {
       onPressed: () {
         final events = properties['events'] as Map<String, dynamic>?;
         if (events != null) {
-          _handleCallback(events['onPressed'], properties);
+          _handleCallback(events['onPressed'], config);
         }
       },
       child: child,
@@ -1294,7 +1298,10 @@ class UIRenderer {
     );
   }
 
-  static Widget _buildOutlinedButton(Map<String, dynamic> properties) {
+  static Widget _buildOutlinedButton(
+    Map<String, dynamic> properties,
+    Map<String, dynamic> config,
+  ) {
     final childrenData = properties['children'] as List? ?? [];
     final child = childrenData.isNotEmpty
         ? render(childrenData.first as Map<String, dynamic>)
@@ -1304,7 +1311,7 @@ class UIRenderer {
       onPressed: () {
         final events = properties['events'] as Map<String, dynamic>?;
         if (events != null) {
-          _handleCallback(events['onPressed'], properties);
+          _handleCallback(events['onPressed'], config);
         }
       },
       child: child,
@@ -1312,7 +1319,16 @@ class UIRenderer {
   }
 
   static Widget _buildTextField(Map<String, dynamic> properties) {
+    final fieldId = properties['fieldId'] as String? ?? 'field_${DateTime.now().millisecondsSinceEpoch}';
+    
+    // Get or create controller for this field
+    final controller = _fieldControllers.putIfAbsent(
+      fieldId,
+      () => TextEditingController(),
+    );
+    
     return TextField(
+      controller: controller,
       decoration: InputDecoration(
         labelText: properties['label'] as String?,
         hintText: properties['hint'] as String?,
@@ -1627,12 +1643,6 @@ class UIRenderer {
     }
   }
 
-  static BuildContext? _currentContext;
-
-  static void setCurrentContext(BuildContext context) {
-    _currentContext = context;
-  }
-
   static void _handleCallback(dynamic actionData, Map<String, dynamic> properties) {
     if (actionData == null) {
       LoggerUtil.warning('No action specified for callback');
@@ -1646,18 +1656,26 @@ class UIRenderer {
         switch (action) {
           case 'navigate':
             final screen = actionData['screen'] as String?;
-            if (screen != null && _currentContext != null) {
-              // Navigate without data
-              Navigator.of(_currentContext!).pushNamed(screen);
+            if (screen != null) {
+              // Get the navigation callback from properties
+              final onNavigateTo = properties['onNavigateTo'];
+              if (onNavigateTo is Function) {
+                onNavigateTo(screen);
+              }
             }
             break;
             
           case 'navigateWithData':
             final screen = actionData['screen'] as String?;
             final data = actionData['data'] as Map<String, dynamic>?;
-            if (screen != null && _currentContext != null) {
-              // Navigate with data - will be handled by custom navigation
-              Navigator.of(_currentContext!).pushNamed(screen, arguments: data);
+            if (screen != null) {
+              // Get the navigation callback from properties
+              final onNavigateTo = properties['onNavigateTo'];
+              if (onNavigateTo is Function) {
+                // Collect field values from data object
+                final processedData = _processDataVariables(data ?? {}, properties);
+                onNavigateTo(screen, processedData);
+              }
             }
             break;
             
@@ -1672,6 +1690,43 @@ class UIRenderer {
         LoggerUtil.error('Error executing callback: $e', e);
       }
     }
+  }
+
+  /// Process data variables like ${fields.fieldId} and ${navigationData.x}
+  static Map<String, dynamic> _processDataVariables(
+    Map<String, dynamic> data,
+    Map<String, dynamic> properties,
+  ) {
+    final result = <String, dynamic>{};
+    
+    data.forEach((key, value) {
+      if (value is String) {
+        // Handle ${fields.fieldId} patterns
+        if (value.startsWith('\${fields.') && value.endsWith('}')) {
+          final fieldId = value.replaceFirst('\${fields.', '').replaceFirst('}', '');
+          // Get field value from controllers
+          final controller = _fieldControllers[fieldId];
+          result[key] = controller?.text ?? value;
+        }
+        // Handle ${navigationData.x} patterns
+        else if (value.startsWith('\${navigationData.') && value.endsWith('}')) {
+          final dataKey = value.replaceFirst('\${navigationData.', '').replaceFirst('}', '');
+          final navData = properties['navigationData'] as Map<String, dynamic>? ?? {};
+          result[key] = navData[dataKey] ?? value;
+        }
+        // Handle ${now} pattern
+        else if (value == '\${now}') {
+          result[key] = DateTime.now().toIso8601String();
+        }
+        else {
+          result[key] = value;
+        }
+      } else {
+        result[key] = value;
+      }
+    });
+    
+    return result;
   }
 
   static void _handleButtonPress(dynamic actionData) {

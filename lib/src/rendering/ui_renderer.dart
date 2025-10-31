@@ -190,6 +190,9 @@ class UIRenderer {
       final shouldRender = config['shouldRender'] as bool? ?? true;
       if (!shouldRender) return const SizedBox.shrink();
       
+      // CRITICAL: Log for debugging callback propagation
+      LoggerUtil.debug('render() called for type: $type, has onNavigateTo: ${config['onNavigateTo'] != null}');
+      
       return _renderWidgetByType(type, config, context);
     } catch (error, stackTrace) {
       return ErrorHandler.handleRenderingError(
@@ -221,6 +224,7 @@ class UIRenderer {
           if (parentConfig != null && parentConfig['onNavigateTo'] != null) {
             if (childData['onNavigateTo'] == null) {
               childData['onNavigateTo'] = parentConfig['onNavigateTo'];
+              LoggerUtil.debug('✅ renderList injected onNavigateTo to child type: ${childData['type']}');
             }
             if (childData['navigationData'] == null) {
               childData['navigationData'] = parentConfig['navigationData'];
@@ -256,6 +260,23 @@ class UIRenderer {
     }
     
     return widgets;
+  }
+
+  /// Helper to inject parent config into a single child config before rendering
+  static Widget renderChild(
+    Map<String, dynamic> childData,
+    Map<String, dynamic> parentConfig,
+    {BuildContext? context}
+  ) {
+    final data = Map<String, dynamic>.from(childData);
+    if (parentConfig['onNavigateTo'] != null && data['onNavigateTo'] == null) {
+      data['onNavigateTo'] = parentConfig['onNavigateTo'];
+      LoggerUtil.debug('✅ renderChild injected onNavigateTo to type: ${data['type']}');
+    }
+    if (parentConfig['navigationData'] != null && data['navigationData'] == null) {
+      data['navigationData'] = parentConfig['navigationData'];
+    }
+    return render(data, context: context);
   }
 
   /// Render widget by type - 70+ widgets supported
@@ -307,16 +328,16 @@ class UIRenderer {
         // ===== LAYOUT WIDGETS =====
         'Column' => _buildColumn(properties, childrenData, context, config),
         'Row' => _buildRow(properties, childrenData, context, config),
-        'Container' => _buildContainer(properties, childrenData, context),
+        'Container' => _buildContainer(properties, childrenData, context, config),
         'Stack' => _buildStack(properties, childrenData, context),
         'Positioned' => _buildPositioned(properties, childrenData, context),
-        'Center' => _buildCenter(properties, childrenData, context),
-        'Padding' => _buildPadding(properties, childrenData, context),
+        'Center' => _buildCenter(properties, childrenData, context, config),
+        'Padding' => _buildPadding(properties, childrenData, context, config),
         'Align' => _buildAlign(properties, childrenData, context),
         'Expanded' => _buildExpanded(properties, childrenData, context),
         'Flexible' => _buildFlexible(properties, childrenData, context),
         'SizedBox' => _buildSizedBox(properties, childrenData, context),
-        'SingleChildScrollView' => _buildSingleChildScrollView(properties, childrenData, context),
+        'SingleChildScrollView' => _buildSingleChildScrollView(properties, childrenData, context, config),
         'ListView' => _buildListView(properties, childrenData, context),
         'GridView' => _buildGridView(properties, childrenData, context),
         'Wrap' => _buildWrap(properties, childrenData, context),
@@ -760,9 +781,12 @@ class UIRenderer {
     Map<String, dynamic> properties,
     List<dynamic> childrenData,
     BuildContext? context,
+    Map<String, dynamic>? parentConfig,
   ) {
     final child = childrenData.isNotEmpty
-        ? render(childrenData.first as Map<String, dynamic>, context: context)
+        ? (parentConfig != null 
+            ? renderChild(childrenData.first as Map<String, dynamic>, parentConfig, context: context)
+            : render(childrenData.first as Map<String, dynamic>, context: context))
         : null;
     
     // Handle color vs decoration conflict - Flutter doesn't allow both
@@ -823,9 +847,12 @@ class UIRenderer {
     Map<String, dynamic> properties,
     List<dynamic> childrenData,
     BuildContext? context,
+    Map<String, dynamic>? parentConfig,
   ) {
     final child = childrenData.isNotEmpty
-        ? render(childrenData.first as Map<String, dynamic>, context: context)
+        ? (parentConfig != null 
+            ? renderChild(childrenData.first as Map<String, dynamic>, parentConfig, context: context)
+            : render(childrenData.first as Map<String, dynamic>, context: context))
         : null;
     return Center(child: child ?? const Placeholder());
   }
@@ -834,9 +861,12 @@ class UIRenderer {
     Map<String, dynamic> properties,
     List<dynamic> childrenData,
     BuildContext? context,
+    Map<String, dynamic>? parentConfig,
   ) {
     final child = childrenData.isNotEmpty
-        ? render(childrenData.first as Map<String, dynamic>, context: context)
+        ? (parentConfig != null 
+            ? renderChild(childrenData.first as Map<String, dynamic>, parentConfig, context: context)
+            : render(childrenData.first as Map<String, dynamic>, context: context))
         : null;
     return Padding(
       padding: _parseEdgeInsets(properties['padding']) ?? EdgeInsets.zero,
@@ -908,9 +938,12 @@ class UIRenderer {
     Map<String, dynamic> properties,
     List<dynamic> childrenData,
     BuildContext? context,
+    Map<String, dynamic>? parentConfig,
   ) {
     final child = childrenData.isNotEmpty
-        ? render(childrenData.first as Map<String, dynamic>, context: context)
+        ? (parentConfig != null 
+            ? renderChild(childrenData.first as Map<String, dynamic>, parentConfig, context: context)
+            : render(childrenData.first as Map<String, dynamic>, context: context))
         : null;
     return SingleChildScrollView(
       scrollDirection: properties['scrollDirection'] == 'horizontal' ? Axis.horizontal : Axis.vertical,

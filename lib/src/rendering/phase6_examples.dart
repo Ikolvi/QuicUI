@@ -11,7 +11,9 @@ class Phase6Examples {
       'name': 'Basic Line Chart',
       'widget': Phase6Widgets.buildLineChart({
         'title': 'Sales Trend',
-        'dataPoints': [10, 25, 15, 30, 20, 35, 28]
+        'dataPoints': [10, 25, 15, 30, 20, 35, 28],
+        'backgroundColor': '#FFFFFF',
+        'lineColor': '#2196F3'
       }, null)
     },
     {
@@ -19,6 +21,7 @@ class Phase6Examples {
       'widget': Phase6Widgets.buildLineChart({
         'title': 'Temperature',
         'dataPoints': [15, 18, 22, 25, 24, 20, 16],
+        'backgroundColor': '#FAFAFA',
         'lineColor': '#FF6B35'
       }, null)
     },
@@ -26,7 +29,9 @@ class Phase6Examples {
       'name': 'High Volume Data',
       'widget': Phase6Widgets.buildLineChart({
         'title': 'Daily Users',
-        'dataPoints': [100, 250, 180, 320, 290, 350, 330, 380, 420]
+        'dataPoints': [100, 250, 180, 320, 290, 350, 330, 380, 420],
+        'backgroundColor': '#F5F5F5',
+        'lineColor': '#1976D2'
       }, null)
     },
   ];
@@ -37,7 +42,8 @@ class Phase6Examples {
       'name': 'Basic Bar Chart',
       'widget': Phase6Widgets.buildBarChart({
         'title': 'Monthly Revenue',
-        'dataPoints': [12, 25, 18, 30, 22, 28]
+        'dataPoints': [12, 25, 18, 30, 22, 28],
+        'barColor': '#2196F3'
       }, null)
     },
     {
@@ -52,7 +58,8 @@ class Phase6Examples {
       'name': 'Comparison Chart',
       'widget': Phase6Widgets.buildBarChart({
         'title': 'Q1 vs Q2',
-        'dataPoints': [50, 65, 40, 80, 55, 70]
+        'dataPoints': [50, 65, 40, 80, 55, 70],
+        'barColor': '#00BCD4'
       }, null)
     },
   ];
@@ -113,7 +120,8 @@ class Phase6Examples {
       'name': 'Sales Progression',
       'widget': Phase6Widgets.buildAreaChart({
         'title': 'Cumulative Sales',
-        'dataPoints': [10, 25, 35, 50, 65, 80, 95]
+        'dataPoints': [10, 25, 35, 50, 65, 80, 95],
+        'areaColor': '#81C784'
       }, null)
     },
     {
@@ -128,7 +136,8 @@ class Phase6Examples {
       'name': 'Bandwidth Usage',
       'widget': Phase6Widgets.buildAreaChart({
         'title': 'Network Traffic',
-        'dataPoints': [20, 45, 60, 75, 85, 90, 88]
+        'dataPoints': [20, 45, 60, 75, 85, 90, 88],
+        'areaColor': '#64B5F6'
       }, null)
     },
   ];
@@ -143,7 +152,8 @@ class Phase6Examples {
           'Development',
           'Testing',
           'Launch'
-        ]
+        ],
+        'lineColor': '#2196F3'
       }, null)
     },
     {
@@ -154,7 +164,8 @@ class Phase6Examples {
           'Q2 Development',
           'Q3 Beta',
           'Q4 Release'
-        ]
+        ],
+        'lineColor': '#FF9800'
       }, null)
     },
     {
@@ -202,7 +213,8 @@ class Phase6Examples {
       'name': 'Download Progress',
       'widget': Phase6Widgets.buildProgressRing({
         'progress': 0.65,
-        'size': 120
+        'size': 120,
+        'ringColor': '#2196F3'
       }, null)
     },
     {
@@ -217,7 +229,8 @@ class Phase6Examples {
       'name': 'Processing Half',
       'widget': Phase6Widgets.buildProgressRing({
         'progress': 0.5,
-        'size': 100
+        'size': 100,
+        'ringColor': '#FF9800'
       }, null)
     },
   ];
@@ -318,7 +331,8 @@ class Phase6Examples {
       'name': 'Photo Grid',
       'widget': Phase6Widgets.buildVirtualGrid({
         'itemCount': 50,
-        'crossAxisCount': 3
+        'crossAxisCount': 3,
+        'backgroundColor': '#FFFFFF'
       }, null)
     },
     {
@@ -333,7 +347,8 @@ class Phase6Examples {
       'name': 'Icon Grid',
       'widget': Phase6Widgets.buildVirtualGrid({
         'itemCount': 60,
-        'crossAxisCount': 4
+        'crossAxisCount': 4,
+        'backgroundColor': '#F5F5F5'
       }, null)
     },
   ];

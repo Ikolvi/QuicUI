@@ -1832,6 +1832,22 @@ class UIRenderer {
               }
             }
             break;
+
+          case 'navigateToFlow':
+            _handleNavigateToFlow(actionData, properties);
+            break;
+
+          case 'executeCallback':
+            _handleExecuteCallback(actionData, properties);
+            break;
+
+          case 'updateNavigationData':
+            _handleUpdateNavigationData(actionData, properties);
+            break;
+
+          case 'goBack':
+            _handleGoBack(actionData, properties);
+            break;
             
           case 'apiCall':
             LoggerUtil.info('API Call: ${actionData['endpoint']}');
@@ -1843,6 +1859,127 @@ class UIRenderer {
       } catch (e, stackTrace) {
         LoggerUtil.error('Error executing callback: $e', e, stackTrace);
       }
+    }
+  }
+
+  /// Handle navigateToFlow action for multi-JSON navigation
+  static void _handleNavigateToFlow(
+    Map<String, dynamic> actionData,
+    Map<String, dynamic> properties,
+  ) {
+    try {
+      final targetFlow = actionData['targetFlow'] as String?;
+      final targetScreen = actionData['targetScreen'] as String?;
+      final data = actionData['data'] as Map<String, dynamic>?;
+
+      LoggerUtil.info(
+        'NavigateToFlow action - flow: $targetFlow, screen: $targetScreen',
+      );
+
+      if (targetFlow == null || targetScreen == null) {
+        LoggerUtil.warning(
+          'NavigateToFlow: targetFlow and targetScreen are required',
+        );
+        return;
+      }
+
+      final onFlowNavigate = properties['onFlowNavigate'];
+      if (onFlowNavigate is Function) {
+        final processedData =
+            data != null ? _processDataVariables(data, properties) : null;
+        LoggerUtil.info(
+          'Calling onFlowNavigate: $targetFlow → $targetScreen, data: $processedData',
+        );
+        onFlowNavigate(targetFlow, targetScreen, processedData);
+      } else {
+        LoggerUtil.warning('onFlowNavigate callback not available');
+      }
+    } catch (e, stackTrace) {
+      LoggerUtil.error('Error in navigateToFlow', e, stackTrace);
+    }
+  }
+
+  /// Handle executeCallback action for custom named callbacks
+  static void _handleExecuteCallback(
+    Map<String, dynamic> actionData,
+    Map<String, dynamic> properties,
+  ) {
+    try {
+      final callbackName = actionData['callbackName'] as String?;
+      final params = actionData['params'] as Map<String, dynamic>?;
+
+      LoggerUtil.info('ExecuteCallback action - callback: $callbackName');
+
+      if (callbackName == null) {
+        LoggerUtil.warning('ExecuteCallback: callbackName is required');
+        return;
+      }
+
+      final onExecuteCallback = properties['onExecuteCallback'];
+      if (onExecuteCallback is Function) {
+        final processedParams =
+            params != null ? _processDataVariables(params, properties) : null;
+        LoggerUtil.info('Executing custom callback: $callbackName');
+        onExecuteCallback(callbackName, processedParams);
+      } else {
+        LoggerUtil.warning('onExecuteCallback not available');
+      }
+    } catch (e, stackTrace) {
+      LoggerUtil.error('Error in executeCallback', e, stackTrace);
+    }
+  }
+
+  /// Handle updateNavigationData action
+  static void _handleUpdateNavigationData(
+    Map<String, dynamic> actionData,
+    Map<String, dynamic> properties,
+  ) {
+    try {
+      final data = actionData['data'] as Map<String, dynamic>?;
+      final merge = actionData['merge'] as bool? ?? true;
+
+      LoggerUtil.info(
+        'UpdateNavigationData action - merge: $merge, data: $data',
+      );
+
+      if (data == null) {
+        LoggerUtil.warning('UpdateNavigationData: data is required');
+        return;
+      }
+
+      final onUpdateNavigationData = properties['onUpdateNavigationData'];
+      if (onUpdateNavigationData is Function) {
+        final processedData = _processDataVariables(data, properties);
+        LoggerUtil.info('Updating navigation data: $processedData');
+        onUpdateNavigationData(processedData, merge);
+      } else {
+        LoggerUtil.warning('onUpdateNavigationData callback not available');
+      }
+    } catch (e, stackTrace) {
+      LoggerUtil.error('Error in updateNavigationData', e, stackTrace);
+    }
+  }
+
+  /// Handle goBack action for navigation history
+  static void _handleGoBack(
+    Map<String, dynamic> actionData,
+    Map<String, dynamic> properties,
+  ) {
+    try {
+      final steps = actionData['steps'] as int? ?? 1;
+      final clearData = actionData['clearData'] as bool? ?? true;
+
+      LoggerUtil.info('GoBack action - steps: $steps, clearData: $clearData');
+
+      final onGoBack = properties['onGoBack'];
+      if (onGoBack is Function) {
+        LoggerUtil.info('Going back $steps steps');
+        onGoBack(steps, clearData);
+      } else {
+        LoggerUtil.warning('onGoBack callback not available');
+      }
+    } catch (e, stackTrace) {
+      LoggerUtil.error('Error in goBack', e, stackTrace);
     }
   }
 

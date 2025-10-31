@@ -112,15 +112,15 @@ class DisplayWidgets {
   /// - shadowColor: String (hex color)
   /// - margin: String (padding as number)
   static Widget buildCard(
-    Map<String, dynamic> properties, {
-    List<dynamic>? childrenData,
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData, {
     BuildContext? context,
-    Widget Function(Map<String, dynamic>, {List<dynamic>? childrenData, BuildContext? context})? render,
+    Widget Function(Map<String, dynamic>, List<dynamic>?, {BuildContext? context})? render,
   }) {
     // Note: render callback will be passed from UIRenderer
     // For now using placeholder - will be resolved in Phase 3
-    final child = childrenData != null && childrenData.isNotEmpty && render != null
-        ? render(childrenData.first as Map<String, dynamic>, childrenData: null, context: context)
+    final child = childrenData.isNotEmpty && render != null
+        ? render(childrenData.first as Map<String, dynamic>, null, context: context)
         : null;
     
     return Card(
@@ -174,15 +174,15 @@ class DisplayWidgets {
   /// - backgroundColor: String (hex color)
   /// - textColor: String (hex color)
   static Widget buildBadge(
-    Map<String, dynamic> properties, {
-    List<dynamic>? childrenData,
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData, {
     BuildContext? context,
-    Widget Function(Map<String, dynamic>, {List<dynamic>? childrenData, BuildContext? context})? render,
+    Widget Function(Map<String, dynamic>, List<dynamic>?, {BuildContext? context})? render,
   }) {
     final label = properties['label'] as String? ?? '';
     // Note: render callback will be passed from UIRenderer
-    final child = childrenData != null && childrenData.isNotEmpty && render != null
-        ? render(childrenData.first as Map<String, dynamic>, childrenData: null, context: context)
+    final child = childrenData.isNotEmpty && render != null
+        ? render(childrenData.first as Map<String, dynamic>, null, context: context)
         : null;
     
     return Badge(
@@ -290,14 +290,14 @@ class DisplayWidgets {
   /// Properties:
   /// - message: String
   static Widget buildTooltip(
-    Map<String, dynamic> properties, {
-    List<dynamic>? childrenData,
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData, {
     BuildContext? context,
-    Widget Function(Map<String, dynamic>, {List<dynamic>? childrenData, BuildContext? context})? render,
+    Widget Function(Map<String, dynamic>, List<dynamic>?, {BuildContext? context})? render,
   }) {
     // Note: render callback will be passed from UIRenderer
-    final child = childrenData != null && childrenData.isNotEmpty && render != null
-        ? render(childrenData.first as Map<String, dynamic>, childrenData: null, context: context)
+    final child = childrenData.isNotEmpty && render != null
+        ? render(childrenData.first as Map<String, dynamic>, null, context: context)
         : null;
     
     return Tooltip(

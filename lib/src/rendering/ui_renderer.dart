@@ -133,6 +133,11 @@ import 'package:flutter/material.dart';
 import '../models/callback_actions.dart' as callback_actions;
 import '../utils/logger_util.dart';
 import '../utils/error_handler.dart';
+import 'parse_utils.dart';
+import 'app_level_widgets.dart';
+import 'display_widgets.dart';
+import 'input_widgets.dart';
+import 'dialog_widgets.dart';
 import 'layout_widgets.dart';
 import 'form_widgets.dart';
 import 'scrolling_widgets.dart';
@@ -1297,65 +1302,19 @@ class UIRenderer {
   // ===== DISPLAY WIDGETS =====
 
   static Widget _buildText(Map<String, dynamic> properties) {
-    return _safeWidgetBuilder(
-      'Text',
-      properties,
-      () {
-        var text = properties['text'] as String? ?? '';
-        
-        // Process data variables using the new elegant approach
-        text = _processVariableString(text, properties);
-        
-        return Text(
-          text,
-          style: TextStyle(
-            fontSize: (properties['fontSize'] as num?)?.toDouble(),
-            fontWeight: _parseFontWeight(properties['fontWeight']),
-            color: _parseColor(properties['color']),
-          ),
-          textAlign: _parseTextAlign(properties['textAlign']),
-          maxLines: (properties['maxLines'] as num?)?.toInt(),
-        );
-      },
-      fallbackBuilder: (error) {
-        // Fallback to simple text with basic styling if complex styling fails
-        final text = properties['text']?.toString() ?? 'Text Error';
-        return Text(
-          text,
-          style: const TextStyle(color: Colors.red, fontSize: 12),
-        );
-      },
-    );
+    return DisplayWidgets.buildText(properties);
   }
 
   static Widget _buildRichText(Map<String, dynamic> properties) {
-    return RichText(
-      text: TextSpan(
-        text: properties['text'] as String? ?? '',
-        style: TextStyle(
-          fontSize: (properties['fontSize'] as num?)?.toDouble(),
-          color: _parseColor(properties['color']) ?? Colors.black,
-        ),
-      ),
-    );
+    return DisplayWidgets.buildRichText(properties);
   }
 
   static Widget _buildImage(Map<String, dynamic> properties) {
-    final src = properties['src'] as String? ?? '';
-    final width = (properties['width'] as num?)?.toDouble();
-    final height = (properties['height'] as num?)?.toDouble();
-
-    if (src.startsWith('http')) {
-      return Image.network(src, width: width, height: height);
-    }
-    return Image.asset(src, width: width, height: height);
+    return DisplayWidgets.buildImage(properties);
   }
 
   static Widget _buildIcon(Map<String, dynamic> properties) {
-    final iconName = properties['icon'] as String? ?? 'info';
-    final size = (properties['size'] as num?)?.toDouble() ?? 24.0;
-    final color = _parseColor(properties['color']) ?? Colors.black;
-    return Icon(_parseIconData(iconName), size: size, color: color);
+    return DisplayWidgets.buildIcon(properties);
   }
 
   static Widget _buildCard(
@@ -1363,26 +1322,15 @@ class UIRenderer {
     List<dynamic> childrenData,
     BuildContext? context,
   ) {
-    final child = childrenData.isNotEmpty
-        ? render(childrenData.first as Map<String, dynamic>, context: context)
-        : null;
-    return Card(child: child ?? const Placeholder());
+    return DisplayWidgets.buildCard(properties, childrenData, context: context, render: (cfg, _, {context}) => render(cfg, context: context));
   }
 
   static Widget _buildDivider(Map<String, dynamic> properties) {
-    return Divider(
-      height: (properties['height'] as num?)?.toDouble() ?? 16.0,
-      thickness: (properties['thickness'] as num?)?.toDouble() ?? 1.0,
-      color: _parseColor(properties['color']),
-    );
+    return DisplayWidgets.buildDivider(properties);
   }
 
   static Widget _buildVerticalDivider(Map<String, dynamic> properties) {
-    return VerticalDivider(
-      width: (properties['width'] as num?)?.toDouble() ?? 16.0,
-      thickness: (properties['thickness'] as num?)?.toDouble() ?? 1.0,
-      color: _parseColor(properties['color']),
-    );
+    return DisplayWidgets.buildVerticalDivider(properties);
   }
 
   static Widget _buildBadge(
@@ -1390,41 +1338,27 @@ class UIRenderer {
     List<dynamic> childrenData,
     BuildContext? context,
   ) {
-    final label = properties['label'] as String? ?? '';
-    final child = childrenData.isNotEmpty
-        ? render(childrenData.first as Map<String, dynamic>, context: context)
-        : null;
-    return Badge(label: Text(label), child: child ?? const Icon(Icons.notifications));
+    return DisplayWidgets.buildBadge(properties, childrenData, context: context, render: (cfg, _, {context}) => render(cfg, context: context));
   }
 
   static Widget _buildChip(Map<String, dynamic> properties) {
-    return Chip(label: Text(properties['label'] as String? ?? ''));
+    return DisplayWidgets.buildChip(properties);
   }
 
   static Widget _buildActionChip(Map<String, dynamic> properties) {
-    return ActionChip(
-      label: Text(properties['label'] as String? ?? ''),
-      onPressed: () => _handleButtonPress(properties['onPressed'] as String? ?? ''),
-    );
+    return DisplayWidgets.buildActionChip(properties);
   }
 
   static Widget _buildFilterChip(Map<String, dynamic> properties) {
-    return FilterChip(
-      label: Text(properties['label'] as String? ?? ''),
-      onSelected: (bool selected) {},
-    );
+    return DisplayWidgets.buildFilterChip(properties);
   }
 
   static Widget _buildInputChip(Map<String, dynamic> properties) {
-    return InputChip(label: Text(properties['label'] as String? ?? ''));
+    return DisplayWidgets.buildInputChip(properties);
   }
 
   static Widget _buildChoiceChip(Map<String, dynamic> properties) {
-    return ChoiceChip(
-      label: Text(properties['label'] as String? ?? ''),
-      selected: false,
-      onSelected: (bool selected) {},
-    );
+    return DisplayWidgets.buildChoiceChip(properties);
   }
 
   static Widget _buildTooltip(
@@ -1432,13 +1366,7 @@ class UIRenderer {
     List<dynamic> childrenData,
     BuildContext? context,
   ) {
-    final child = childrenData.isNotEmpty
-        ? render(childrenData.first as Map<String, dynamic>, context: context)
-        : null;
-    return Tooltip(
-      message: properties['message'] as String? ?? '',
-      child: child ?? const Placeholder(),
-    );
+    return DisplayWidgets.buildTooltip(properties, childrenData, context: context, render: (cfg, _, {context}) => render(cfg, context: context));
   }
 
   static Widget _buildListTile(
@@ -1446,13 +1374,7 @@ class UIRenderer {
     List<dynamic> childrenData,
     BuildContext? context,
   ) {
-    return ListTile(
-      title: Text(properties['title'] as String? ?? ''),
-      subtitle: Text(properties['subtitle'] as String? ?? ''),
-      leading: properties['leadingIcon'] != null
-          ? Icon(_parseIconData(properties['leadingIcon'] as String))
-          : null,
-    );
+    return DisplayWidgets.buildListTile(properties);
   }
 
   // ===== INPUT WIDGETS =====

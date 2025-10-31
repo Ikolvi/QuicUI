@@ -205,14 +205,29 @@ class UIRenderer {
   }
 
   /// Render a list of widgets from JSON array
-  static List<Widget> renderList(List<dynamic> widgetsData, {BuildContext? context}) {
+  static List<Widget> renderList(
+    List<dynamic> widgetsData, {
+    BuildContext? context,
+    Map<String, dynamic>? parentConfig,
+  }) {
     final widgets = <Widget>[];
     
     for (int i = 0; i < widgetsData.length; i++) {
       final data = widgetsData[i];
       if (data is Map<String, dynamic>) {
         try {
-          final widget = render(data, context: context);
+          // Inject parent config callbacks into child if not already present
+          final childData = Map<String, dynamic>.from(data);
+          if (parentConfig != null && parentConfig['onNavigateTo'] != null) {
+            if (childData['onNavigateTo'] == null) {
+              childData['onNavigateTo'] = parentConfig['onNavigateTo'];
+            }
+            if (childData['navigationData'] == null) {
+              childData['navigationData'] = parentConfig['navigationData'];
+            }
+          }
+          
+          final widget = render(childData, context: context);
           widgets.add(widget);
         } catch (error, stackTrace) {
           LoggerUtil.error(
@@ -275,8 +290,8 @@ class UIRenderer {
         'TabBar' => _buildTabBar(properties),
         
         // ===== LAYOUT WIDGETS =====
-        'Column' => _buildColumn(properties, childrenData, context),
-        'Row' => _buildRow(properties, childrenData, context),
+        'Column' => _buildColumn(properties, childrenData, context, config),
+        'Row' => _buildRow(properties, childrenData, context, config),
         'Container' => _buildContainer(properties, childrenData, context),
         'Stack' => _buildStack(properties, childrenData, context),
         'Positioned' => _buildPositioned(properties, childrenData, context),
@@ -682,12 +697,13 @@ class UIRenderer {
     Map<String, dynamic> properties,
     List<dynamic> childrenData,
     BuildContext? context,
+    Map<String, dynamic>? parentConfig,
   ) {
     return _safeWidgetBuilder(
       'Column',
       properties,
       () {
-        final children = renderList(childrenData, context: context);
+        final children = renderList(childrenData, context: context, parentConfig: parentConfig);
         return Column(
           mainAxisAlignment: _parseMainAxisAlignment(properties['mainAxisAlignment']),
           crossAxisAlignment: _parseCrossAxisAlignment(properties['crossAxisAlignment']),
@@ -698,7 +714,7 @@ class UIRenderer {
       fallbackBuilder: (error) {
         // Fallback to basic column if property parsing fails
         LoggerUtil.warning('Column fallback used due to error', error);
-        final children = renderList(childrenData, context: context);
+        final children = renderList(childrenData, context: context, parentConfig: parentConfig);
         return Column(children: children);
       },
     );
@@ -708,8 +724,9 @@ class UIRenderer {
     Map<String, dynamic> properties,
     List<dynamic> childrenData,
     BuildContext? context,
+    Map<String, dynamic>? parentConfig,
   ) {
-    final children = renderList(childrenData, context: context);
+    final children = renderList(childrenData, context: context, parentConfig: parentConfig);
     
     // Default to MainAxisSize.min to prevent unbounded constraints in scrollable contexts
     final mainAxisSize = properties['mainAxisSize'] == 'max' 

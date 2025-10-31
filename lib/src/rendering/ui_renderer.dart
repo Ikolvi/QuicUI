@@ -226,8 +226,9 @@ class UIRenderer {
               childData['onNavigateTo'] = parentConfig['onNavigateTo'];
               LoggerUtil.debug('✅ renderList injected onNavigateTo to child type: ${childData['type']}');
             }
-            if (childData['navigationData'] == null) {
+            if (childData['navigationData'] == null && parentConfig['navigationData'] != null) {
               childData['navigationData'] = parentConfig['navigationData'];
+              LoggerUtil.debug('✅ renderList injected navigationData to child type: ${childData['type']}, data: ${parentConfig['navigationData']}');
             }
           }
           
@@ -300,6 +301,9 @@ class UIRenderer {
       }
       if (config['navigationData'] != null) {
         properties['navigationData'] = config['navigationData'];
+        LoggerUtil.debug('✅ Injected navigationData into properties: ${config['navigationData']}');
+      } else {
+        LoggerUtil.debug('⚠️ config[navigationData] was null, not injecting');
       }
       
       LoggerUtil.debug('After injection - properties keys: ${properties.keys.toList()}');
@@ -563,12 +567,18 @@ class UIRenderer {
       if (config['onNavigateTo'] != null) {
         homeConfig['onNavigateTo'] = config['onNavigateTo'];
       }
+      if (config['navigationData'] != null) {
+        homeConfig['navigationData'] = config['navigationData'];
+      }
       home = render(homeConfig, context: context);
     } else if (childrenData.isNotEmpty) {
       // Fallback to children if no explicit home
       final childConfig = Map<String, dynamic>.from(childrenData.first as Map<String, dynamic>);
       if (config['onNavigateTo'] != null) {
         childConfig['onNavigateTo'] = config['onNavigateTo'];
+      }
+      if (config['navigationData'] != null) {
+        childConfig['navigationData'] = config['navigationData'];
       }
       home = render(childConfig, context: context);
     }
@@ -640,9 +650,12 @@ class UIRenderer {
     for (final child in childrenData) {
       final childMap = Map<String, dynamic>.from(child as Map<String, dynamic>);
       
-      // Pass navigation callback to all children
+      // Pass navigation callback and data to all children
       if (config['onNavigateTo'] != null) {
         childMap['onNavigateTo'] = config['onNavigateTo'];
+      }
+      if (config['navigationData'] != null) {
+        childMap['navigationData'] = config['navigationData'];
       }
       
       final type = childMap['type'] as String;
@@ -1892,10 +1905,14 @@ class UIRenderer {
     }
 
     var result = text;
+    LoggerUtil.debug('_processVariableString: Processing text: "$text"');
+    LoggerUtil.debug('_processVariableString: context keys: ${context.keys.toList()}');
     
     // Process ${navigationData.key} patterns
     final navDataPattern = RegExp(r'\$\{navigationData\.(\w+)\}');
     final navigationData = context['navigationData'] as Map<String, dynamic>? ?? {};
+    LoggerUtil.debug('_processVariableString: navigationData = $navigationData');
+    
     result = result.replaceAllMapped(navDataPattern, (match) {
       final key = match.group(1)!;
       final value = navigationData[key];
@@ -1913,6 +1930,7 @@ class UIRenderer {
       return value ?? match.group(0)!;
     });
     
+    LoggerUtil.debug('_processVariableString: Final result: "$result"');
     return result;
   }
 

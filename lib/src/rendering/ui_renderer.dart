@@ -128,6 +128,7 @@ library;
 /// - [WidgetBuilder]: Builder utilities
 /// - [UIRenderer.render]: Main render method
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/callback_actions.dart' as callback_actions;
 import '../utils/logger_util.dart';
@@ -168,11 +169,13 @@ class UIRenderer {
   /// Render a widget tree from JSON configuration
   static Widget render(Map<String, dynamic> config, {BuildContext? context}) {
     try {
-      // Validate JSON structure
-      final validation = JsonValidator.validateWidgetJson(config);
-      if (!validation.isValid) {
-        ErrorHandler.handleValidationErrors(validation.errors, config);
-        // Continue with rendering but log validation issues
+      // Validate JSON structure only in debug mode for better performance in production
+      if (kDebugMode) {
+        final validation = JsonValidator.validateWidgetJson(config);
+        if (!validation.isValid) {
+          ErrorHandler.handleValidationErrors(validation.errors, config);
+          // Continue with rendering but log validation issues
+        }
       }
 
       final type = config['type'] as String?;

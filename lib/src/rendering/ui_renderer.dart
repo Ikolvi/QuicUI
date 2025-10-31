@@ -169,6 +169,11 @@ class UIRenderer {
   /// Render a widget tree from JSON configuration
   static Widget render(Map<String, dynamic> config, {BuildContext? context}) {
     try {
+      // Set current context for callbacks
+      if (context != null) {
+        setCurrentContext(context);
+      }
+
       // Validate JSON structure only in debug mode for better performance in production
       if (kDebugMode) {
         final validation = JsonValidator.validateWidgetJson(config);
@@ -1245,14 +1250,24 @@ class UIRenderer {
 
   static Widget _buildElevatedButton(Map<String, dynamic> properties) {
     return ElevatedButton(
-      onPressed: () => _handleButtonPress(properties['onPressed'] as String? ?? ''),
+      onPressed: () {
+        final events = properties['events'] as Map<String, dynamic>?;
+        if (events != null) {
+          _handleCallback(events['onPressed'], properties);
+        }
+      },
       child: Text(properties['label'] as String? ?? 'Button'),
     );
   }
 
   static Widget _buildTextButton(Map<String, dynamic> properties) {
     return TextButton(
-      onPressed: () => _handleButtonPress(properties['onPressed'] as String? ?? ''),
+      onPressed: () {
+        final events = properties['events'] as Map<String, dynamic>?;
+        if (events != null) {
+          _handleCallback(events['onPressed'], properties);
+        }
+      },
       child: Text(properties['label'] as String? ?? 'Button'),
     );
   }
@@ -1260,13 +1275,23 @@ class UIRenderer {
   static Widget _buildIconButton(Map<String, dynamic> properties) {
     return IconButton(
       icon: Icon(_parseIconData(properties['icon'] as String? ?? 'info')),
-      onPressed: () => _handleButtonPress(properties['onPressed'] as String? ?? ''),
+      onPressed: () {
+        final events = properties['events'] as Map<String, dynamic>?;
+        if (events != null) {
+          _handleCallback(events['onPressed'], properties);
+        }
+      },
     );
   }
 
   static Widget _buildOutlinedButton(Map<String, dynamic> properties) {
     return OutlinedButton(
-      onPressed: () => _handleButtonPress(properties['onPressed'] as String? ?? ''),
+      onPressed: () {
+        final events = properties['events'] as Map<String, dynamic>?;
+        if (events != null) {
+          _handleCallback(events['onPressed'], properties);
+        }
+      },
       child: Text(properties['label'] as String? ?? 'Button'),
     );
   }
@@ -1584,6 +1609,53 @@ class UIRenderer {
         },
         stackTrace: stackTrace,
       );
+    }
+  }
+
+  static BuildContext? _currentContext;
+
+  static void setCurrentContext(BuildContext context) {
+    _currentContext = context;
+  }
+
+  static void _handleCallback(dynamic actionData, Map<String, dynamic> properties) {
+    if (actionData == null) {
+      LoggerUtil.warning('No action specified for callback');
+      return;
+    }
+
+    if (actionData is Map<String, dynamic>) {
+      try {
+        final action = actionData['action'] as String?;
+        
+        switch (action) {
+          case 'navigate':
+            final screen = actionData['screen'] as String?;
+            if (screen != null && _currentContext != null) {
+              // Navigate without data
+              Navigator.of(_currentContext!).pushNamed(screen);
+            }
+            break;
+            
+          case 'navigateWithData':
+            final screen = actionData['screen'] as String?;
+            final data = actionData['data'] as Map<String, dynamic>?;
+            if (screen != null && _currentContext != null) {
+              // Navigate with data - will be handled by custom navigation
+              Navigator.of(_currentContext!).pushNamed(screen, arguments: data);
+            }
+            break;
+            
+          case 'apiCall':
+            LoggerUtil.info('API Call: ${actionData['endpoint']}');
+            break;
+            
+          default:
+            LoggerUtil.warning('Unknown action: $action');
+        }
+      } catch (e) {
+        LoggerUtil.error('Error executing callback: $e', e);
+      }
     }
   }
 

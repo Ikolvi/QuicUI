@@ -4,163 +4,561 @@
     "title": "TaskManager Pro",
     "debugShowCheckedModeBanner": false,
     "theme": {
-      "primaryColor": "#1E88E5",
-      "backgroundColor": "#FAFAFA"
+      "primaryColor": "#6366F1",
+      "backgroundColor": "#F8F9FA"
     }
   },
-  "home": {
-    "type": "Scaffold",
-    "properties": {},
-    "children": [
-      {
-        "type": "AppBar",
-        "properties": {
-          "title": "My Tasks",
-          "centerTitle": true,
-          "backgroundColor": "#1E88E5",
-          "elevation": 4.0
-        }
+  "screens": {
+    "login": {
+      "type": "Scaffold",
+      "properties": {
+        "backgroundColor": "#F8F9FA"
       },
-      {
-        "type": "SingleChildScrollView",
-        "properties": {},
-        "children": [
-          {
-            "type": "Container",
-            "properties": {
-              "padding": {"all": 16}
-            },
-            "children": [
-              {
-                "type": "Column",
-                "properties": {
-                  "mainAxisAlignment": "start",
-                  "crossAxisAlignment": "stretch"
-                },
-                "children": [
-                  {
-                    "type": "Text",
-                    "properties": {
-                      "text": "✅ Pure JSON App",
-                      "fontSize": 28,
-                      "fontWeight": "bold",
-                      "color": "#1E88E5"
-                    }
+      "children": [
+        {
+          "type": "SingleChildScrollView",
+          "properties": {},
+          "children": [
+            {
+              "type": "Container",
+              "properties": {
+                "height": "${screenHeight}",
+                "color": "#F8F9FA"
+              },
+              "children": [
+                {
+                  "type": "Column",
+                  "properties": {
+                    "mainAxisAlignment": "center",
+                    "crossAxisAlignment": "center"
                   },
-                  {
-                    "type": "SizedBox",
-                    "properties": {"height": 16}
-                  },
-                  {
-                    "type": "Text",
-                    "properties": {
-                      "text": "This entire app is built from pure JSON!",
-                      "fontSize": 16,
-                      "color": "#666666"
-                    }
-                  },
-                  {
-                    "type": "SizedBox",
-                    "properties": {"height": 24}
-                  },
-                  {
-                    "type": "Container",
-                    "properties": {
-                      "padding": {"all": 12},
-                      "color": "#E3F2FD"
+                  "children": [
+                    {
+                      "type": "Container",
+                      "properties": {
+                        "width": 100,
+                        "height": 100,
+                        "color": "#6366F1",
+                        "margin": {"bottom": 32}
+                      },
+                      "children": [
+                        {
+                          "type": "Center",
+                          "properties": {},
+                          "children": [
+                            {
+                              "type": "Icon",
+                              "properties": {
+                                "icon": "lock",
+                                "size": 60,
+                                "color": "#FFFFFF"
+                              }
+                            }
+                          ]
+                        }
+                      ]
                     },
-                    "children": [
-                      {
-                        "type": "Column",
-                        "properties": {
-                          "mainAxisAlignment": "start",
-                          "crossAxisAlignment": "stretch"
-                        },
-                        "children": [
-                          {
-                            "type": "Text",
-                            "properties": {
-                              "text": "main.dart (9 lines only)",
-                              "fontSize": 14,
-                              "fontWeight": "bold"
-                            }
-                          },
-                          {
-                            "type": "SizedBox",
-                            "properties": {"height": 8}
-                          },
-                          {
-                            "type": "Text",
-                            "properties": {
-                              "text": "1. Load JSON from assets\n2. Render with UIRenderer\n3. Done!",
-                              "fontSize": 12,
-                              "color": "#333333"
-                            }
-                          }
-                        ]
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "TaskManager Pro",
+                        "fontSize": 32,
+                        "fontWeight": "bold",
+                        "color": "#1F2937",
+                        "textAlign": "center"
                       }
-                    ]
-                  },
-                  {
-                    "type": "SizedBox",
-                    "properties": {"height": 24}
-                  },
-                  {
-                    "type": "Text",
-                    "properties": {
-                      "text": "Features",
-                      "fontSize": 18,
-                      "fontWeight": "bold"
-                    }
-                  },
-                  {
-                    "type": "SizedBox",
-                    "properties": {"height": 12}
-                  },
-                  {
-                    "type": "Container",
-                    "properties": {
-                      "padding": {"all": 12},
-                      "color": "#F5F5F5",
-                      "margin": {"bottom": 8}
                     },
-                    "children": [
-                      {
-                        "type": "Text",
-                        "properties": {
-                          "text": "✓ Zero Dart widget code\n✓ All UI in JSON\n✓ Hot reload works\n✓ Easy to modify",
-                          "fontSize": 13
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 12}
+                    },
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "Welcome Back",
+                        "fontSize": 16,
+                        "color": "#6B7280",
+                        "textAlign": "center"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 40}
+                    },
+                    {
+                      "type": "Container",
+                      "properties": {
+                        "width": 320,
+                        "padding": {"all": 24}
+                      },
+                      "children": [
+                        {
+                          "type": "Column",
+                          "properties": {
+                            "crossAxisAlignment": "stretch"
+                          },
+                          "children": [
+                            {
+                              "type": "Text",
+                              "properties": {
+                                "text": "Username",
+                                "fontSize": 14,
+                                "fontWeight": "bold",
+                                "color": "#1F2937",
+                                "textAlign": "left"
+                              }
+                            },
+                            {
+                              "type": "SizedBox",
+                              "properties": {"height": 8}
+                            },
+                            {
+                              "type": "TextField",
+                              "properties": {
+                                "label": "Enter your username",
+                                "hint": "john_doe",
+                                "fieldId": "username",
+                                "obscureText": false,
+                                "decoration": {
+                                  "border": {
+                                    "color": "#E5E7EB",
+                                    "width": 1
+                                  },
+                                  "borderRadius": 12
+                                }
+                              }
+                            },
+                            {
+                              "type": "SizedBox",
+                              "properties": {"height": 20}
+                            },
+                            {
+                              "type": "Text",
+                              "properties": {
+                                "text": "Password",
+                                "fontSize": 14,
+                                "fontWeight": "bold",
+                                "color": "#1F2937",
+                                "textAlign": "left"
+                              }
+                            },
+                            {
+                              "type": "SizedBox",
+                              "properties": {"height": 8}
+                            },
+                            {
+                              "type": "TextField",
+                              "properties": {
+                                "label": "Enter your password",
+                                "hint": "••••••••",
+                                "fieldId": "password",
+                                "obscureText": true,
+                                "decoration": {
+                                  "border": {
+                                    "color": "#E5E7EB",
+                                    "width": 1
+                                  },
+                                  "borderRadius": 12
+                                }
+                              }
+                            },
+                            {
+                              "type": "SizedBox",
+                              "properties": {"height": 32}
+                            },
+                            {
+                              "type": "ElevatedButton",
+                              "properties": {
+                                "label": "Login",
+                                "fieldId": "loginButton",
+                                "backgroundColor": "#6366F1",
+                                "events": {
+                                  "onPressed": {
+                                    "action": "navigateWithData",
+                                    "screen": "dashboard",
+                                    "data": {
+                                      "username": "${fields.username}",
+                                      "loginTime": "${now}"
+                                    }
+                                  }
+                                }
+                              }
+                            },
+                            {
+                              "type": "SizedBox",
+                              "properties": {"height": 16}
+                            },
+                            {
+                              "type": "OutlinedButton",
+                              "properties": {
+                                "label": "Sign Up",
+                                "fieldId": "signupButton"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "dashboard": {
+      "type": "Scaffold",
+      "properties": {
+        "backgroundColor": "#F8F9FA"
+      },
+      "children": [
+        {
+          "type": "AppBar",
+          "properties": {
+            "title": "Dashboard",
+            "centerTitle": true,
+            "backgroundColor": "#6366F1",
+            "elevation": 0
+          }
+        },
+        {
+          "type": "SingleChildScrollView",
+          "properties": {},
+          "children": [
+            {
+              "type": "Container",
+              "properties": {
+                "padding": {"all": 24}
+              },
+              "children": [
+                {
+                  "type": "Column",
+                  "properties": {
+                    "crossAxisAlignment": "stretch"
+                  },
+                  "children": [
+                    {
+                      "type": "Container",
+                      "properties": {
+                        "padding": {"all": 24},
+                        "color": "#FFFFFF",
+                        "decoration": {
+                          "borderRadius": 16,
+                          "boxShadow": [
+                            {
+                              "color": "#00000008",
+                              "blurRadius": 8,
+                              "offset": {"dx": 0, "dy": 2}
+                            }
+                          ]
+                        }
+                      },
+                      "children": [
+                        {
+                          "type": "Column",
+                          "properties": {
+                            "crossAxisAlignment": "stretch"
+                          },
+                          "children": [
+                            {
+                              "type": "Text",
+                              "properties": {
+                                "text": "Hi ${navigationData.username}! 👋",
+                                "fontSize": 28,
+                                "fontWeight": "bold",
+                                "color": "#1F2937"
+                              }
+                            },
+                            {
+                              "type": "SizedBox",
+                              "properties": {"height": 8}
+                            },
+                            {
+                              "type": "Text",
+                              "properties": {
+                                "text": "Welcome to your dashboard",
+                                "fontSize": 14,
+                                "color": "#6B7280"
+                              }
+                            },
+                            {
+                              "type": "SizedBox",
+                              "properties": {"height": 16}
+                            },
+                            {
+                              "type": "Divider",
+                              "properties": {
+                                "color": "#E5E7EB"
+                              }
+                            },
+                            {
+                              "type": "SizedBox",
+                              "properties": {"height": 16}
+                            },
+                            {
+                              "type": "Text",
+                              "properties": {
+                                "text": "Login Time: ${navigationData.loginTime}",
+                                "fontSize": 12,
+                                "color": "#9CA3AF"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 24}
+                    },
+                    {
+                      "type": "Text",
+                      "properties": {
+                        "text": "Quick Stats",
+                        "fontSize": 18,
+                        "fontWeight": "bold",
+                        "color": "#1F2937"
+                      }
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 16}
+                    },
+                    {
+                      "type": "Row",
+                      "properties": {
+                        "mainAxisAlignment": "spaceBetween",
+                        "crossAxisAlignment": "start"
+                      },
+                      "children": [
+                        {
+                          "type": "Expanded",
+                          "properties": {"flex": 1},
+                          "children": [
+                            {
+                              "type": "Container",
+                              "properties": {
+                                "padding": {"all": 16},
+                                "color": "#FFFFFF",
+                                "margin": {"right": 8},
+                                "decoration": {
+                                  "borderRadius": 12,
+                                  "boxShadow": [
+                                    {
+                                      "color": "#00000008",
+                                      "blurRadius": 4,
+                                      "offset": {"dx": 0, "dy": 1}
+                                    }
+                                  ]
+                                }
+                              },
+                              "children": [
+                                {
+                                  "type": "Column",
+                                  "properties": {
+                                    "crossAxisAlignment": "center"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Icon",
+                                      "properties": {
+                                        "icon": "check_circle",
+                                        "size": 32,
+                                        "color": "#10B981"
+                                      }
+                                    },
+                                    {
+                                      "type": "SizedBox",
+                                      "properties": {"height": 8}
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "properties": {
+                                        "text": "12",
+                                        "fontSize": 24,
+                                        "fontWeight": "bold",
+                                        "color": "#1F2937"
+                                      }
+                                    },
+                                    {
+                                      "type": "SizedBox",
+                                      "properties": {"height": 4}
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "properties": {
+                                        "text": "Completed",
+                                        "fontSize": 12,
+                                        "color": "#6B7280"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Expanded",
+                          "properties": {"flex": 1},
+                          "children": [
+                            {
+                              "type": "Container",
+                              "properties": {
+                                "padding": {"all": 16},
+                                "color": "#FFFFFF",
+                                "margin": {"right": 8},
+                                "decoration": {
+                                  "borderRadius": 12,
+                                  "boxShadow": [
+                                    {
+                                      "color": "#00000008",
+                                      "blurRadius": 4,
+                                      "offset": {"dx": 0, "dy": 1}
+                                    }
+                                  ]
+                                }
+                              },
+                              "children": [
+                                {
+                                  "type": "Column",
+                                  "properties": {
+                                    "crossAxisAlignment": "center"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Icon",
+                                      "properties": {
+                                        "icon": "assignment",
+                                        "size": 32,
+                                        "color": "#F59E0B"
+                                      }
+                                    },
+                                    {
+                                      "type": "SizedBox",
+                                      "properties": {"height": 8}
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "properties": {
+                                        "text": "5",
+                                        "fontSize": 24,
+                                        "fontWeight": "bold",
+                                        "color": "#1F2937"
+                                      }
+                                    },
+                                    {
+                                      "type": "SizedBox",
+                                      "properties": {"height": 4}
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "properties": {
+                                        "text": "In Progress",
+                                        "fontSize": 12,
+                                        "color": "#6B7280"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "type": "Expanded",
+                          "properties": {"flex": 1},
+                          "children": [
+                            {
+                              "type": "Container",
+                              "properties": {
+                                "padding": {"all": 16},
+                                "color": "#FFFFFF",
+                                "decoration": {
+                                  "borderRadius": 12,
+                                  "boxShadow": [
+                                    {
+                                      "color": "#00000008",
+                                      "blurRadius": 4,
+                                      "offset": {"dx": 0, "dy": 1}
+                                    }
+                                  ]
+                                }
+                              },
+                              "children": [
+                                {
+                                  "type": "Column",
+                                  "properties": {
+                                    "crossAxisAlignment": "center"
+                                  },
+                                  "children": [
+                                    {
+                                      "type": "Icon",
+                                      "properties": {
+                                        "icon": "error",
+                                        "size": 32,
+                                        "color": "#EF4444"
+                                      }
+                                    },
+                                    {
+                                      "type": "SizedBox",
+                                      "properties": {"height": 8}
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "properties": {
+                                        "text": "3",
+                                        "fontSize": 24,
+                                        "fontWeight": "bold",
+                                        "color": "#1F2937"
+                                      }
+                                    },
+                                    {
+                                      "type": "SizedBox",
+                                      "properties": {"height": 4}
+                                    },
+                                    {
+                                      "type": "Text",
+                                      "properties": {
+                                        "text": "Overdue",
+                                        "fontSize": 12,
+                                        "color": "#6B7280"
+                                      }
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "SizedBox",
+                      "properties": {"height": 32}
+                    },
+                    {
+                      "type": "ElevatedButton",
+                      "properties": {
+                        "label": "Logout",
+                        "backgroundColor": "#EF4444",
+                        "events": {
+                          "onPressed": {
+                            "action": "navigate",
+                            "screen": "login"
+                          }
                         }
                       }
-                    ]
-                  },
-                  {
-                    "type": "SizedBox",
-                    "properties": {"height": 24}
-                  },
-                  {
-                    "type": "ElevatedButton",
-                    "properties": {
-                      "label": "This is also JSON!",
-                      "backgroundColor": "#1E88E5"
                     }
-                  },
-                  {
-                    "type": "SizedBox",
-                    "properties": {"height": 12}
-                  },
-                  {
-                    "type": "OutlinedButton",
-                    "properties": {
-                      "label": "Completely JSON Driven"
-                    }
-                  }
-                ]
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "home": "login"
 }

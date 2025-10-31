@@ -199,6 +199,7 @@
 library;
 
 // Core exports
+export 'src/core/quicui.dart';
 export 'src/core/constants.dart';
 export 'src/core/exceptions.dart';
 export 'src/core/typedefs.dart';
@@ -237,7 +238,6 @@ export 'src/widgets/screen_view.dart';
 
 // Services
 export 'src/services/quicui_service.dart';
-export 'src/services/supabase_service.dart';
 export 'src/services/storage_service.dart';
 
 // Utilities

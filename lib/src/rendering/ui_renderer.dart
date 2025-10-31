@@ -19,6 +19,8 @@
 ///   "events": {
 ///     "onPressed": {
 ///       "action": "apiCall",
+library;
+
 ///       "method": "POST",
 ///       "endpoint": "/api/login"
 ///     }
@@ -128,6 +130,7 @@
 
 import 'package:flutter/material.dart';
 import '../models/callback_actions.dart' as callback_actions;
+import '../utils/logger_util.dart';
 import 'layout_widgets.dart';
 import 'form_widgets.dart';
 import 'scrolling_widgets.dart';
@@ -192,6 +195,9 @@ class UIRenderer {
 
     try {
       return switch (type) {
+        // ===== APP-LEVEL WIDGETS =====
+        'MaterialApp' => _buildMaterialApp(properties, childrenData, config, context),
+        
         // ===== SCAFFOLD & APP-LEVEL WIDGETS =====
         'Scaffold' => _buildScaffold(properties, childrenData, config, context),
         'AppBar' => _buildAppBar(properties, childrenData, context),
@@ -411,6 +417,78 @@ class UIRenderer {
     }
   }
 
+  // ===== APP-LEVEL WIDGETS =====
+
+  static Widget _buildMaterialApp(
+    Map<String, dynamic> properties,
+    List<dynamic> childrenData,
+    Map<String, dynamic> config,
+    BuildContext? context,
+  ) {
+    // Pass navigation callback to child widgets
+    final childConfig = childrenData.isNotEmpty
+        ? Map<String, dynamic>.from(childrenData.first as Map<String, dynamic>)
+        : <String, dynamic>{};
+    
+    // Inject navigation callback if present
+    if (config['onNavigateTo'] != null) {
+      childConfig['onNavigateTo'] = config['onNavigateTo'];
+    }
+    
+    final home = childrenData.isNotEmpty
+        ? render(childConfig, context: context)
+        : null;
+    
+    // Theme configuration
+    final themeConfig = config['theme'] as Map<String, dynamic>?;
+    ThemeData? theme;
+    
+    if (themeConfig != null) {
+      final primaryColorStr = themeConfig['primaryColor'] as String? ?? '#1E88E5';
+      final primaryColor = _parseColor(primaryColorStr) ?? Colors.blue;
+      final useMaterial3 = themeConfig['useMaterial3'] as bool? ?? true;
+      final brightness = themeConfig['brightness'] == 'dark' ? Brightness.dark : Brightness.light;
+      
+      theme = ThemeData(
+        primarySwatch: _colorToMaterialColor(primaryColor),
+        useMaterial3: useMaterial3,
+        brightness: brightness,
+      );
+    }
+    
+    return MaterialApp(
+      title: properties['title'] as String? ?? 'QuicUI App',
+      theme: theme ?? ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+      ),
+      home: home,
+      debugShowCheckedModeBanner: properties['debugShowCheckedModeBanner'] as bool? ?? false,
+    );
+  }
+
+  // Helper method to convert Color to MaterialColor
+  static MaterialColor _colorToMaterialColor(Color color) {
+    final int red = (color.r * 255.0).round() & 0xff;
+    final int green = (color.g * 255.0).round() & 0xff;
+    final int blue = (color.b * 255.0).round() & 0xff;
+    
+    final Map<int, Color> shades = {
+      50: Color.fromRGBO(red, green, blue, .1),
+      100: Color.fromRGBO(red, green, blue, .2),
+      200: Color.fromRGBO(red, green, blue, .3),
+      300: Color.fromRGBO(red, green, blue, .4),
+      400: Color.fromRGBO(red, green, blue, .5),
+      500: Color.fromRGBO(red, green, blue, .6),
+      600: Color.fromRGBO(red, green, blue, .7),
+      700: Color.fromRGBO(red, green, blue, .8),
+      800: Color.fromRGBO(red, green, blue, .9),
+      900: Color.fromRGBO(red, green, blue, 1),
+    };
+    
+    return MaterialColor(color.toARGB32(), shades);
+  }
+
   // ===== SCAFFOLD & APP-LEVEL WIDGETS =====
   
   static Widget _buildScaffold(
@@ -419,16 +497,48 @@ class UIRenderer {
     Map<String, dynamic> config,
     BuildContext? context,
   ) {
-    final body = childrenData.isNotEmpty
-        ? render(childrenData.first as Map<String, dynamic>, context: context)
-        : null;
+    // Separate AppBar and body from children
+    PreferredSizeWidget? appBar;
+    Widget? body;
+    Widget? floatingActionButton;
+    Widget? bottomNavigationBar;
+    
+    for (final child in childrenData) {
+      final childMap = Map<String, dynamic>.from(child as Map<String, dynamic>);
+      
+      // Pass navigation callback to all children
+      if (config['onNavigateTo'] != null) {
+        childMap['onNavigateTo'] = config['onNavigateTo'];
+      }
+      
+      final type = childMap['type'] as String;
+      
+      switch (type) {
+        case 'AppBar':
+          appBar = render(childMap, context: context) as PreferredSizeWidget?;
+          break;
+        case 'FloatingActionButton':
+          floatingActionButton = render(childMap, context: context);
+          break;
+        case 'BottomNavigationBar':
+          bottomNavigationBar = render(childMap, context: context);
+          break;
+        default:
+          // All other widgets go to body
+          body = render(childMap, context: context);
+          break;
+      }
+    }
+    
+    // Handle legacy config format (fallback)
     final appBarConfig = config['appBar'] as Map<String, dynamic>?;
     final floatingActionButtonConfig = config['fab'] as Map<String, dynamic>?;
     
     return Scaffold(
-      appBar: appBarConfig != null ? _buildAppBar((appBarConfig['properties'] as Map<String, dynamic>?) ?? {}, [], context) as PreferredSizeWidget? : null,
+      appBar: appBar ?? (appBarConfig != null ? _buildAppBar((appBarConfig['properties'] as Map<String, dynamic>?) ?? {}, [], context) as PreferredSizeWidget? : null),
       body: body,
-      floatingActionButton: floatingActionButtonConfig != null ? _buildFloatingActionButton((floatingActionButtonConfig['properties'] as Map<String, dynamic>?) ?? {}) : null,
+      floatingActionButton: floatingActionButton ?? (floatingActionButtonConfig != null ? _buildFloatingActionButton((floatingActionButtonConfig['properties'] as Map<String, dynamic>?) ?? {}) : null),
+      bottomNavigationBar: bottomNavigationBar,
     );
   }
 
@@ -524,13 +634,27 @@ class UIRenderer {
     final child = childrenData.isNotEmpty
         ? render(childrenData.first as Map<String, dynamic>, context: context)
         : null;
+    
+    // Handle color vs decoration conflict - Flutter doesn't allow both
+    final parsedDecoration = _parseBoxDecoration(properties['decoration']);
+    final parsedColor = _parseColor(properties['color']);
+    
+    BoxDecoration? finalDecoration = parsedDecoration;
+    Color? finalColor;
+    
+    // If no decoration but color exists, use color
+    // If decoration exists, ignore color (decoration takes priority)
+    if (parsedDecoration == null && parsedColor != null) {
+      finalColor = parsedColor;
+    }
+    
     return Container(
       width: (properties['width'] as num?)?.toDouble(),
       height: (properties['height'] as num?)?.toDouble(),
-      color: _parseColor(properties['color']),
+      color: finalColor,
       padding: _parseEdgeInsets(properties['padding']),
       margin: _parseEdgeInsets(properties['margin']),
-      decoration: _parseBoxDecoration(properties['decoration']),
+      decoration: finalDecoration,
       child: child,
     );
   }
@@ -1076,19 +1200,17 @@ class UIRenderer {
   }
 
   static Widget _buildRadio(Map<String, dynamic> properties) {
-    return Radio(
-      value: properties['value'] ?? '',
-      groupValue: properties['groupValue'] ?? '',
-      onChanged: (value) {},
+    // Modern Radio without deprecated onChanged - events handled by QuicUI system
+    return Radio<String>(
+      value: properties['value'] as String? ?? '',
     );
   }
 
   static Widget _buildRadioListTile(Map<String, dynamic> properties) {
-    return RadioListTile(
+    // Modern RadioListTile without deprecated onChanged - events handled by QuicUI system
+    return RadioListTile<String>(
       title: Text(properties['label'] as String? ?? ''),
-      value: properties['value'] ?? '',
-      groupValue: properties['groupValue'] ?? '',
-      onChanged: (value) {},
+      value: properties['value'] as String? ?? '',
     );
   }
 
@@ -1287,13 +1409,13 @@ class UIRenderer {
   static void _handleButtonPress(dynamic actionData) {
     // Support both old string format and new action object format
     if (actionData == null || actionData.toString().isEmpty) {
-      print('No action specified');
+      LoggerUtil.warning('No action specified for button press');
       return;
     }
 
     // Old format: just a string
     if (actionData is String) {
-      print('Button pressed: $actionData');
+      LoggerUtil.debug('Button pressed: $actionData');
       return;
     }
 
@@ -1302,15 +1424,15 @@ class UIRenderer {
       try {
         final action = callback_actions.Action.fromJson(actionData);
         // TODO: Execute action with proper context
-        // For now, just print the action type
-        print('Action executed: ${action.action}');
+        // For now, just log the action type
+        LoggerUtil.info('Action executed: ${action.action}');
       } catch (e) {
-        print('Error parsing action: $e');
+        LoggerUtil.error('Error parsing action: $e', e);
       }
       return;
     }
 
-    print('Invalid action format: $actionData');
+    LoggerUtil.error('Invalid action format: $actionData');
   }
 
   static MainAxisAlignment _parseMainAxisAlignment(dynamic value) {
@@ -1361,7 +1483,12 @@ class UIRenderer {
     if (value is String) {
       if (value.startsWith('#')) {
         final hexColor = value.replaceFirst('#', '');
-        return Color(int.parse('0x${hexColor.padLeft(8, '0')}'));
+        // If it's a 6-digit hex color (#RRGGBB), add full opacity (FF)
+        // If it's an 8-digit hex color (#AARRGGBB), use as-is
+        final colorString = hexColor.length == 6 
+            ? 'FF$hexColor'  // Add full opacity for 6-digit colors
+            : hexColor.padLeft(8, '0');  // Pad with zeros for shorter colors
+        return Color(int.parse('0x$colorString'));
       }
       return switch (value.toLowerCase()) {
         'red' => Colors.red,
@@ -1386,6 +1513,23 @@ class UIRenderer {
     if (value == null) return null;
     if (value is num) return EdgeInsets.all(value.toDouble());
     if (value is Map) {
+      // Handle "all" property for uniform padding/margin
+      if (value.containsKey('all')) {
+        final allValue = (value['all'] as num?)?.toDouble() ?? 0;
+        return EdgeInsets.all(allValue);
+      }
+      
+      // Handle "horizontal" and "vertical" shorthand properties
+      if (value.containsKey('horizontal') || value.containsKey('vertical')) {
+        final horizontal = (value['horizontal'] as num?)?.toDouble() ?? 0;
+        final vertical = (value['vertical'] as num?)?.toDouble() ?? 0;
+        return EdgeInsets.symmetric(
+          horizontal: horizontal,
+          vertical: vertical,
+        );
+      }
+      
+      // Handle individual sides (LTRB format)
       return EdgeInsets.fromLTRB(
         (value['left'] as num?)?.toDouble() ?? 0,
         (value['top'] as num?)?.toDouble() ?? 0,
@@ -1455,26 +1599,276 @@ class UIRenderer {
     if (value is Map) {
       return BoxDecoration(
         color: _parseColor(value['color']),
+        gradient: _parseGradient(value['gradient']),
         border: _parseBorder(value['border']),
         borderRadius: _parseBorderRadius(value['borderRadius']),
+        boxShadow: _parseBoxShadow(value['boxShadow']),
+        shape: _parseBoxShape(value['shape']),
       );
     }
     return null;
   }
 
-  static Border? _parseBorder(dynamic value) {
+  /// Parse gradient from JSON configuration
+  /// 
+  /// Supports:
+  /// - Linear gradients with colors, begin, and end positions
+  /// - Radial gradients with center and radius
+  /// - Sweep gradients with center and rotation
+  ///
+  /// Example JSON:
+  /// ```json
+  /// {
+  ///   "type": "linear",
+  ///   "colors": ["#FF0000", "#00FF00", "#0000FF"],
+  ///   "stops": [0.0, 0.5, 1.0],
+  ///   "begin": "topLeft",
+  ///   "end": "bottomRight"
+  /// }
+  /// ```
+  static Gradient? _parseGradient(dynamic value) {
     if (value == null) return null;
     if (value is Map) {
-      final color = _parseColor(value['color']) ?? Colors.black;
-      final width = (value['width'] as num?)?.toDouble() ?? 1.0;
-      return Border.all(color: color, width: width);
+      final type = value['type'] as String? ?? 'linear';
+      final colors = (value['colors'] as List?)
+          ?.map((c) => _parseColor(c))
+          .where((c) => c != null)
+          .cast<Color>()
+          .toList() ?? [];
+      
+      if (colors.isEmpty) return null;
+      
+      final stops = (value['stops'] as List?)
+          ?.map((s) => (s as num).toDouble())
+          .toList();
+      
+      switch (type.toLowerCase()) {
+        case 'linear':
+          return LinearGradient(
+            colors: colors,
+            stops: stops,
+            begin: _parseAlignmentFromValue(value['begin']),
+            end: _parseAlignmentFromValue(value['end']),
+          );
+        
+        case 'radial':
+          return RadialGradient(
+            colors: colors,
+            stops: stops,
+            center: _parseAlignmentFromValue(value['center']),
+            radius: (value['radius'] as num?)?.toDouble() ?? 0.5,
+          );
+        
+        case 'sweep':
+          return SweepGradient(
+            colors: colors,
+            stops: stops,
+            center: _parseAlignmentFromValue(value['center']),
+            startAngle: (value['startAngle'] as num?)?.toDouble() ?? 0.0,
+            endAngle: (value['endAngle'] as num?)?.toDouble() ?? 6.28318530718, // 2π
+          );
+        
+        default:
+          return LinearGradient(colors: colors, stops: stops);
+      }
     }
     return null;
   }
 
+  /// Parse alignment from string or map
+  /// 
+  /// Supports common alignment names and custom coordinates
+  /// 
+  /// Examples:
+  /// - "topLeft", "center", "bottomRight"
+  /// - {"x": -1.0, "y": -1.0}
+  static Alignment _parseAlignmentFromValue(dynamic value) {
+    if (value == null) return Alignment.center;
+    
+    if (value is String) {
+      // Handle both camelCase (topLeft) and lowercase (topleft) formats
+      final normalized = value.toLowerCase().replaceAll('_', '').replaceAll('-', '');
+      switch (normalized) {
+        case 'topleft': return Alignment.topLeft;
+        case 'topcenter': return Alignment.topCenter;
+        case 'topright': return Alignment.topRight;
+        case 'centerleft': return Alignment.centerLeft;
+        case 'center': return Alignment.center;
+        case 'centerright': return Alignment.centerRight;
+        case 'bottomleft': return Alignment.bottomLeft;
+        case 'bottomcenter': return Alignment.bottomCenter;
+        case 'bottomright': return Alignment.bottomRight;
+        default: 
+          return Alignment.center;
+      }
+    }
+    
+    if (value is Map) {
+      final x = (value['x'] as num?)?.toDouble() ?? 0.0;
+      final y = (value['y'] as num?)?.toDouble() ?? 0.0;
+      return Alignment(x, y);
+    }
+    
+    return Alignment.center;
+  }
+
+  /// Parse box shadows from JSON array
+  /// 
+  /// Supports multiple shadows with color, blur, spread, and offset
+  /// 
+  /// Example JSON:
+  /// ```json
+  /// [
+  ///   {
+  ///     "color": "#00000040",
+  ///     "blurRadius": 8.0,
+  ///     "spreadRadius": 2.0,
+  ///     "offset": {"dx": 0, "dy": 4}
+  ///   }
+  /// ]
+  /// ```
+  static List<BoxShadow>? _parseBoxShadow(dynamic value) {
+    if (value == null) return null;
+    if (value is List) {
+      return value
+          .map((shadow) => _parseSingleBoxShadow(shadow))
+          .where((shadow) => shadow != null)
+          .cast<BoxShadow>()
+          .toList();
+    }
+    return null;
+  }
+
+  /// Parse single box shadow from JSON
+  static BoxShadow? _parseSingleBoxShadow(dynamic value) {
+    if (value is Map) {
+      return BoxShadow(
+        color: _parseColor(value['color']) ?? Colors.black26,
+        blurRadius: (value['blurRadius'] as num?)?.toDouble() ?? 0.0,
+        spreadRadius: (value['spreadRadius'] as num?)?.toDouble() ?? 0.0,
+        offset: _parseOffset(value['offset']),
+      );
+    }
+    return null;
+  }
+
+  /// Parse offset from JSON
+  /// 
+  /// Example: {"dx": 2.0, "dy": 4.0}
+  static Offset _parseOffset(dynamic value) {
+    if (value is Map) {
+      final dx = (value['dx'] as num?)?.toDouble() ?? 0.0;
+      final dy = (value['dy'] as num?)?.toDouble() ?? 0.0;
+      return Offset(dx, dy);
+    }
+    return Offset.zero;
+  }
+
+  /// Parse box shape from string
+  /// 
+  /// Supports: "rectangle", "circle"
+  static BoxShape _parseBoxShape(dynamic value) {
+    if (value is String) {
+      switch (value.toLowerCase()) {
+        case 'circle': return BoxShape.circle;
+        case 'rectangle': return BoxShape.rectangle;
+        default: return BoxShape.rectangle;
+      }
+    }
+    return BoxShape.rectangle;
+  }
+
+  /// Enhanced border parsing with support for complex borders
+  /// 
+  /// Supports:
+  /// - Simple borders: {"color": "#FF0000", "width": 2.0}
+  /// - Side-specific borders: {"left": {...}, "right": {...}}
+  /// - Border styles: solid, dotted, dashed (note: Flutter has limited support)
+  static Border? _parseBorder(dynamic value) {
+    if (value == null) return null;
+    if (value is Map) {
+      // Check if it's a simple border (all sides)
+      if (value.containsKey('color') || value.containsKey('width')) {
+        final color = _parseColor(value['color']) ?? Colors.black;
+        final width = (value['width'] as num?)?.toDouble() ?? 1.0;
+        return Border.all(color: color, width: width);
+      }
+      
+      // Complex border with individual sides
+      return Border(
+        left: _parseBorderSide(value['left']) ?? BorderSide.none,
+        right: _parseBorderSide(value['right']) ?? BorderSide.none,
+        top: _parseBorderSide(value['top']) ?? BorderSide.none,
+        bottom: _parseBorderSide(value['bottom']) ?? BorderSide.none,
+      );
+    }
+    return null;
+  }
+
+  /// Parse individual border side
+  /// 
+  /// Example: {"color": "#FF0000", "width": 2.0, "style": "solid"}
+  static BorderSide? _parseBorderSide(dynamic value) {
+    if (value is Map) {
+      final color = _parseColor(value['color']) ?? Colors.black;
+      final width = (value['width'] as num?)?.toDouble() ?? 1.0;
+      final style = _parseBorderStyle(value['style']);
+      
+      return BorderSide(
+        color: color,
+        width: width,
+        style: style,
+      );
+    }
+    return null;
+  }
+
+  /// Parse border style from string
+  static BorderStyle _parseBorderStyle(dynamic value) {
+    if (value is String) {
+      switch (value.toLowerCase()) {
+        case 'solid': return BorderStyle.solid;
+        case 'none': return BorderStyle.none;
+        default: return BorderStyle.solid;
+      }
+    }
+    return BorderStyle.solid;
+  }
+
+  /// Enhanced border radius parsing
+  /// 
+  /// Supports:
+  /// - Simple radius: 8.0
+  /// - Object radius: {"all": 8.0}
+  /// - Individual corners: {"topLeft": 8.0, "topRight": 4.0, ...}
   static BorderRadius? _parseBorderRadius(dynamic value) {
     if (value == null) return null;
-    if (value is num) return BorderRadius.circular(value.toDouble());
+    
+    if (value is num) {
+      return BorderRadius.circular(value.toDouble());
+    }
+    
+    if (value is Map) {
+      // Check for "all" property
+      if (value.containsKey('all')) {
+        final radius = (value['all'] as num?)?.toDouble() ?? 0.0;
+        return BorderRadius.circular(radius);
+      }
+      
+      // Individual corner radii
+      final topLeft = (value['topLeft'] as num?)?.toDouble() ?? 0.0;
+      final topRight = (value['topRight'] as num?)?.toDouble() ?? 0.0;
+      final bottomLeft = (value['bottomLeft'] as num?)?.toDouble() ?? 0.0;
+      final bottomRight = (value['bottomRight'] as num?)?.toDouble() ?? 0.0;
+      
+      return BorderRadius.only(
+        topLeft: Radius.circular(topLeft),
+        topRight: Radius.circular(topRight),
+        bottomLeft: Radius.circular(bottomLeft),
+        bottomRight: Radius.circular(bottomRight),
+      );
+    }
+    
     return null;
   }
 }

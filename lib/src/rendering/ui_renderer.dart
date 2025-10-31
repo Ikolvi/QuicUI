@@ -140,6 +140,7 @@ import 'navigation_widgets.dart';
 import 'animation_widgets.dart';
 import 'data_display_widgets.dart';
 import 'state_management_widgets.dart';
+import 'gesture_widgets.dart';
 
 /// Main UI renderer for building Flutter widgets from JSON
 ///
@@ -444,6 +445,11 @@ class UIRenderer {
         'SegmentedButton' => _buildSegmentedButton(properties),
         'SearchBar' => _buildSearchBar(properties),
         'Form' => _buildForm(properties, childrenData, context),
+        
+        // ===== GESTURE WIDGETS =====
+        'GestureDetector' => buildGestureDetector(config, _handleCallback),
+        'InkWell' => buildInkWell(config, _handleCallback),
+        'InkResponse' => buildInkResponse(config, _handleCallback),
         
         // ===== DIALOG & OVERLAY WIDGETS =====
         'Dialog' => _buildDialog(properties, childrenData, context),

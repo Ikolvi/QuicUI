@@ -318,3 +318,194 @@ BorderRadius? _parseBorderRadius(dynamic value) {
 
   return null;
 }
+
+// ============================================================================
+// PHASE 2: ADVANCED GESTURE WIDGETS (DRAG & DROP)
+// ============================================================================
+
+/// Builds a Draggable widget from JSON configuration
+///
+/// Draggable makes a widget draggable. Typically paired with DragTarget.
+///
+/// Properties:
+/// - data: Object to pass when drag completes (string key to data map)
+/// - axis: 'horizontal', 'vertical', or 'free' (default: 'free')
+/// - affinity: 'vertical' or 'horizontal'
+/// - ignoringFeedbackSemantics: bool (default: true)
+Widget buildDraggable(
+  Map<String, dynamic> config,
+  Function(dynamic, Map<String, dynamic>)? onCallback,
+) {
+  LoggerUtil.debug('🖱️ Building Draggable');
+
+  final properties = config['properties'] ?? {};
+  final data = properties['data'] ?? 'draggable_data';
+  final axisStr = properties['axis'] ?? 'free';
+  final axis = _parseAxis(axisStr);
+  final ignoringFeedback = properties['ignoringFeedbackSemantics'] ?? true;
+
+  Widget child = const SizedBox(
+    width: 100,
+    height: 100,
+    child: Placeholder(),
+  );
+
+  Widget feedback = child;
+  Widget childWhenDragging = const SizedBox.shrink();
+
+  return Draggable(
+    data: data,
+    axis: axis,
+    ignoringFeedbackSemantics: ignoringFeedback,
+    feedback: feedback,
+    childWhenDragging: childWhenDragging,
+    onDragStarted: config['events']?['onDragStarted'] != null
+        ? () => onCallback?.call(config['events']['onDragStarted'], config)
+        : null,
+    onDraggableCanceled: config['events']?['onDraggableCanceled'] != null
+        ? (velocity, offset) =>
+            onCallback?.call(config['events']['onDraggableCanceled'], config)
+        : null,
+    onDragEnd: config['events']?['onDragEnd'] != null
+        ? (details) =>
+            onCallback?.call(config['events']['onDragEnd'], config)
+        : null,
+    onDragCompleted: config['events']?['onDragCompleted'] != null
+        ? () => onCallback?.call(config['events']['onDragCompleted'], config)
+        : null,
+    child: child,
+  );
+}
+
+/// Builds a LongPressDraggable widget from JSON configuration
+///
+/// LongPressDraggable is a Draggable that only starts dragging on long press.
+/// Better UX for most cases than regular Draggable.
+///
+/// Properties (same as Draggable, plus):
+/// - delayMs: int (duration before drag starts, default: 500)
+/// - maxSimultaneousDrags: int (default: unlimited)
+Widget buildLongPressDraggable(
+  Map<String, dynamic> config,
+  Function(dynamic, Map<String, dynamic>)? onCallback,
+) {
+  LoggerUtil.debug('🖱️ Building LongPressDraggable');
+
+  final properties = config['properties'] ?? {};
+  final data = properties['data'] ?? 'draggable_data';
+  final axisStr = properties['axis'] ?? 'free';
+  final axis = _parseAxis(axisStr);
+  final ignoringFeedback = properties['ignoringFeedbackSemantics'] ?? true;
+  final delayMs = (properties['delayMs'] as int?) ?? 500;
+  final maxDrags = properties['maxSimultaneousDrags'] as int?;
+
+  Widget child = const SizedBox(
+    width: 100,
+    height: 100,
+    child: Placeholder(),
+  );
+
+  Widget feedback = child;
+  Widget childWhenDragging = const SizedBox.shrink();
+
+  return LongPressDraggable(
+    data: data,
+    axis: axis,
+    ignoringFeedbackSemantics: ignoringFeedback,
+    delay: Duration(milliseconds: delayMs),
+    maxSimultaneousDrags: maxDrags,
+    feedback: feedback,
+    childWhenDragging: childWhenDragging,
+    onDragStarted: config['events']?['onDragStarted'] != null
+        ? () => onCallback?.call(config['events']['onDragStarted'], config)
+        : null,
+    onDraggableCanceled: config['events']?['onDraggableCanceled'] != null
+        ? (velocity, offset) =>
+            onCallback?.call(config['events']['onDraggableCanceled'], config)
+        : null,
+    onDragEnd: config['events']?['onDragEnd'] != null
+        ? (details) =>
+            onCallback?.call(config['events']['onDragEnd'], config)
+        : null,
+    onDragCompleted: config['events']?['onDragCompleted'] != null
+        ? () => onCallback?.call(config['events']['onDragCompleted'], config)
+        : null,
+    child: child,
+  );
+}
+
+/// Builds a DragTarget widget from JSON configuration
+///
+/// DragTarget is a widget that accepts drops from Draggable widgets.
+///
+/// Properties:
+/// - acceptedTypes: List of drag types this target accepts
+/// - onWillAccept: bool callback when drag enters target
+/// - onAccept: callback when drop accepted
+/// - onLeave: callback when drag leaves target
+Widget buildDragTarget(
+  Map<String, dynamic> config,
+  Function(dynamic, Map<String, dynamic>)? onCallback,
+) {
+  LoggerUtil.debug('🖱️ Building DragTarget');
+
+  // Properties are reserved for future enhancements
+  // final properties = config['properties'] ?? {};
+
+  Widget builder(
+    BuildContext context,
+    List<dynamic> accepted,
+    List<dynamic> rejected,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(
+          color: accepted.isNotEmpty ? Colors.green : Colors.grey,
+          width: 2,
+        ),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: const Center(
+        child: Placeholder(),
+      ),
+    );
+  }
+
+  return DragTarget(
+    builder: builder,
+    onWillAccept: config['events']?['onWillAccept'] != null
+        ? (data) {
+            onCallback?.call(config['events']['onWillAccept'], config);
+            return true;
+          }
+        : null,
+    onAccept: config['events']?['onAccept'] != null
+        ? (data) =>
+            onCallback?.call(config['events']['onAccept'], config)
+        : null,
+    onLeave: config['events']?['onLeave'] != null
+        ? (data) =>
+            onCallback?.call(config['events']['onLeave'], config)
+        : null,
+  );
+}
+
+// ============================================================================
+// PHASE 2 HELPER FUNCTIONS
+// ============================================================================
+
+/// Parses Axis from string
+Axis _parseAxis(dynamic value) {
+  if (value is String) {
+    switch (value.toLowerCase()) {
+      case 'horizontal':
+        return Axis.horizontal;
+      case 'vertical':
+        return Axis.vertical;
+      case 'free':
+      default:
+        return Axis.vertical;
+    }
+  }
+  return Axis.vertical;
+}

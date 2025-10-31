@@ -451,6 +451,11 @@ class UIRenderer {
         'InkWell' => buildInkWell(config, _handleCallback),
         'InkResponse' => buildInkResponse(config, _handleCallback),
         
+        // ===== DRAG & DROP WIDGETS (Phase 2) =====
+        'Draggable' => buildDraggable(config, _handleCallback),
+        'LongPressDraggable' => buildLongPressDraggable(config, _handleCallback),
+        'DragTarget' => buildDragTarget(config, _handleCallback),
+        
         // ===== DIALOG & OVERLAY WIDGETS =====
         'Dialog' => _buildDialog(properties, childrenData, context),
         'AlertDialog' => _buildAlertDialog(properties, childrenData, context),

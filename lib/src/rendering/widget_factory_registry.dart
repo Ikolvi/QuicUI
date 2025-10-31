@@ -1221,11 +1221,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return AnimatedContainer(
-      duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 300),
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return animation_widgets.AnimationWidgets.buildAnimatedContainer(properties, childrenData);
   }
 
   static Widget _buildAnimatedOpacity(
@@ -1234,12 +1230,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return AnimatedOpacity(
-      opacity: (properties['opacity'] as num?)?.toDouble() ?? 1.0,
-      duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 300),
-      child: child as Widget? ?? const Placeholder(),
-    );
+    return animation_widgets.AnimationWidgets.buildAnimatedOpacity(properties, childrenData);
   }
 
   static Widget _buildFadeInImage(
@@ -1916,12 +1907,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : const Placeholder();
-    return AnimatedScale(
-      scale: (properties['scale'] as num?)?.toDouble() ?? 1.0,
-      duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 300),
-      child: child as Widget,
-    );
+    return animation_widgets.AnimationWidgets.buildAnimatedScale(properties, childrenData);
   }
 
   static Widget _buildAnimatedRotation(
@@ -1930,12 +1916,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : const Placeholder();
-    return AnimatedRotation(
-      turns: (properties['turns'] as num?)?.toDouble() ?? 0.0,
-      duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 300),
-      child: child as Widget,
-    );
+    return animation_widgets.AnimationWidgets.buildAnimatedRotation(properties, childrenData);
   }
 
   static Widget _buildAnimatedPositioned(
@@ -1944,17 +1925,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : const Placeholder();
-    return Stack(
-      children: [
-        AnimatedPositioned(
-          left: (properties['left'] as num?)?.toDouble() ?? 0,
-          top: (properties['top'] as num?)?.toDouble() ?? 0,
-          duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 300),
-          child: child as Widget,
-        ),
-      ],
-    );
+    return animation_widgets.AnimationWidgets.buildAnimatedPositioned(properties, childrenData);
   }
 
   static Widget _buildAnimatedAlign(
@@ -1963,12 +1934,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : const Placeholder();
-    return AnimatedAlign(
-      alignment: _parseAlignment(properties['alignment'] as String? ?? 'center'),
-      duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 300),
-      child: child as Widget,
-    );
+    return animation_widgets.AnimationWidgets.buildAnimatedAlign(properties, childrenData);
   }
 
   static Widget _buildAnimatedBuilder(
@@ -1987,12 +1953,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : const Placeholder();
-    return AnimatedDefaultTextStyle(
-      style: TextStyle(fontSize: (properties['fontSize'] as num?)?.toDouble() ?? 14),
-      duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 300),
-      child: child as Widget,
-    );
+    return animation_widgets.AnimationWidgets.buildAnimatedDefaultTextStyle(properties, childrenData);
   }
 
   static Widget _buildAnimatedPhysicalModel(
@@ -2001,15 +1962,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : const Placeholder();
-    return AnimatedPhysicalModel(
-      shape: BoxShape.rectangle,
-      elevation: (properties['elevation'] as num?)?.toDouble() ?? 0,
-      color: _parseColor(properties['color']) ?? Colors.white,
-      shadowColor: Colors.black,
-      duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 300),
-      child: child as Widget,
-    );
+    return animation_widgets.AnimationWidgets.buildAnimatedPhysicalModel(properties, childrenData);
   }
 
   static Widget _buildAnimatedSwitcher(
@@ -2018,11 +1971,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : const Placeholder();
-    return AnimatedSwitcher(
-      duration: Duration(milliseconds: (properties['duration'] as num?)?.toInt() ?? 300),
-      child: child as Widget,
-    );
+    return animation_widgets.AnimationWidgets.buildAnimatedSwitcher(properties, childrenData);
   }
 
   static Widget _buildHero(
@@ -2031,11 +1980,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : const Placeholder();
-    return Hero(
-      tag: properties['tag'] ?? 'hero',
-      child: child as Widget,
-    );
+    return animation_widgets.AnimationWidgets.buildHero(properties, childrenData);
   }
 
   static Widget _buildTweenAnimationBuilder(

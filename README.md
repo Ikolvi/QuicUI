@@ -24,7 +24,17 @@
 
 ## 📦 What's New
 
-**v1.0.4 (October 30, 2025) - Callback Action System** ✨ NEW
+**v1.0.5 (October 31, 2025) - Enhanced Padding/Margin & Task Manager** ✨ NEW
+- ✅ **Enhanced Padding/Margin Support**: `{"all": 16}`, `{"horizontal": 20, "vertical": 10}` syntax
+- ✅ **Improved Container Rendering**: Better support for complex decoration patterns
+- ✅ **Task Manager Example**: Complete production-ready task management app
+- ✅ **Layout Overflow Fixes**: Proper Expanded widget usage for responsive layouts  
+- ✅ **Icon Spacing Improvements**: Better touch targets and visual spacing
+- ✅ **Deprecated API Fixes**: Updated to latest Flutter APIs (Color, Radio widgets)
+- ✅ **JSON Structure Enhancements**: Support for nested container hierarchies
+- ✅ **Mobile-Optimized UI**: Perfect spacing and alignment for mobile devices
+
+**v1.0.4 (October 30, 2025) - Callback Action System** ✨
 - ✅ Generic callback action system (navigate, setState, apiCall, custom)
 - ✅ JSON-driven interactive flows without Dart code
 - ✅ Action chaining with success/error handling
@@ -113,11 +123,19 @@ class MyApp extends StatelessWidget {
 
 ### Example Applications
 See `/example` folder for:
+- **Task Manager Runner** ✨ NEW - Production-ready task management app with advanced UI patterns
 - Counter App - Simple state management
-- Form App - Input handling and validation
+- Form App - Input handling and validation  
 - Todo App - CRUD operations
 - Offline Sync App - Offline-first synchronization
 - Dashboard App - Complex layouts and theming
+
+#### Task Manager Example Features ✨ NEW
+- **Advanced Layout Patterns**: Nested containers with proper spacing
+- **Mobile-Optimized Design**: Perfect touch targets and visual hierarchy
+- **Complex JSON Structure**: Real-world example of sophisticated UI composition
+- **Responsive Layout**: Proper Expanded widget usage to prevent overflow
+- **Enhanced Styling**: Modern Material Design with shadows, borders, and gradients
 
 
 ## 🔌 Official Plugins
@@ -320,6 +338,31 @@ CallbackRegistry.register('validateEmail', (context, params) async {
 - Testing examples
 
 ## 📝 JSON Schema Example
+
+### Enhanced Padding & Margin Support ✨ NEW
+
+QuicUI now supports multiple padding and margin formats for easier styling:
+
+```json
+{
+  "type": "Container",
+  "properties": {
+    "padding": {"all": 16},           // Uniform padding
+    "margin": {"horizontal": 20, "vertical": 10}, // Symmetric spacing
+    "decoration": {
+      "color": "#F5F5F5",
+      "borderRadius": {"all": 12}
+    }
+  },
+  "children": [...]
+}
+```
+
+**Supported Formats:**
+- `{"all": 16}` - Apply to all sides
+- `{"horizontal": 20, "vertical": 10}` - Symmetric spacing
+- `{"left": 10, "right": 20, "top": 5, "bottom": 15}` - Individual sides
+- `16` - Simple number (applies to all sides)
 
 ### About the ID Field
 

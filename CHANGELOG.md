@@ -1,3 +1,51 @@
+## 1.0.5 - October 31, 2025
+
+### 🎨 Enhanced Padding/Margin & Task Manager Example
+
+**New Padding/Margin Syntax** ✨
+- ✅ **Enhanced `_parseEdgeInsets` support**: `{"all": 16}`, `{"horizontal": 20, "vertical": 10}` syntax
+- ✅ **Backward Compatible**: All existing `{"left": x, "right": y}` syntax still works
+- ✅ **75% Less JSON**: Common padding patterns now require much less code
+- ✅ **Semantic Properties**: Clear intent with `all`, `horizontal`, `vertical` keywords
+- ✅ **Mixed Format Support**: Combine different formats as needed
+
+**Production-Ready Task Manager Example** 📱
+- ✅ **Complete Flutter App**: Full-featured task management application
+- ✅ **Advanced Layout Patterns**: Nested containers with proper spacing hierarchy
+- ✅ **Mobile-Optimized Design**: Perfect touch targets and visual spacing
+- ✅ **Overflow Prevention**: Proper `Expanded` widget usage for responsive text
+- ✅ **Professional UI**: Material Design with shadows, borders, and gradients
+- ✅ **Real-World JSON**: Complex, production-ready UI structure example
+
+**Flutter API Modernization** 🔄
+- ✅ **Fixed Deprecated APIs**: Updated Color properties (`.r/.g/.b` instead of deprecated)
+- ✅ **Modern Radio Widgets**: Removed deprecated `onChanged` parameters
+- ✅ **Future-Proof Code**: Compatible with latest Flutter 3.0+ APIs
+- ✅ **Clean Warnings**: Zero deprecation warnings in console output
+
+**Layout & Rendering Improvements** 📐  
+- ✅ **Enhanced Container Rendering**: Better support for complex decoration patterns
+- ✅ **Icon Spacing**: 8px padding around icons for better touch targets (44px minimum)
+- ✅ **Responsive Layout**: Proper overflow handling with Expanded widgets
+- ✅ **Visual Hierarchy**: Consistent spacing system throughout applications
+- ✅ **JSON Structure**: Support for sophisticated nested container hierarchies
+
+**Code Quality & Architecture** 🏗️
+- ✅ **LoggerUtil Integration**: Better debugging and error reporting
+- ✅ **Removed Deprecated Dependencies**: Cleaned up Supabase service dependencies
+- ✅ **Enhanced Documentation**: 2 new comprehensive guides (Padding/Margin + Task Manager)
+- ✅ **Example Structure**: Organized example applications with clear documentation
+- ✅ **Testing & Validation**: JSON syntax validation and error handling improvements
+
+**New Documentation** 📚
+- ✅ **[Padding & Margin Guide](./PADDING_MARGIN_GUIDE.md)**: Complete syntax reference with examples
+- ✅ **[Task Manager Guide](./TASK_MANAGER_EXAMPLE_GUIDE.md)**: Production app walkthrough
+- ✅ **Enhanced README**: Updated with new features and syntax examples
+- ✅ **Migration Guide**: How to upgrade from older padding/margin syntax
+- ✅ **Best Practices**: Mobile-first design patterns and common pitfall solutions
+
+---
+
 ## 1.0.3 - October 30, 2025
 
 ### 📚 Plugin Documentation & Integration

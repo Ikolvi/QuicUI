@@ -809,17 +809,17 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final childrenData2 = properties['children'] as List? ?? [];
-    final child = childrenData2.isNotEmpty ? render(childrenData2.first) : Text(properties['label'] as String? ?? 'Button');
-    
-    return ElevatedButton(
-      onPressed: () {
+    return input_widgets.InputWidgets.buildElevatedButton(
+      properties,
+      childrenData: childrenData,
+      context: context,
+      render: (cfg, {childrenData, context}) => render(cfg),
+      onCallback: (props) {
         final events = properties['events'] as Map<String, dynamic>?;
         if (events != null) {
           _handleCallback(events['onPressed'], properties);
         }
       },
-      child: child as Widget,
     );
   }
 
@@ -829,17 +829,17 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final childrenData2 = properties['children'] as List? ?? [];
-    final child = childrenData2.isNotEmpty ? render(childrenData2.first) : Text(properties['label'] as String? ?? 'Button');
-    
-    return TextButton(
-      onPressed: () {
+    return input_widgets.InputWidgets.buildTextButton(
+      properties,
+      childrenData: childrenData,
+      context: context,
+      render: (cfg, {childrenData, context}) => render(cfg),
+      onCallback: (props) {
         final events = properties['events'] as Map<String, dynamic>?;
         if (events != null) {
           _handleCallback(events['onPressed'], properties);
         }
       },
-      child: child as Widget,
     );
   }
 
@@ -849,9 +849,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return IconButton(
-      icon: Icon(_parseIconData(properties['icon'] as String? ?? 'info')),
-      onPressed: () {
+    return input_widgets.InputWidgets.buildIconButton(
+      properties,
+      childrenData: childrenData,
+      context: context,
+      onCallback: (props) {
         final events = properties['events'] as Map<String, dynamic>?;
         if (events != null) {
           _handleCallback(events['onPressed'], properties);
@@ -866,17 +868,17 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final childrenData2 = properties['children'] as List? ?? [];
-    final child = childrenData2.isNotEmpty ? render(childrenData2.first) : Text(properties['label'] as String? ?? 'Button');
-    
-    return OutlinedButton(
-      onPressed: () {
+    return input_widgets.InputWidgets.buildOutlinedButton(
+      properties,
+      childrenData: childrenData,
+      context: context,
+      render: (cfg, {childrenData, context}) => render(cfg),
+      onCallback: (props) {
         final events = properties['events'] as Map<String, dynamic>?;
         if (events != null) {
           _handleCallback(events['onPressed'], properties);
         }
       },
-      child: child as Widget,
     );
   }
 
@@ -886,21 +888,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final fieldId = properties['fieldId'] as String? ?? 'field_${DateTime.now().millisecondsSinceEpoch}';
-    
-    final controller = _fieldControllers.putIfAbsent(
-      fieldId,
-      () => TextEditingController(),
-    );
-    
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(
-        labelText: properties['label'] as String?,
-        hintText: properties['hint'] as String?,
-        border: const OutlineInputBorder(),
-      ),
-      obscureText: properties['obscureText'] as bool? ?? false,
+    return input_widgets.InputWidgets.buildTextField(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -910,9 +901,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Checkbox(
-      value: properties['value'] as bool? ?? false,
-      onChanged: (bool? value) {},
+    return input_widgets.InputWidgets.buildCheckbox(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -922,10 +914,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return CheckboxListTile(
-      title: Text(properties['label'] as String? ?? ''),
-      value: properties['value'] as bool? ?? false,
-      onChanged: (bool? value) {},
+    return input_widgets.InputWidgets.buildCheckboxListTile(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -935,8 +927,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Radio<String>(
-      value: properties['value'] as String? ?? '',
+    return input_widgets.InputWidgets.buildRadio(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -946,9 +940,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return RadioListTile<String>(
-      title: Text(properties['label'] as String? ?? ''),
-      value: properties['value'] as String? ?? '',
+    return input_widgets.InputWidgets.buildRadioListTile(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -958,9 +953,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Switch(
-      value: properties['value'] as bool? ?? false,
-      onChanged: (bool value) {},
+    return input_widgets.InputWidgets.buildSwitch(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -970,10 +966,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return SwitchListTile(
-      title: Text(properties['label'] as String? ?? ''),
-      value: properties['value'] as bool? ?? false,
-      onChanged: (bool value) {},
+    return input_widgets.InputWidgets.buildSwitchListTile(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -983,11 +979,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Slider(
-      min: (properties['min'] as num?)?.toDouble() ?? 0.0,
-      max: (properties['max'] as num?)?.toDouble() ?? 100.0,
-      value: (properties['value'] as num?)?.toDouble() ?? 0.0,
-      onChanged: (double value) {},
+    return input_widgets.InputWidgets.buildSlider(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -997,14 +992,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return RangeSlider(
-      min: (properties['min'] as num?)?.toDouble() ?? 0.0,
-      max: (properties['max'] as num?)?.toDouble() ?? 100.0,
-      values: RangeValues(
-        (properties['startValue'] as num?)?.toDouble() ?? 0.0,
-        (properties['endValue'] as num?)?.toDouble() ?? 100.0,
-      ),
-      onChanged: (RangeValues values) {},
+    return input_widgets.InputWidgets.buildRangeSlider(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -1014,10 +1005,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return DropdownButton<String>(
-      hint: Text(properties['hint'] as String? ?? 'Select'),
-      items: [],
-      onChanged: (String? value) {},
+    return input_widgets.InputWidgets.buildDropdownButton(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -1027,8 +1018,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return PopupMenuButton<String>(
-      itemBuilder: (BuildContext context) => [],
+    return input_widgets.InputWidgets.buildPopupMenuButton(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -1038,10 +1031,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return SegmentedButton<String>(
-      segments: [],
-      selected: const <String>{},
-      onSelectionChanged: (Set<String> newSelection) {},
+    return input_widgets.InputWidgets.buildSegmentedButton(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -1063,8 +1056,12 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return Dialog(child: child as Widget? ?? const Placeholder());
+    return dialog_widgets.DialogWidgets.buildDialog(
+      properties,
+      childrenData: childrenData,
+      context: context,
+      render: (cfg, {childrenData, context}) => render(cfg),
+    );
   }
 
   static Widget _buildAlertDialog(
@@ -1073,9 +1070,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return AlertDialog(
-      title: Text(properties['title'] as String? ?? ''),
-      content: Text(properties['content'] as String? ?? ''),
+    return dialog_widgets.DialogWidgets.buildAlertDialog(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -1085,8 +1083,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return SimpleDialog(
-      title: Text(properties['title'] as String? ?? ''),
+    return dialog_widgets.DialogWidgets.buildSimpleDialog(
+      properties,
+      childrenData: childrenData,
+      context: context,
     );
   }
 
@@ -1096,10 +1096,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return Offstage(
-      offstage: properties['offstage'] as bool? ?? false,
-      child: child as Widget? ?? const Placeholder(),
+    return dialog_widgets.DialogWidgets.buildOffstage(
+      properties,
+      childrenData: childrenData,
+      context: context,
+      render: (cfg, {childrenData, context}) => render(cfg),
     );
   }
 
@@ -1140,10 +1141,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    final child = childrenData.isNotEmpty ? render(childrenData.first) : null;
-    return Visibility(
-      visible: properties['visible'] as bool? ?? true,
-      child: child as Widget? ?? const Placeholder(),
+    return dialog_widgets.DialogWidgets.buildVisibility(
+      properties,
+      childrenData: childrenData,
+      context: context,
+      render: (cfg, {childrenData, context}) => render(cfg),
     );
   }
 

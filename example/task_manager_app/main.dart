@@ -46,14 +46,17 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
   @override
   Widget build(BuildContext context) {
     if (appConfig == null) {
-      return const MaterialApp(
-        home: Scaffold(
+      return MaterialApp(
+        title: 'TaskManager Pro',
+        debugShowCheckedModeBanner: false,
+        theme: _buildTheme(),
+        home: const Scaffold(
           body: Center(child: CircularProgressIndicator()),
         ),
       );
     }
 
-    // Get current screen config
+    // Get current screen config (already contains complete Scaffold)
     final screens = appConfig!['screens'] as List? ?? [];
     final screenConfig = screens.firstWhere(
       (s) => s['id'] == currentScreenId,
@@ -64,7 +67,7 @@ class _TaskManagerAppState extends State<TaskManagerApp> {
     screenConfig['onNavigation'] = _onNavigation;
 
     return MaterialApp(
-      title: appConfig!['appName'] ?? 'App',
+      title: appConfig!['appName'] ?? 'TaskManager Pro',
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(),
       home: UIRenderer.render(screenConfig),

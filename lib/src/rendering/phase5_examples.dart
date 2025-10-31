@@ -1,433 +1,884 @@
-import 'package:flutter/material.dart';
-import 'phase5_widgets.dart';
-
-/// Phase 5 Examples - Animation & Transition Widget Usage
-/// Demonstrates practical implementations of 25 animation effects
+// Phase 5 Examples - Animation & Transition Widget Usage
+// Demonstrates practical implementations of 25 animation effects
+// Pure JSON configuration format (no method calls)
 
 class Phase5Examples {
-  /// Example: Fading UI element
-  static Widget buildFadingUIExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildAnimatedOpacity({'opacity': 0.5, 'duration': 800}, null),
-        SizedBox(height: 16),
-        Text('Fading Effect'),
-      ],
-    );
+  /// AnimatedOpacity Examples
+  static final animatedOpacityExamples = [
+    {
+      'name': 'Fade In Effect',
+      'type': 'AnimatedOpacityCustom',
+      'properties': {
+        'opacity': 1.0,
+        'duration': 800
+      }
+    },
+    {
+      'name': 'Fade Out Effect',
+      'type': 'AnimatedOpacityCustom',
+      'properties': {
+        'opacity': 0.0,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Semi-transparent',
+      'type': 'AnimatedOpacityCustom',
+      'properties': {
+        'opacity': 0.5,
+        'duration': 600
+      }
+    },
+  ];
+
+  /// AnimatedScale Examples
+  static final animatedScaleExamples = [
+    {
+      'name': 'Growing Widget',
+      'type': 'AnimatedScaleCustom',
+      'properties': {
+        'scale': 1.5,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Shrinking Widget',
+      'type': 'AnimatedScaleCustom',
+      'properties': {
+        'scale': 0.5,
+        'duration': 800
+      }
+    },
+    {
+      'name': 'Zoom Effect',
+      'type': 'AnimatedScaleCustom',
+      'properties': {
+        'scale': 2.0,
+        'duration': 1200
+      }
+    },
+  ];
+
+  /// AnimatedRotation Examples
+  static final animatedRotationExamples = [
+    {
+      'name': 'Half Turn',
+      'type': 'AnimatedRotationCustom',
+      'properties': {
+        'turns': 0.5,
+        'duration': 1500
+      }
+    },
+    {
+      'name': 'Full Rotation',
+      'type': 'AnimatedRotationCustom',
+      'properties': {
+        'turns': 1.0,
+        'duration': 2000
+      }
+    },
+    {
+      'name': 'Quarter Turn',
+      'type': 'AnimatedRotationCustom',
+      'properties': {
+        'turns': 0.25,
+        'duration': 800
+      }
+    },
+  ];
+
+  /// AnimatedContainer Examples
+  static final animatedContainerExamples = [
+    {
+      'name': 'Color Change Animation',
+      'type': 'AnimatedContainerCustom',
+      'properties': {
+        'width': 200,
+        'height': 150,
+        'duration': 800,
+        'backgroundColor': '#3498DB',
+        'borderRadius': 12
+      }
+    },
+    {
+      'name': 'Size Growing',
+      'type': 'AnimatedContainerCustom',
+      'properties': {
+        'width': 300,
+        'height': 250,
+        'duration': 1000,
+        'backgroundColor': '#E74C3C',
+        'borderRadius': 8
+      }
+    },
+    {
+      'name': 'Smooth Transition',
+      'type': 'AnimatedContainerCustom',
+      'properties': {
+        'width': 150,
+        'height': 100,
+        'duration': 1200,
+        'backgroundColor': '#2ECC71',
+        'borderRadius': 16
+      }
+    },
+  ];
+
+  /// AnimatedPositioned Examples
+  static final animatedPositionedExamples = [
+    {
+      'name': 'Position Move',
+      'type': 'AnimatedPositionedCustom',
+      'properties': {
+        'left': 20,
+        'top': 20,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Slide Down',
+      'type': 'AnimatedPositionedCustom',
+      'properties': {
+        'left': 0,
+        'top': 200,
+        'duration': 1500
+      }
+    },
+    {
+      'name': 'Center Position',
+      'type': 'AnimatedPositionedCustom',
+      'properties': {
+        'left': 100,
+        'top': 100,
+        'duration': 800
+      }
+    },
+  ];
+
+  /// AnimatedAlign Examples
+  static final animatedAlignExamples = [
+    {
+      'name': 'Center Align',
+      'type': 'AnimatedAlignCustom',
+      'properties': {
+        'alignment': 'center',
+        'duration': 800
+      }
+    },
+    {
+      'name': 'Bottom Right',
+      'type': 'AnimatedAlignCustom',
+      'properties': {
+        'alignment': 'bottomRight',
+        'duration': 800
+      }
+    },
+    {
+      'name': 'Top Left',
+      'type': 'AnimatedAlignCustom',
+      'properties': {
+        'alignment': 'topLeft',
+        'duration': 1000
+      }
+    },
+  ];
+
+  /// Hero Animation Examples
+  static final heroExamples = [
+    {
+      'name': 'Hero Image',
+      'type': 'HeroCustom',
+      'properties': {
+        'tag': 'hero-image',
+        'heroSize': 100
+      }
+    },
+    {
+      'name': 'Hero Avatar',
+      'type': 'HeroCustom',
+      'properties': {
+        'tag': 'hero-avatar',
+        'heroSize': 80
+      }
+    },
+    {
+      'name': 'Hero Icon',
+      'type': 'HeroCustom',
+      'properties': {
+        'tag': 'hero-icon',
+        'heroSize': 64
+      }
+    },
+  ];
+
+  /// TweenAnimationBuilder Examples
+  static final tweenAnimationBuilderExamples = [
+    {
+      'name': 'Number Counter',
+      'type': 'TweenAnimationBuilderCustom',
+      'properties': {
+        'duration': 2000,
+        'startValue': 0,
+        'endValue': 100
+      }
+    },
+    {
+      'name': 'Percentage Progress',
+      'type': 'TweenAnimationBuilderCustom',
+      'properties': {
+        'duration': 1500,
+        'startValue': 0,
+        'endValue': 1.0
+      }
+    },
+    {
+      'name': 'Countdown',
+      'type': 'TweenAnimationBuilderCustom',
+      'properties': {
+        'duration': 3000,
+        'startValue': 10,
+        'endValue': 0
+      }
+    },
+  ];
+
+  /// AnimatedDefaultTextStyle Examples
+  static final animatedDefaultTextStyleExamples = [
+    {
+      'name': 'Bold Animation',
+      'type': 'AnimatedDefaultTextStyleCustom',
+      'properties': {
+        'fontSize': 24,
+        'fontWeight': 'bold',
+        'color': '#333333',
+        'duration': 800
+      }
+    },
+    {
+      'name': 'Color Fade',
+      'type': 'AnimatedDefaultTextStyleCustom',
+      'properties': {
+        'fontSize': 20,
+        'fontWeight': 'normal',
+        'color': '#2196F3',
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Size Change',
+      'type': 'AnimatedDefaultTextStyleCustom',
+      'properties': {
+        'fontSize': 28,
+        'fontWeight': 'w500',
+        'color': '#FF6B6B',
+        'duration': 1200
+      }
+    },
+  ];
+
+  /// AnimatedPhysicalModel Examples
+  static final animatedPhysicalModelExamples = [
+    {
+      'name': 'Elevation Increase',
+      'type': 'AnimatedPhysicalModelCustom',
+      'properties': {
+        'elevation': 8,
+        'shadowColor': '#000000',
+        'duration': 800
+      }
+    },
+    {
+      'name': 'Deep Shadow',
+      'type': 'AnimatedPhysicalModelCustom',
+      'properties': {
+        'elevation': 16,
+        'shadowColor': '#333333',
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Light Shadow',
+      'type': 'AnimatedPhysicalModelCustom',
+      'properties': {
+        'elevation': 2,
+        'shadowColor': '#CCCCCC',
+        'duration': 600
+      }
+    },
+  ];
+
+  /// AnimatedSwitcher Examples
+  static final animatedSwitcherExamples = [
+    {
+      'name': 'Content Switch',
+      'type': 'AnimatedSwitcherCustom',
+      'properties': {
+        'duration': 500,
+        'transitionType': 'fade'
+      }
+    },
+    {
+      'name': 'Scale Transition',
+      'type': 'AnimatedSwitcherCustom',
+      'properties': {
+        'duration': 800,
+        'transitionType': 'scale'
+      }
+    },
+    {
+      'name': 'Slide Transition',
+      'type': 'AnimatedSwitcherCustom',
+      'properties': {
+        'duration': 700,
+        'transitionType': 'slide'
+      }
+    },
+  ];
+
+  /// SlideAnimation Examples
+  static final slideAnimationExamples = [
+    {
+      'name': 'Slide Right',
+      'type': 'SlideAnimation',
+      'properties': {
+        'slideX': 100,
+        'slideY': 0,
+        'duration': 800
+      }
+    },
+    {
+      'name': 'Slide Down',
+      'type': 'SlideAnimation',
+      'properties': {
+        'slideX': 0,
+        'slideY': 100,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Diagonal Slide',
+      'type': 'SlideAnimation',
+      'properties': {
+        'slideX': 50,
+        'slideY': 50,
+        'duration': 1200
+      }
+    },
+  ];
+
+  /// FadeAnimation Examples
+  static final fadeAnimationExamples = [
+    {
+      'name': 'Fade In',
+      'type': 'FadeAnimation',
+      'properties': {
+        'opacity': 1.0,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Fade Out',
+      'type': 'FadeAnimation',
+      'properties': {
+        'opacity': 0.0,
+        'duration': 800
+      }
+    },
+    {
+      'name': 'Semi Fade',
+      'type': 'FadeAnimation',
+      'properties': {
+        'opacity': 0.3,
+        'duration': 1200
+      }
+    },
+  ];
+
+  /// RotationAnimation Examples
+  static final rotationAnimationExamples = [
+    {
+      'name': 'Slow Spin',
+      'type': 'RotationAnimation',
+      'properties': {
+        'angle': 3.14159,
+        'duration': 2000
+      }
+    },
+    {
+      'name': 'Fast Spin',
+      'type': 'RotationAnimation',
+      'properties': {
+        'angle': 6.28318,
+        'duration': 800
+      }
+    },
+    {
+      'name': 'Quarter Turn',
+      'type': 'RotationAnimation',
+      'properties': {
+        'angle': 1.5708,
+        'duration': 600
+      }
+    },
+  ];
+
+  /// ScaleAnimation Examples
+  static final scaleAnimationExamples = [
+    {
+      'name': 'Zoom In',
+      'type': 'ScaleAnimation',
+      'properties': {
+        'scale': 2.0,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Zoom Out',
+      'type': 'ScaleAnimation',
+      'properties': {
+        'scale': 0.5,
+        'duration': 800
+      }
+    },
+    {
+      'name': 'Moderate Zoom',
+      'type': 'ScaleAnimation',
+      'properties': {
+        'scale': 1.3,
+        'duration': 1200
+      }
+    },
+  ];
+
+  /// SizeAnimation Examples
+  static final sizeAnimationExamples = [
+    {
+      'name': 'Expand',
+      'type': 'SizeAnimation',
+      'properties': {
+        'width': 300,
+        'height': 200,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Contract',
+      'type': 'SizeAnimation',
+      'properties': {
+        'width': 100,
+        'height': 80,
+        'duration': 800
+      }
+    },
+    {
+      'name': 'Smooth Resize',
+      'type': 'SizeAnimation',
+      'properties': {
+        'width': 200,
+        'height': 150,
+        'duration': 1200
+      }
+    },
+  ];
+
+  /// SkewAnimation Examples
+  static final skewAnimationExamples = [
+    {
+      'name': 'Skew Horizontal',
+      'type': 'SkewAnimation',
+      'properties': {
+        'skewX': 0.2,
+        'skewY': 0,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Skew Vertical',
+      'type': 'SkewAnimation',
+      'properties': {
+        'skewX': 0,
+        'skewY': 0.2,
+        'duration': 1200
+      }
+    },
+    {
+      'name': 'Skew Both',
+      'type': 'SkewAnimation',
+      'properties': {
+        'skewX': 0.15,
+        'skewY': 0.15,
+        'duration': 1500
+      }
+    },
+  ];
+
+  /// PerspectiveAnimation Examples
+  static final perspectiveAnimationExamples = [
+    {
+      'name': 'Perspective Tilt',
+      'type': 'PerspectiveAnimation',
+      'properties': {
+        'perspective': 0.003,
+        'rotationX': 0.5,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Subtle Perspective',
+      'type': 'PerspectiveAnimation',
+      'properties': {
+        'perspective': 0.001,
+        'rotationX': 0.2,
+        'duration': 1200
+      }
+    },
+    {
+      'name': 'Deep Perspective',
+      'type': 'PerspectiveAnimation',
+      'properties': {
+        'perspective': 0.005,
+        'rotationX': 0.8,
+        'duration': 1500
+      }
+    },
+  ];
+
+  /// ShakeAnimation Examples
+  static final shakeAnimationExamples = [
+    {
+      'name': 'Gentle Shake',
+      'type': 'ShakeAnimation',
+      'properties': {
+        'intensity': 4,
+        'duration': 400
+      }
+    },
+    {
+      'name': 'Strong Shake',
+      'type': 'ShakeAnimation',
+      'properties': {
+        'intensity': 8,
+        'duration': 600
+      }
+    },
+    {
+      'name': 'Vigorous Shake',
+      'type': 'ShakeAnimation',
+      'properties': {
+        'intensity': 12,
+        'duration': 800
+      }
+    },
+  ];
+
+  /// PulseAnimation Examples
+  static final pulseAnimationExamples = [
+    {
+      'name': 'Subtle Pulse',
+      'type': 'PulseAnimation',
+      'properties': {
+        'maxScale': 1.1,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Strong Pulse',
+      'type': 'PulseAnimation',
+      'properties': {
+        'maxScale': 1.3,
+        'duration': 1200
+      }
+    },
+    {
+      'name': 'Intense Pulse',
+      'type': 'PulseAnimation',
+      'properties': {
+        'maxScale': 1.5,
+        'duration': 1500
+      }
+    },
+  ];
+
+  /// FlipAnimation Examples
+  static final flipAnimationExamples = [
+    {
+      'name': 'Flip Horizontal',
+      'type': 'FlipAnimation',
+      'properties': {
+        'direction': 'horizontal',
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Flip Vertical',
+      'type': 'FlipAnimation',
+      'properties': {
+        'direction': 'vertical',
+        'duration': 1200
+      }
+    },
+    {
+      'name': 'Quick Flip',
+      'type': 'FlipAnimation',
+      'properties': {
+        'direction': 'horizontal',
+        'duration': 600
+      }
+    },
+  ];
+
+  /// BounceAnimation Examples
+  static final bounceAnimationExamples = [
+    {
+      'name': 'Light Bounce',
+      'type': 'BounceAnimation',
+      'properties': {
+        'bounceHeight': 20,
+        'duration': 800
+      }
+    },
+    {
+      'name': 'High Bounce',
+      'type': 'BounceAnimation',
+      'properties': {
+        'bounceHeight': 50,
+        'duration': 1200
+      }
+    },
+    {
+      'name': 'Extra High Bounce',
+      'type': 'BounceAnimation',
+      'properties': {
+        'bounceHeight': 80,
+        'duration': 1500
+      }
+    },
+  ];
+
+  /// FloatingAnimation Examples
+  static final floatingAnimationExamples = [
+    {
+      'name': 'Gentle Float',
+      'type': 'FloatingAnimation',
+      'properties': {
+        'floatDistance': 10,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Medium Float',
+      'type': 'FloatingAnimation',
+      'properties': {
+        'floatDistance': 15,
+        'duration': 1200
+      }
+    },
+    {
+      'name': 'High Float',
+      'type': 'FloatingAnimation',
+      'properties': {
+        'floatDistance': 25,
+        'duration': 1500
+      }
+    },
+  ];
+
+  /// GlowAnimation Examples
+  static final glowAnimationExamples = [
+    {
+      'name': 'Blue Glow',
+      'type': 'GlowAnimation',
+      'properties': {
+        'glowRadius': 10,
+        'glowColor': '#2196F3',
+        'duration': 1200
+      }
+    },
+    {
+      'name': 'Red Glow',
+      'type': 'GlowAnimation',
+      'properties': {
+        'glowRadius': 15,
+        'glowColor': '#F44336',
+        'duration': 1500
+      }
+    },
+    {
+      'name': 'Green Glow',
+      'type': 'GlowAnimation',
+      'properties': {
+        'glowRadius': 12,
+        'glowColor': '#4CAF50',
+        'duration': 1000
+      }
+    },
+  ];
+
+  /// ProgressAnimation Examples
+  static final progressAnimationExamples = [
+    {
+      'name': 'Quarter Progress',
+      'type': 'ProgressAnimation',
+      'properties': {
+        'progress': 0.25,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Half Progress',
+      'type': 'ProgressAnimation',
+      'properties': {
+        'progress': 0.5,
+        'duration': 1200
+      }
+    },
+    {
+      'name': 'Full Progress',
+      'type': 'ProgressAnimation',
+      'properties': {
+        'progress': 1.0,
+        'duration': 1500
+      }
+    },
+  ];
+
+  /// WaveAnimation Examples
+  static final waveAnimationExamples = [
+    {
+      'name': 'Gentle Wave',
+      'type': 'WaveAnimation',
+      'properties': {
+        'amplitude': 5,
+        'frequency': 2,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Strong Wave',
+      'type': 'WaveAnimation',
+      'properties': {
+        'amplitude': 10,
+        'frequency': 3,
+        'duration': 1200
+      }
+    },
+    {
+      'name': 'Intense Wave',
+      'type': 'WaveAnimation',
+      'properties': {
+        'amplitude': 15,
+        'frequency': 4,
+        'duration': 1500
+      }
+    },
+  ];
+
+  /// ColorAnimation Examples
+  static final colorAnimationExamples = [
+    {
+      'name': 'Blue to Green',
+      'type': 'ColorAnimation',
+      'properties': {
+        'startColor': '#2196F3',
+        'endColor': '#4CAF50',
+        'duration': 1500
+      }
+    },
+    {
+      'name': 'Red to Yellow',
+      'type': 'ColorAnimation',
+      'properties': {
+        'startColor': '#F44336',
+        'endColor': '#FFEB3B',
+        'duration': 1200
+      }
+    },
+    {
+      'name': 'Purple to Orange',
+      'type': 'ColorAnimation',
+      'properties': {
+        'startColor': '#9C27B0',
+        'endColor': '#FF9800',
+        'duration': 1800
+      }
+    },
+  ];
+
+  /// BlurAnimation Examples
+  static final blurAnimationExamples = [
+    {
+      'name': 'Blur In',
+      'type': 'BlurAnimation',
+      'properties': {
+        'blurAmount': 10,
+        'duration': 1000
+      }
+    },
+    {
+      'name': 'Blur Out',
+      'type': 'BlurAnimation',
+      'properties': {
+        'blurAmount': 0,
+        'duration': 1200
+      }
+    },
+    {
+      'name': 'Strong Blur',
+      'type': 'BlurAnimation',
+      'properties': {
+        'blurAmount': 20,
+        'duration': 1500
+      }
+    },
+  ];
+
+  /// Get all examples
+  static final allExamples = {
+    'AnimatedOpacityCustom': animatedOpacityExamples,
+    'AnimatedScaleCustom': animatedScaleExamples,
+    'AnimatedRotationCustom': animatedRotationExamples,
+    'AnimatedContainerCustom': animatedContainerExamples,
+    'AnimatedPositionedCustom': animatedPositionedExamples,
+    'AnimatedAlignCustom': animatedAlignExamples,
+    'HeroCustom': heroExamples,
+    'TweenAnimationBuilderCustom': tweenAnimationBuilderExamples,
+    'AnimatedDefaultTextStyleCustom': animatedDefaultTextStyleExamples,
+    'AnimatedPhysicalModelCustom': animatedPhysicalModelExamples,
+    'AnimatedSwitcherCustom': animatedSwitcherExamples,
+    'SlideAnimation': slideAnimationExamples,
+    'FadeAnimation': fadeAnimationExamples,
+    'RotationAnimation': rotationAnimationExamples,
+    'ScaleAnimation': scaleAnimationExamples,
+    'SizeAnimation': sizeAnimationExamples,
+    'SkewAnimation': skewAnimationExamples,
+    'PerspectiveAnimation': perspectiveAnimationExamples,
+    'ShakeAnimation': shakeAnimationExamples,
+    'PulseAnimation': pulseAnimationExamples,
+    'FlipAnimation': flipAnimationExamples,
+    'BounceAnimation': bounceAnimationExamples,
+    'FloatingAnimation': floatingAnimationExamples,
+    'GlowAnimation': glowAnimationExamples,
+    'ProgressAnimation': progressAnimationExamples,
+    'WaveAnimation': waveAnimationExamples,
+    'ColorAnimation': colorAnimationExamples,
+    'BlurAnimation': blurAnimationExamples,
+  };
+
+  /// Get example by type and index
+  static Map<String, dynamic>? getExample(String type, int index) {
+    final examples = allExamples[type];
+    if (examples != null && index >= 0 && index < examples.length) {
+      return examples[index];
+    }
+    return null;
   }
 
-  /// Example: Growing widget
-  static Widget buildGrowingWidgetExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildAnimatedScale({'scale': 1.5, 'duration': 1000}, null),
-        SizedBox(height: 16),
-        Text('Growing/Scaling'),
-      ],
-    );
-  }
-
-  /// Example: Spinning widget
-  static Widget buildSpinningWidgetExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildAnimatedRotation({'turns': 0.5, 'duration': 1500}, null),
-        SizedBox(height: 16),
-        Text('Spinning Animation'),
-      ],
-    );
-  }
-
-  /// Example: Animated card
-  static Widget buildAnimatedCardExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildAnimatedContainer({
-          'width': 200,
-          'height': 150,
-          'duration': 800,
-          'backgroundColor': '#3498db',
-          'borderRadius': 12,
-        }, null),
-        SizedBox(height: 16),
-        Text('Animated Card'),
-      ],
-    );
-  }
-
-  /// Example: Moving element with position animation
-  static Widget buildMovingElementExample() {
-    return Column(
-      children: [
-        Container(
-          height: 200,
-          width: 300,
-          color: Colors.grey[100],
-          child: Phase5Widgets.buildAnimatedPositioned({
-            'left': 50,
-            'top': 75,
-          }, null),
-        ),
-        Text('Position Animation'),
-      ],
-    );
-  }
-
-  /// Example: Align animation
-  static Widget buildAlignmentAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildAnimatedAlign({'alignment': 'bottomRight', 'duration': 800}, null),
-        SizedBox(height: 16),
-        Text('Alignment Animation'),
-      ],
-    );
-  }
-
-  /// Example: Hero animation (shared element)
-  static Widget buildHeroAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildHero({'tag': 'hero-example', 'heroSize': 100}, null),
-        SizedBox(height: 16),
-        Text('Hero Animation'),
-      ],
-    );
-  }
-
-  /// Example: Value tween animation
-  static Widget buildValueTweenExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildTweenAnimationBuilder({
-          'startValue': 0,
-          'endValue': 200,
-          'duration': 2000,
-        }, null),
-        SizedBox(height: 16),
-        Text('Tween Animation'),
-      ],
-    );
-  }
-
-  /// Example: Text style animation
-  static Widget buildTextStyleAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildAnimatedDefaultTextStyle({
-          'fontSize': 32,
-          'fontWeight': 'bold',
-          'duration': 800,
-          'textColor': '#e74c3c',
-        }, null),
-        SizedBox(height: 16),
-        Text('Text Style Animation'),
-      ],
-    );
-  }
-
-  /// Example: Elevation animation (3D effect)
-  static Widget buildElevationAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildAnimatedPhysicalModel({
-          'elevation': 16,
-          'duration': 800,
-          'shadowColor': '#000000',
-        }, null),
-        SizedBox(height: 16),
-        Text('Elevation Animation'),
-      ],
-    );
-  }
-
-  /// Example: Widget switching animation
-  static Widget buildWidgetSwitchingExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildAnimatedSwitcher({
-          'duration': 500,
-          'transitionBuilder': 'scale',
-        }, null),
-        SizedBox(height: 16),
-        Text('Switcher Animation'),
-      ],
-    );
-  }
-
-  /// Example: Slide animation
-  static Widget buildSlideAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildSlideAnimation({'slideX': 50, 'slideY': 0}, null),
-        SizedBox(height: 16),
-        Text('Slide Animation'),
-      ],
-    );
-  }
-
-  /// Example: Fade in/out
-  static Widget buildFadeInOutExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildFadeAnimation({'opacity': 0.3}, null),
-        SizedBox(height: 16),
-        Text('Fade In/Out'),
-      ],
-    );
-  }
-
-  /// Example: Smooth rotation
-  static Widget buildSmoothRotationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildRotationAnimation({'angle': 0.785}, null),
-        SizedBox(height: 16),
-        Text('Rotation (45°)'),
-      ],
-    );
-  }
-
-  /// Example: Size scaling
-  static Widget buildSizeScalingExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildScaleAnimation({'scale': 1.3}, null),
-        SizedBox(height: 16),
-        Text('Size Scaling'),
-      ],
-    );
-  }
-
-  /// Example: Perspective transform
-  static Widget buildPerspectiveExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildPerspectiveAnimation({'perspective': 0.003}, null),
-        SizedBox(height: 16),
-        Text('3D Perspective'),
-      ],
-    );
-  }
-
-  /// Example: Shake effect
-  static Widget buildShakeEffectExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildShakeAnimation({'intensity': 8}, null),
-        SizedBox(height: 16),
-        Text('Shake Effect'),
-      ],
-    );
-  }
-
-  /// Example: Pulse animation
-  static Widget buildPulseEffectExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildPulseAnimation({'maxScale': 1.3}, null),
-        SizedBox(height: 16),
-        Text('Pulse Effect'),
-      ],
-    );
-  }
-
-  /// Example: Float/levitate effect
-  static Widget buildFloatEffectExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildFloatingAnimation({'floatDistance': 15}, null),
-        SizedBox(height: 16),
-        Text('Floating Effect'),
-      ],
-    );
-  }
-
-  /// Example: Glow effect
-  static Widget buildGlowEffectExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildGlowAnimation({'glowRadius': 15, 'glowColor': '#3498db'}, null),
-        SizedBox(height: 16),
-        Text('Glow Effect'),
-      ],
-    );
-  }
-
-  /// Example: Progress animation
-  static Widget buildProgressAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildProgressAnimation({'progress': 0.65}, null),
-        SizedBox(height: 16),
-        Text('Progress Animation'),
-      ],
-    );
-  }
-
-  /// Example: Wave animation
-  static Widget buildWaveAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildWaveAnimation({'waveHeight': 15}, null),
-        SizedBox(height: 16),
-        Text('Wave Effect'),
-      ],
-    );
-  }
-
-  /// Example: Color transition
-  static Widget buildColorTransitionExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildColorAnimation({
-          'startColor': '#ff6b6b',
-          'endColor': '#4ecdc4',
-        }, null),
-        SizedBox(height: 16),
-        Text('Color Transition'),
-      ],
-    );
-  }
-
-  /// Example: Blur animation
-  static Widget buildBlurAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildBlurAnimation({'blurRadius': 8}, null),
-        SizedBox(height: 16),
-        Text('Blur Effect'),
-      ],
-    );
-  }
-
-  /// Example: Combined animations dashboard
-  static Widget buildAnimationDashboard() {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Phase 5: Animation Widgets Showcase', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-            SizedBox(height: 24),
-            
-            // Grid layout for animations
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              children: [
-                buildAnimationCard('Opacity', buildFadingUIExample()),
-                buildAnimationCard('Scale', buildGrowingWidgetExample()),
-                buildAnimationCard('Rotation', buildSpinningWidgetExample()),
-                buildAnimationCard('Container', buildAnimatedCardExample()),
-                buildAnimationCard('Position', buildMovingElementExample()),
-                buildAnimationCard('Alignment', buildAlignmentAnimationExample()),
-                buildAnimationCard('Hero', buildHeroAnimationExample()),
-                buildAnimationCard('Tween', buildValueTweenExample()),
-                buildAnimationCard('TextStyle', buildTextStyleAnimationExample()),
-                buildAnimationCard('Elevation', buildElevationAnimationExample()),
-                buildAnimationCard('Switcher', buildWidgetSwitchingExample()),
-                buildAnimationCard('Slide', buildSlideAnimationExample()),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Helper to build animation demo cards
-  static Widget buildAnimationCard(String title, Widget content) {
-    return Card(
-      elevation: 4,
-      child: Padding(
-        padding: EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(child: content),
-            SizedBox(height: 8),
-            Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Example: Loading animation sequence
-  static Widget buildLoadingSequenceExample() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Phase5Widgets.buildPulseAnimation({'maxScale': 1.2}, null),
-        SizedBox(height: 16),
-        Phase5Widgets.buildProgressAnimation({'progress': 0.75}, null),
-        SizedBox(height: 24),
-        Text('Loading...', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-      ],
-    );
-  }
-
-  /// Example: Button press animation
-  static Widget buildButtonPressAnimationExample() {
-    return Container(
-      padding: EdgeInsets.all(24),
-      child: Column(
-        children: [
-          Phase5Widgets.buildAnimatedScale({'scale': 0.95, 'duration': 200}, null),
-          SizedBox(height: 24),
-          Text('Pressable Button', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        ],
-      ),
-    );
-  }
-
-  /// Example: Card flip animation
-  static Widget buildCardFlipAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildFlipAnimation({'angle': 1.57}, null),
-        SizedBox(height: 16),
-        Text('Card Flip (90°)'),
-      ],
-    );
-  }
-
-  /// Example: Bounce animation
-  static Widget buildBounceAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildBounceAnimation({'bounceHeight': 25}, null),
-        SizedBox(height: 16),
-        Text('Bounce Effect'),
-      ],
-    );
-  }
-
-  /// Example: Skew animation
-  static Widget buildSkewAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildSkewAnimation({'skewX': 0.2}, null),
-        SizedBox(height: 16),
-        Text('Skew Transform'),
-      ],
-    );
-  }
-
-  /// Example: Size animation
-  static Widget buildSizeAnimationExample() {
-    return Column(
-      children: [
-        Phase5Widgets.buildSizeAnimation({'width': 120, 'height': 120}, null),
-        SizedBox(height: 16),
-        Text('Size Animation'),
-      ],
-    );
+  /// Get all example names by type
+  static List<String> getExampleNames(String type) {
+    final examples = allExamples[type];
+    if (examples != null) {
+      return examples.map((e) => e['name'] as String).toList();
+    }
+    return [];
   }
 }

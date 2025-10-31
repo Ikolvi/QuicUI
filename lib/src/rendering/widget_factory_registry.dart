@@ -1341,7 +1341,17 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    final children = (render as Function)(childrenData);
+    return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.grey),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: ExpansionTile(
+        title: Text(properties['title'] as String? ?? 'Expansion Panel'),
+        children: children as List<Widget>,
+      ),
+    );
   }
 
   static Widget _buildExpansionTile(
@@ -1990,7 +2000,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return NavigationRail(
+      onDestinationSelected: (int index) {},
+      selectedIndex: 0,
+      destinations: [],
+    );
   }
 
   static Widget _buildBreadcrumb(
@@ -1999,7 +2013,8 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    final children = (render as Function)(childrenData);
+    return Row(children: children as List<Widget>);
   }
 
   static Widget _buildMenuBar(
@@ -2008,7 +2023,8 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    final children = (render as Function)(childrenData);
+    return Row(children: children as List<Widget>);
   }
 
   static Widget _buildSideBar(
@@ -2046,7 +2062,14 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(icon: const Icon(Icons.chevron_left), onPressed: () {}),
+        Text(properties['currentPage'] as String? ?? 'Page 1'),
+        IconButton(icon: const Icon(Icons.chevron_right), onPressed: () {}),
+      ],
+    );
   }
 
   static Widget _buildDrawerNavigation(
@@ -2064,7 +2087,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return BottomNavigationBar(
+      items: [],
+      onTap: (index) {},
+    );
   }
 
   static Widget _buildAdvancedSliverAppBar(
@@ -2073,7 +2099,10 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return SliverAppBar(
+      title: Text(properties['title'] as String? ?? ''),
+      pinned: true,
+    );
   }
 
   static Widget _buildTabBarEnhanced(
@@ -2082,7 +2111,7 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return const TabBar(tabs: []);
   }
 
   static Widget _buildTabBarViewAdvanced(
@@ -2148,7 +2177,8 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return ListView();
+    final children = (render as Function)(childrenData);
+    return ListView(children: children as List<Widget>);
   }
 
   static Widget _buildVirtualizedList(
@@ -2166,7 +2196,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return GridView.count(crossAxisCount: 2, children: []);
+    final children = (render as Function)(childrenData);
+    return GridView.count(
+      crossAxisCount: (properties['columns'] as num?)?.toInt() ?? 2,
+      children: children as List<Widget>,
+    );
   }
 
   static Widget _buildMasonryGrid(
@@ -2175,7 +2209,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return GridView.count(crossAxisCount: 2, children: []);
+    final children = (render as Function)(childrenData);
+    return GridView.count(
+      crossAxisCount: (properties['columns'] as num?)?.toInt() ?? 2,
+      children: children as List<Widget>,
+    );
   }
 
   static Widget _buildStickyHeaders(
@@ -2195,7 +2233,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return Container(
+      height: 200,
+      color: Colors.grey[100],
+      child: const Center(child: Text('LineChart')),
+    );
   }
 
   static Widget _buildBarChart(
@@ -2204,7 +2246,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return Container(
+      height: 200,
+      color: Colors.grey[100],
+      child: const Center(child: Text('BarChart')),
+    );
   }
 
   static Widget _buildPieChart(
@@ -2213,7 +2259,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return Container(
+      height: 200,
+      color: Colors.grey[100],
+      child: const Center(child: Text('PieChart')),
+    );
   }
 
   static Widget _buildAreaChart(
@@ -2222,7 +2272,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return Container(
+      height: 200,
+      color: Colors.grey[100],
+      child: const Center(child: Text('AreaChart')),
+    );
   }
 
   static Widget _buildScatterChart(
@@ -2231,7 +2285,11 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return Container(
+      height: 200,
+      color: Colors.grey[100],
+      child: const Center(child: Text('ScatterChart')),
+    );
   }
 
   static Widget _buildTimeline(
@@ -2258,7 +2316,12 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return DataTable(
+      columns: [
+        const DataColumn(label: Text('Column 1')),
+      ],
+      rows: [],
+    );
   }
 
   static Widget _buildTableView(
@@ -2267,7 +2330,15 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
+        columns: [
+          const DataColumn(label: Text('Column 1')),
+        ],
+        rows: [],
+      ),
+    );
   }
 
   static Widget _buildMediaQueryHelper(
@@ -2499,7 +2570,16 @@ class WidgetFactoryRegistry {
     BuildContext context,
     dynamic render,
   ) {
-    return Container();
+    return Container(
+      height: 48,
+      color: Colors.grey[800],
+      child: Center(
+        child: Text(
+          properties['message'] as String? ?? 'SnackBar',
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+    );
   }
 
   // ===== HELPER METHODS =====

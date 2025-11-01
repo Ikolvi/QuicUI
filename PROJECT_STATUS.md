@@ -1,8 +1,8 @@
 # QuicUI Code Push - Project Status & Roadmap
 
 **Last Updated**: November 1, 2025  
-**Current Phase**: Phase 3a Complete (Backend Scaffold)  
-**Overall Progress**: 57% Complete
+**Current Phase**: Phase 3b Complete (Patch Management)  
+**Overall Progress**: 62% Complete (57% → 62%)
 
 ## 🎯 Project Overview
 
@@ -86,18 +86,34 @@ QuicUI Code Push is a **production-grade over-the-air (OTA) patch management sys
   - Dart VM patch loading support
 - **Status**: ✅ Pushed to main branch
 
+### Phase 3b: Core Patch Management ✅
+- **Patch Service** (707 lines)
+  - Upload validation and storage
+  - Version management and history
+  - Download distribution
+  - Metrics tracking
+- **REST Endpoints** (625 lines)
+  - 7 new endpoints for patch operations
+  - Request/response formatting
+  - Error handling and middleware
+- **Documentation** (466 lines)
+  - Implementation guide
+  - API specifications
+  - Testing strategy
+- **Lines**: 1,798 | **Duration**: 1 sprint
+
 ---
 
 ## 🚀 In Progress & Next Steps
 
-### Phase 3b: Core Patch Management (Next)
-**Estimated Duration**: 3-4 days | **Lines**: ~500
+### Phase 3c: Security & Authentication (Next)
+**Estimated Duration**: 3 days | **Lines**: ~400
 
-- [ ] Patch upload and validation
-- [ ] Version management
-- [ ] Download endpoint optimization
-- [ ] Metadata storage and retrieval
-- [ ] Rollout statistics tracking
+- [ ] JWT token generation/validation
+- [ ] Role-based access control
+- [ ] API key management
+- [ ] Rate limiting
+- [ ] Audit logging
 
 ### Phase 3c: Security & Authentication (Following)
 **Estimated Duration**: 3 days | **Lines**: ~400

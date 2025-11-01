@@ -1,5 +1,5 @@
 import 'dart:async';
-import 'dart:io' show Platform, Process;
+import 'dart:io' show Platform, Process, File;
 
 /// Service for detecting and reporting Flutter SDK information
 class SDKInfoService {
@@ -11,15 +11,6 @@ class SDKInfoService {
   /// Returns the Flutter version string (e.g., "3.38.0-1.0.pre-350")
   static Future<String> getFlutterSDKVersion() async {
     try {
-      // Check build-time constant first (most reliable for packaged apps)
-      final buildVersion = const String.fromEnvironment(
-        'QUICUI_FLUTTER_VERSION',
-        defaultValue: '',
-      );
-      if (buildVersion.isNotEmpty && buildVersion != 'unknown') {
-        return buildVersion;
-      }
-      
       if (Platform.isAndroid || Platform.isIOS) {
         // On mobile platforms, return version from pubspec or constants
         return _getFlutterVersionFromPubspec();
@@ -65,15 +56,6 @@ class SDKInfoService {
   /// Returns the channel name (e.g., "stable", "[user-branch]", "dev")
   static Future<String> getFlutterSDKChannel() async {
     try {
-      // Check build-time constant first (most reliable for packaged apps)
-      final buildChannel = const String.fromEnvironment(
-        'QUICUI_SDK_CHANNEL',
-        defaultValue: '',
-      );
-      if (buildChannel.isNotEmpty && buildChannel != 'unknown') {
-        return buildChannel;
-      }
-      
       if (Platform.isAndroid || Platform.isIOS) {
         return 'mobile';
       }
@@ -94,32 +76,55 @@ class SDKInfoService {
   /// Detect if using QuicUI custom Flutter SDK
   /// 
   /// Returns true if the Flutter SDK is the custom QuicUI fork
+  /// Detection checks for:
+  /// 1. .quicui_marker file in Flutter root
+  /// 2. [user-branch] channel in flutter --version
   static Future<bool> isQuicUISDK() async {
     try {
-      // First check build-time constant (most reliable)
-      if (const bool.fromEnvironment('QUICUI_IS_FORK', defaultValue: false)) {
-        return true;
+      if (Platform.isAndroid || Platform.isIOS) {
+        return false; // Mobile can't detect at runtime
       }
       
-      final channel = await getFlutterSDKChannel();
-      
-      // Check for QuicUI indicators
-      if (channel.contains('user-branch') || 
-          channel.contains('quicui') ||
-          channel == '[user-branch]') {
-        return true;
+      // First check for the marker file (fastest)
+      final flutterBin = Platform.environment['FLUTTER_ROOT'] ?? 
+        (await _getFlutterRoot());
+      if (flutterBin.isNotEmpty) {
+        final markerFile = File('$flutterBin/.quicui_marker');
+        if (await markerFile.exists()) {
+          return true;
+        }
       }
       
-      // Check version for custom markers
-      final version = await getFlutterSDKVersion();
-      if (version.contains('pre') || version.contains('quicui')) {
-        return true;
+      // Fallback: Check channel in flutter --version output
+      final result = await Process.run('flutter', ['--version']);
+      if (result.exitCode == 0) {
+        final output = result.stdout.toString();
+        
+        // QuicUI fork shows channel as [user-branch]
+        if (output.contains('[user-branch]')) {
+          return true;
+        }
       }
       
       return false;
     } catch (e) {
       return false;
     }
+  }
+  
+  /// Get Flutter root directory
+  static Future<String> _getFlutterRoot() async {
+    try {
+      final result = await Process.run('which', ['flutter']);
+      if (result.exitCode == 0) {
+        final flutterPath = result.stdout.toString().trim();
+        // Navigate up from bin/flutter to root
+        return File(flutterPath).parent.parent.path;
+      }
+    } catch (e) {
+      // ignored
+    }
+    return '';
   }
 
   /// Get Git branch of Flutter SDK (if available)

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:quicui_code_push_client/quicui_code_push_client.dart';
-import 'package:quicui_code_push_client/src/constants/build_sdk_info.dart';
 
 void main() {
   runApp(const QuicUITestApp());
@@ -75,36 +74,19 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _detectSDKInfo() async {
     try {
-      // First try to get build-time SDK info (most reliable for mobile)
-      final buildSDKInfo = BuildSDKInfo.toMap();
-      final isQuicUIBuild = buildSDKInfo['isQuicUI'] as bool;
+      // Detect SDK info directly from Flutter SDK using SDKInfoService
+      final flutterVersion = await SDKInfoService.getFlutterSDKVersion();
+      final channel = await SDKInfoService.getFlutterSDKChannel();
+      final isQuicUI = await SDKInfoService.isQuicUISDK();
       
-      // If build-time info is available and valid, use it
-      if (isQuicUIBuild || buildSDKInfo['flutterVersion'] != 'unknown') {
-        final statusIcon = isQuicUIBuild ? '✅' : '❌';
-        final sdkType = isQuicUIBuild ? 'QuicUI (Custom Fork)' : 'Flutter (Standard)';
-        final flutterVer = buildSDKInfo['flutterVersion'];
-        final channelInfo = buildSDKInfo['channel'];
-        
-        setState(() {
-          sdkInfo = '$flutterVer ($channelInfo)';
-          sdkStatus = '$sdkType $statusIcon';
-        });
-      } else {
-        // Fallback: try runtime detection using SDKInfoService
-        final flutterVersion = await SDKInfoService.getFlutterSDKVersion();
-        final channel = await SDKInfoService.getFlutterSDKChannel();
-        final isQuicUI = await SDKInfoService.isQuicUISDK();
-        
-        final statusIcon = isQuicUI ? '✅' : '❌';
-        final sdkType = isQuicUI ? 'QuicUI (Custom Fork)' : 'Flutter (Standard)';
-        final shortInfo = '$flutterVersion ($channel)';
-        
-        setState(() {
-          sdkInfo = shortInfo;
-          sdkStatus = '$sdkType $statusIcon';
-        });
-      }
+      final statusIcon = isQuicUI ? '✅' : '❌';
+      final sdkType = isQuicUI ? 'QuicUI (Custom Fork)' : 'Flutter (Standard)';
+      final shortInfo = '$flutterVersion ($channel)';
+      
+      setState(() {
+        sdkInfo = shortInfo;
+        sdkStatus = '$sdkType $statusIcon';
+      });
     } catch (e) {
       setState(() {
         sdkInfo = 'Unknown';

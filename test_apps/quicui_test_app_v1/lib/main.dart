@@ -46,9 +46,10 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _initializeCodePush() async {
     try {
-      // Initialize code push configuration
+      // Initialize code push configuration with local network endpoint
+      // PC Address: 192.168.20.100:8080
       codePushConfig = Config(
-        apiUrl: 'http://localhost:8080',
+        apiUrl: 'http://192.168.20.100:8080',
         appId: 'com.quicui.testapp',
         clientSecret: 'test-secret-key-12345',
         appVersion: appVersion,

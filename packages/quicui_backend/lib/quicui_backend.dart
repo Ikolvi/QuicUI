@@ -1,17 +1,25 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:convert';
 import 'package:shelf/shelf.dart' as shelf;
 import 'package:shelf/shelf_io.dart' as shelf_io;
 import 'package:shelf_router/shelf_router.dart';
 import 'src/security_config.dart';
+import 'src/cache_service.dart';
+import 'src/cached_database.dart';
 
 // Export security configuration for external use
 export 'src/security_config.dart' show SecurityConfig, SecurityConfigException;
+export 'src/cache_service.dart' show CacheService;
+export 'src/cached_database.dart' show CachedDatabase;
 
 /// Simple QuicUI Backend for local development
 class CodePushBackend {
   final String host;
   final int port;
+  
+  late CacheService cacheService;
+  late CachedDatabase cachedDb;
   
   CodePushBackend({
     this.host = 'localhost',
@@ -26,6 +34,13 @@ class CodePushBackend {
       print('   Host: $host');
       print('   Port: $port');
       print('   Environment: Development');
+
+      // Initialize cache service
+      cacheService = CacheService();
+      await cacheService.initialize();
+
+      // Initialize cached database
+      cachedDb = CachedDatabase(cache: cacheService);
 
       // Load security configuration
       late SecurityConfig securityConfig;
@@ -56,10 +71,20 @@ class CodePushBackend {
         );
       });
 
-      // API v1 endpoints
-      router.get('/api/v1/apps', (shelf.Request request) {
+      // Cache stats endpoint
+      router.get('/metrics/cache', (shelf.Request request) async {
+        final stats = await cacheService.getStats();
         return shelf.Response.ok(
-          '{"apps":[]}',
+          jsonEncode(stats),
+          headers: {'Content-Type': 'application/json'},
+        );
+      });
+
+      // API v1 endpoints
+      router.get('/api/v1/apps', (shelf.Request request) async {
+        final apps = await cachedDb.listApps();
+        return shelf.Response.ok(
+          jsonEncode({'apps': apps}),
           headers: {'Content-Type': 'application/json'},
         );
       });

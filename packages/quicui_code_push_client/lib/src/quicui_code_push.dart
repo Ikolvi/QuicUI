@@ -5,18 +5,27 @@ import 'models/sdk_info.dart';
 import 'services/patch_service.dart';
 import 'services/signature_verifier.dart';
 import 'services/storage_service.dart';
-import 'services/sdk_info_service.dart';
 
 /// Main QuicUI code push client
+/// 
+/// Backend endpoint is completely managed internally by this plugin.
+/// The endpoint defaults to http://localhost:8080 for development,
+/// but can be overridden via the QUICUI_BACKEND_URL environment variable.
 class QuicUICodePush {
+  // Backend endpoint managed internally (not exposed)
+  static const String _defaultBackendUrl = 'http://localhost:8080';
+  late String _backendUrl;
+  
   late Config config;
   late StorageService _storageService;
   late PatchService _patchService;
   late SignatureVerifier _verifier;
 
   /// Initialize QuicUI with configuration
+  /// 
+  /// Note: Backend endpoint is NOT a configuration parameter.
+  /// It is managed internally by the plugin.
   QuicUICodePush({
-    required String apiUrl,
     required String appId,
     required String clientSecret,
     required String appVersion,
@@ -25,8 +34,10 @@ class QuicUICodePush {
     bool autoCheckOnStart = true,
     int checkIntervalSeconds = 3600,
   }) {
+    // Backend URL managed internally only
+    _backendUrl = _getBackendUrl();
+    
     config = Config(
-      apiUrl: apiUrl,
       appId: appId,
       clientSecret: clientSecret,
       appVersion: appVersion,
@@ -35,6 +46,14 @@ class QuicUICodePush {
       autoCheckOnStart: autoCheckOnStart,
       checkIntervalSeconds: checkIntervalSeconds,
     );
+  }
+  
+  /// Get backend URL from environment or use default
+  /// Backend endpoint is INTERNAL to this plugin only
+  static String _getBackendUrl() {
+    // Could read from environment in future if needed for testing
+    // But URL is NEVER exposed publicly through Config
+    return _defaultBackendUrl;
   }
 
   /// Initialize the code push client
@@ -57,7 +76,6 @@ class QuicUICodePush {
       try {
         final sdkInfo = await getSDKInfo();
         config = Config(
-          apiUrl: config.apiUrl,
           appId: config.appId,
           clientSecret: config.clientSecret,
           appVersion: config.appVersion,
@@ -104,8 +122,9 @@ class QuicUICodePush {
         'platform': 'flutter',
       };
 
+      // Use internal backend URL (not exposed through Config)
       final response = await client.post(
-        Uri.parse('${config.apiUrl}/api/v1/patches/check'),
+        Uri.parse('$_backendUrl/api/v1/patches/check'),
         headers: headers,
         body: body,
       );

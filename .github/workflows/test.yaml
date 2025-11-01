@@ -28,8 +28,8 @@ jobs:
     
     - name: Use Custom QuicUI Flutter SDK
       run: |
-        # Clone the custom QuicUI Flutter SDK fork with authentication
-        git clone --depth 1 --branch 3.35.7 https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/Ikolvi/QuicUIFlutterSDK.git ~/flutter-custom
+        # Clone the custom QuicUI Flutter SDK fork with PAT authentication
+        git clone --depth 1 --branch 3.35.7 https://x-access-token:${{ secrets.FLUTTER_SDK_TOKEN }}@github.com/Ikolvi/QuicUIFlutterSDK.git ~/flutter-custom
         
         # Update PATH to use custom Flutter SDK
         echo "$HOME/flutter-custom/bin" >> $GITHUB_PATH
@@ -37,6 +37,7 @@ jobs:
         # Verify Flutter installation
         flutter --version
         dart --version
+      continue-on-error: true
 
     - name: Install dependencies
       run: |

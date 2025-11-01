@@ -8,9 +8,10 @@ set -e
 
 # Configuration
 ANDROID_SDK="/Users/admin/Library/Android/sdk"
-APK_FILE="/Users/admin/Documents/quicui2/test_apps/quicui_test_app_v1/build/app/outputs/apk/release/app-release.apk"
-PACKAGE_NAME="com.quicui.testapp"
-MAIN_ACTIVITY="com.quicui.testapp.MainActivity"
+FLUTTER_ROOT="/Users/admin/Documents/quicui2/forks/flutter-official"
+APK_FILE="/Users/admin/Documents/quicui2/test_apps/quicui_test_app_v1/build/app/outputs/flutter-apk/app-release.apk"
+PACKAGE_NAME="com.quicui.quicui_test_app"
+MAIN_ACTIVITY="com.quicui.quicui_test_app.MainActivity"
 
 # Colors
 RED='\033[0;31m'

@@ -75,14 +75,11 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _detectSDKInfo() async {
     try {
-      // Detect SDK info directly from Flutter SDK using SDKInfoService
-      final flutterVersion = await SDKInfoService.getFlutterSDKVersion();
-      final channel = await SDKInfoService.getFlutterSDKChannel();
-      final isQuicUI = await SDKInfoService.isQuicUISDK();
-      
+      // Use build-time SDK info
+      final isQuicUI = BuildSDKInfo.isQuicUI;
       final statusIcon = isQuicUI ? '✅' : '❌';
       final sdkType = isQuicUI ? 'QuicUI (Custom Fork)' : 'Flutter (Standard)';
-      final shortInfo = '$flutterVersion ($channel)';
+      final shortInfo = BuildSDKInfo.getSDKString();
       
       setState(() {
         sdkInfo = shortInfo;

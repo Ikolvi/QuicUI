@@ -5,6 +5,7 @@ import 'models/sdk_info.dart';
 import 'services/patch_service.dart';
 import 'services/signature_verifier.dart';
 import 'services/storage_service.dart';
+import 'constants/build_sdk_info.dart';
 
 /// Main QuicUI code push client
 /// 
@@ -209,61 +210,17 @@ class _SDKInfoDetector {
   }
 
   static Future<SDKInfo> _detectSDKInfo() async {
-    final flutterVersion = await _getFlutterVersion();
-    final dartVersion = await _getDartVersion();
-    final isQuicUI = _detectQuicUISDK(flutterVersion);
+    // Use build-time detected SDK info from BuildSDKInfo
+    final flutterVersion = BuildSDKInfo.flutterVersion ?? 'unknown';
+    final dartVersion = BuildSDKInfo.dartVersion ?? 'unknown';
+    final isQuicUI = BuildSDKInfo.isQuicUI;
+    final channel = BuildSDKInfo.channel ?? 'unknown';
 
     return SDKInfo(
       flutterVersion: flutterVersion,
       dartVersion: dartVersion,
-      channel: _extractChannel(flutterVersion),
+      channel: channel,
       isQuicUI: isQuicUI,
-      versionTag: _extractVersionTag(flutterVersion),
-      commitHash: _extractCommitHash(flutterVersion),
-      branch: _extractBranch(flutterVersion),
     );
-  }
-
-  static Future<String> _getFlutterVersion() async {
-    try {
-      // In a real scenario, this would call the Flutter SDK
-      // For now, return a detection-friendly value
-      return 'Flutter 3.38.0 • channel [user-branch] • quicui • commit abc123def456';
-    } catch (e) {
-      return 'unknown';
-    }
-  }
-
-  static Future<String> _getDartVersion() async {
-    try {
-      // In a real scenario, this would call the Dart SDK
-      return 'Dart 3.11.0 (stable)';
-    } catch (e) {
-      return 'unknown';
-    }
-  }
-
-  static bool _detectQuicUISDK(String versionString) {
-    return versionString.toLowerCase().contains('quicui');
-  }
-
-  static String _extractChannel(String versionString) {
-    final match = RegExp(r'channel\s+\[([^\]]+)\]').firstMatch(versionString);
-    return match?.group(1) ?? 'stable';
-  }
-
-  static String? _extractVersionTag(String versionString) {
-    final match = RegExp(r'v\d+\.\d+\.\d+[a-zA-Z0-9\-\.]*').firstMatch(versionString);
-    return match?.group(0);
-  }
-
-  static String? _extractCommitHash(String versionString) {
-    final match = RegExp(r'commit\s+([a-f0-9]+)').firstMatch(versionString);
-    return match?.group(1);
-  }
-
-  static String? _extractBranch(String versionString) {
-    final match = RegExp(r'branch:\s*([^\s•]+)').firstMatch(versionString);
-    return match?.group(1);
   }
 }

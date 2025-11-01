@@ -1,0 +1,15 @@
+name: quicui
+description: QuicUI - Open-source Flutter code push service
+version: 0.1.0-dev
+homepage: https://github.com/Ikolvi/QuicUICodepush
+repository: https://github.com/Ikolvi/QuicUICodepush
+issue_tracker: https://github.com/Ikolvi/QuicUICodepush/issues
+
+environment:
+  sdk: ^3.0.0
+
+# This is a workspace (monorepo) root
+publish_to: none
+
+dev_dependencies:
+  very_good_analysis: ^6.0.0

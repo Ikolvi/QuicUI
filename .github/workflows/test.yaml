@@ -1,0 +1,42 @@
+name: Test
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Dart
+      uses: dart-lang/setup-dart@v1
+      with:
+        sdk: stable
+
+    - name: Install dependencies
+      run: |
+        dart pub get
+        cd packages/quicui_code_push_client && dart pub get && cd ../..
+        cd packages/quicui_cli && dart pub get && cd ../..
+        cd packages/quicui_compiler && dart pub get && cd ../..
+        cd packages/quicui_backend && dart pub get && cd ../..
+
+    - name: Analyze
+      run: dart analyze
+
+    - name: Run tests
+      run: |
+        dart pub global activate coverage
+        cd packages/quicui_code_push_client && dart test && cd ../..
+        cd packages/quicui_cli && dart test && cd ../..
+        cd packages/quicui_compiler && dart test && cd ../..
+        cd packages/quicui_backend && dart test && cd ../..
+
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      if: always()

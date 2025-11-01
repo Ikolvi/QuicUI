@@ -1,0 +1,91 @@
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
+
+/// Manages storage of patches and cached data
+class StorageService {
+  late Directory _patchDirectory;
+  late Directory _cacheDirectory;
+
+  /// Initialize storage directories
+  Future<void> initialize() async {
+    final appDocDir = await getApplicationDocumentsDirectory();
+    _patchDirectory = Directory(path.join(appDocDir.path, 'quicui', 'patches'));
+    _cacheDirectory = Directory(path.join(appDocDir.path, 'quicui', 'cache'));
+
+    // Create directories if they don't exist
+    if (!_patchDirectory.existsSync()) {
+      _patchDirectory.createSync(recursive: true);
+    }
+    if (!_cacheDirectory.existsSync()) {
+      _cacheDirectory.createSync(recursive: true);
+    }
+  }
+
+  /// Get patch directory
+  Directory get patchDirectory => _patchDirectory;
+
+  /// Get cache directory
+  Directory get cacheDirectory => _cacheDirectory;
+
+  /// Save a patch file
+  Future<File> savePatch(String patchId, List<int> bytes) async {
+    final file = File(path.join(_patchDirectory.path, '$patchId.patch'));
+    return file.writeAsBytes(bytes);
+  }
+
+  /// Load a patch file
+  Future<File?> loadPatch(String patchId) async {
+    final file = File(path.join(_patchDirectory.path, '$patchId.patch'));
+    if (await file.exists()) {
+      return file;
+    }
+    return null;
+  }
+
+  /// Delete a patch file
+  Future<void> deletePatch(String patchId) async {
+    final file = File(path.join(_patchDirectory.path, '$patchId.patch'));
+    if (await file.exists()) {
+      await file.delete();
+    }
+  }
+
+  /// Get all stored patches
+  Future<List<String>> getAllPatches() async {
+    final files = _patchDirectory.listSync();
+    return files
+        .whereType<File>()
+        .where((f) => f.path.endsWith('.patch'))
+        .map((f) => path.basenameWithoutExtension(f.path))
+        .toList();
+  }
+
+  /// Clear all cached data
+  Future<void> clearCache() async {
+    if (_cacheDirectory.existsSync()) {
+      _cacheDirectory.deleteSync(recursive: true);
+      _cacheDirectory.createSync(recursive: true);
+    }
+  }
+
+  /// Clear all patches
+  Future<void> clearAllPatches() async {
+    if (_patchDirectory.existsSync()) {
+      _patchDirectory.deleteSync(recursive: true);
+      _patchDirectory.createSync(recursive: true);
+    }
+  }
+
+  /// Get total size of all patches in bytes
+  Future<int> getTotalPatchSize() async {
+    int totalSize = 0;
+    final files = _patchDirectory.listSync();
+    for (var file in files) {
+      if (file is File) {
+        totalSize += await file.length();
+      }
+    }
+    return totalSize;
+  }
+}

@@ -1714,12 +1714,13 @@ class _MockEndpoint {
     }
 
     // Rate limiting
-    if (userId != null) {
-      if (!_checkRateLimit(userId)) {
+    // If using API key, check API key limit instead of user limit
+    if (apiKey != null) {
+      if (!_checkApiKeyRateLimit(apiKey)) {
         auditService.logEvent(
           eventType: 'RATE_LIMIT_EXCEEDED',
-          userId: userId,
-          metadata: {'path': request.path, 'limit': 100},
+          userId: userId ?? 'unknown',
+          metadata: {'path': request.path, 'limit': 100, 'apiKey': apiKey},
         );
         return _HttpResponse(
           statusCode: 429,
@@ -1727,14 +1728,13 @@ class _MockEndpoint {
           headers: {'Retry-After': '60'},
         );
       }
-    }
-
-    if (apiKey != null) {
-      if (!_checkApiKeyRateLimit(apiKey)) {
+    } else if (userId != null) {
+      // Check user rate limit only if not using API key
+      if (!_checkRateLimit(userId)) {
         auditService.logEvent(
           eventType: 'RATE_LIMIT_EXCEEDED',
-          userId: userId ?? 'unknown',
-          metadata: {'path': request.path, 'limit': 500, 'apiKey': apiKey},
+          userId: userId,
+          metadata: {'path': request.path, 'limit': 100},
         );
         return _HttpResponse(
           statusCode: 429,
@@ -1802,31 +1802,16 @@ class _MockEndpoint {
 
   bool _checkRateLimit(String userId) {
     final now = DateTime.now().millisecondsSinceEpoch;
-    final window = now - 60000; // 60 second window
-
-    // Initialize if not exist
-    if (!_userRequestTimestamps.containsKey(userId)) {
-      _userRequestTimestamps[userId] = now;
-      return true;
-    }
-
-    final lastRequest = _userRequestTimestamps[userId]!;
-
-    // If last request was more than 60 seconds ago, reset
-    if (lastRequest < window) {
-      _userRequestTimestamps[userId] = now;
-      return true;
-    }
-
-    // Count recent requests - just check if we have space
-    // For simplicity, track as counter that resets each minute
     final key = '$userId:minute:${now ~/ 60000}';
-    _userRequestTimestamps[key] = (_userRequestTimestamps[key] ?? 0) + 1;
-
-    if ((_userRequestTimestamps[key] ?? 0) >= 100) {
+    
+    // Check limit BEFORE incrementing
+    final current = (_userRequestTimestamps[key] ?? 0);
+    if (current >= 100) {
       return false; // Rate limit exceeded
     }
-
+    
+    // Now increment
+    _userRequestTimestamps[key] = current + 1;
     return true;
   }
 
@@ -1834,12 +1819,14 @@ class _MockEndpoint {
     final now = DateTime.now().millisecondsSinceEpoch;
     final key = '$apiKey:minute:${now ~/ 60000}';
     
-    _keyRequestTimestamps[key] = (_keyRequestTimestamps[key] ?? 0) + 1;
-
-    if ((_keyRequestTimestamps[key] ?? 0) >= 500) {
+    // Check limit BEFORE incrementing
+    final current = (_keyRequestTimestamps[key] ?? 0);
+    if (current >= 100) {
       return false;
     }
-
+    
+    // Now increment
+    _keyRequestTimestamps[key] = current + 1;
     return true;
   }
 
@@ -1881,18 +1868,33 @@ class _MockEndpoint {
       return true;
     }
 
-    // Role-based access - any authenticated user can access these
+    // Role-based access
     if (roles.isNotEmpty) {
-      if (path == '/user/profile' || path == '/patches') {
-        return true;
-      }
-
-      if (roles.contains('developer')) {
-        if (path.startsWith('/patches')) return true;
-      }
-
+      // Service role - restricted to metrics only
       if (roles.contains('service')) {
         if (path.startsWith('/metrics')) return true;
+        return false; // Service denied from everything else
+      }
+
+      // User can read patches but not write
+      if (method == 'GET' && path == '/patches') {
+        return roles.contains('user') || roles.contains('developer');
+      }
+
+      // Only developer can write/modify patches
+      if ((method == 'POST' || method == 'PUT' || method == 'PATCH' || method == 'DELETE') && 
+          path.startsWith('/patches')) {
+        return roles.contains('developer');
+      }
+
+      // User/developer can access their profile
+      if (path == '/user/profile') {
+        return roles.contains('user') || roles.contains('developer');
+      }
+
+      // Developer specific endpoints
+      if (roles.contains('developer')) {
+        if (path.startsWith('/patches') || path.startsWith('/api-keys')) return true;
       }
     }
 

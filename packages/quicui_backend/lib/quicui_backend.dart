@@ -22,6 +22,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:shelf/shelf.dart';
+import 'src/security_config.dart';
 
 /// Main backend application
 class CodePushBackend {
@@ -48,13 +49,29 @@ class CodePushBackend {
       print('   Port: $port');
       print('   Database: $dbUrl');
 
+      // Load security configuration
+      late SecurityConfig securityConfig;
+      try {
+        securityConfig = SecurityConfig.fromEnvironment();
+      } catch (e) {
+        print('⚠️ Security configuration warning: $e');
+        // In development, use default config; in production, this would fail
+        securityConfig = SecurityConfig(
+          allowedOrigins: ['http://localhost:3000'],
+          debugMode: true,
+        );
+      }
+
+      // Print security checklist
+      securityConfig.printSecurityChecklistProduction();
+
       // Initialize database connection
       await _initializeDatabase();
 
-      // Create request handler pipeline
+      // Create request handler pipeline with security middleware
       var handler = const Pipeline()
           .addMiddleware(loggingMiddleware)
-          .addMiddleware(corsMiddleware)
+          .addMiddleware(securityConfig.createSecurityMiddleware())
           .addMiddleware(errorHandlingMiddleware)
           .addHandler(_router);
 

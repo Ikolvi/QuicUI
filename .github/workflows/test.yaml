@@ -23,8 +23,20 @@ jobs:
     - name: Setup Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: '3.24.x'
+        flutter-version: '3.35.7'
         channel: 'stable'
+    
+    - name: Use Custom QuicUI Flutter SDK
+      run: |
+        # Clone the custom QuicUI Flutter SDK fork
+        git clone --depth 1 --branch 3.35.7 https://github.com/Ikolvi/QuicUIFlutterSDK.git ~/flutter-custom
+        
+        # Update PATH to use custom Flutter SDK
+        echo "$HOME/flutter-custom/bin" >> $GITHUB_PATH
+        
+        # Verify Flutter installation
+        flutter --version
+        dart --version
 
     - name: Install dependencies
       run: |

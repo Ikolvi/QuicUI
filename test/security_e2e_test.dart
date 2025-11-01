@@ -174,59 +174,310 @@ void main() {
   });
 
   group('Multi-Day User Sessions', () {
-    test('user token expires after 24 hours', () {
-      // 1. Login at day 1, time 10:00
-      // 2. Use token - succeeds
-      // 3. Wait for expiration (or simulate)
-      // 4. Attempt token use - fails 401
-      expect(true, true); // Placeholder
+    test('E2E4: user token expires after 24 hours', () {
+      // 1. Create token with past expiry
+      final userId = 'user_e2e4';
+      final now = DateTime.now();
+      
+      // Create expired token
+      final header = base64Url.encode(utf8.encode('{"alg":"HS256","typ":"JWT"}'));
+      final expiredPayload = {
+        'userId': userId,
+        'email': 'session@example.com',
+        'roles': ['user'],
+        'iat': now.subtract(Duration(hours: 25)).millisecondsSinceEpoch,
+        'exp': now.subtract(Duration(hours: 1)).millisecondsSinceEpoch, // Expired 1 hour ago
+      };
+      final encodedPayload = base64Url.encode(utf8.encode(jsonEncode(expiredPayload)));
+      final signature = base64Url.encode(utf8.encode('sig'));
+      final expiredToken = '$header.$encodedPayload.$signature';
+      
+      // 2. Attempt to use expired token
+      final request = _HttpRequest(
+        method: 'GET',
+        path: '/user/profile',
+        headers: {'Authorization': 'Bearer $expiredToken'},
+      );
+      
+      final response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(401)); // Token expired
+      
+      // 3. Create fresh token and verify it works
+      final freshToken = jwtService.generateToken(
+        userId: userId,
+        email: 'session@example.com',
+        roles: ['user'],
+      );
+      
+      final freshRequest = _HttpRequest(
+        method: 'GET',
+        path: '/user/profile',
+        headers: {'Authorization': 'Bearer $freshToken'},
+      );
+      
+      final freshResponse = endpoint.handleRequest(freshRequest);
+      expect(freshResponse.statusCode, equals(200)); // Fresh token works
     });
 
-    test('user refreshes token before expiration', () {
-      // 1. Login at day 1
-      // 2. Wait 12 hours
-      // 3. Refresh token - succeeds
-      // 4. Use new token - succeeds
-      // 5. Old token still works (or is invalidated - verify behavior)
-      expect(true, true); // Placeholder
+    test('E2E5: user refreshes token before expiration', () {
+      // 1. Generate initial token
+      final userId = 'user_e2e5';
+      final token1 = jwtService.generateToken(
+        userId: userId,
+        email: 'refresh@example.com',
+        roles: ['developer'],
+        expiryHours: 24,
+      );
+      
+      // 2. Use token1 - should succeed
+      var request = _HttpRequest(
+        method: 'GET',
+        path: '/patches',
+        headers: {'Authorization': 'Bearer $token1'},
+      );
+      
+      var response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(200));
+      
+      // Small delay to ensure different timestamp
+      Future.delayed(Duration(milliseconds: 10));
+      
+      // 3. Refresh token (generate new one)
+      final token2 = jwtService.generateToken(
+        userId: userId,
+        email: 'refresh@example.com',
+        roles: ['developer'],
+        expiryHours: 24, // Fresh 24-hour window
+      );
+      
+      // Both tokens should work (not necessarily different if generated at same ms)
+      // The important thing is they both authenticate the user
+      
+      // 4. Use new token - should succeed
+      request = _HttpRequest(
+        method: 'GET',
+        path: '/patches',
+        headers: {'Authorization': 'Bearer $token2'},
+      );
+      
+      response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(200));
+      
+      // 5. Old token can still be used (unless revoked)
+      request = _HttpRequest(
+        method: 'GET',
+        path: '/patches',
+        headers: {'Authorization': 'Bearer $token1'},
+      );
+      
+      response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(200)); // Still valid
     });
 
-    test('user logs out and cannot use token', () {
-      // 1. Login
+    test('E2E6: user logs out and cannot use token', () {
+      // 1. User logs in
+      final userId = 'user_e2e6';
+      final token = jwtService.generateToken(
+        userId: userId,
+        email: 'logout@example.com',
+        roles: ['user'],
+      );
+      
       // 2. Make successful request
-      // 3. Logout
-      // 4. Attempt to use token - fails 401 (or succeeds but shouldn't)
-      expect(true, true); // Placeholder
+      var request = _HttpRequest(
+        method: 'GET',
+        path: '/user/profile',
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      
+      var response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(200));
+      
+      // 3. Logout (blacklist token)
+      jwtService.blacklistToken(token);
+      
+      // 4. Attempt to use blacklisted token - fails
+      request = _HttpRequest(
+        method: 'GET',
+        path: '/user/profile',
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      
+      response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(401)); // Token blacklisted
+      
+      // Verify audit logged the blacklist event
+      final events = auditService.getEventsByType('AUTH_FAILED');
+      expect(events.isNotEmpty, isTrue);
     });
   });
 
   group('Developer Workflow', () {
-    test('developer creates application API keys', () {
+    test('E2E7: developer creates application API keys', () {
       // 1. Developer logs in
-      // 2. Creates key for application with ['patch:read', 'patch:create']
-      // 3. Provides key to application
+      final userId = 'user_e2e7';
+      final token = jwtService.generateToken(
+        userId: userId,
+        email: 'dev@example.com',
+        roles: ['developer'],
+      );
+      
+      // 2. Create key for application
+      var request = _HttpRequest(
+        method: 'POST',
+        path: '/auth/api-keys',
+        headers: {'Authorization': 'Bearer $token'},
+        body: {'scopes': ['patch:read', 'patch:create']},
+      );
+      
+      var response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(200));
+      
+      final keyData = response.body as Map<String, dynamic>;
+      final apiKey = keyData['apiKey'] as String;
+      
+      // 3. Provide key to application
       // 4. Application uses key to call API
+      request = _HttpRequest(
+        method: 'POST',
+        path: '/patches',
+        headers: {'X-API-Key': apiKey},
+        body: {'title': 'New Patch'},
+      );
+      
       // 5. Application can read and create patches
-      expect(true, true); // Placeholder
+      response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(200));
     });
 
-    test('developer revokes compromised key', () {
+    test('E2E8: developer revokes compromised key', () {
       // 1. Developer has active key
-      // 2. Discovers key was exposed
-      // 3. Revokes key via DELETE /auth/api-keys/:keyId
-      // 4. Old key no longer works
-      // 5. Creates new key
-      // 6. New key works
-      expect(true, true); // Placeholder
+      final userId = 'user_e2e8';
+      final token = jwtService.generateToken(
+        userId: userId,
+        email: 'dev-revoke@example.com',
+        roles: ['developer'],
+      );
+      
+      var request = _HttpRequest(
+        method: 'POST',
+        path: '/auth/api-keys',
+        headers: {'Authorization': 'Bearer $token'},
+        body: {'scopes': ['patch:read']},
+      );
+      
+      var response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(200));
+      
+      final keyData = response.body as Map<String, dynamic>;
+      final apiKey = keyData['apiKey'] as String;
+      
+      // Key works initially
+      request = _HttpRequest(
+        method: 'GET',
+        path: '/patches',
+        headers: {'X-API-Key': apiKey},
+      );
+      response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(200));
+      
+      // 2. Developer discovers key was exposed & revokes it
+      apiKeyService.revokeKey(apiKey);
+      
+      // 3. Old key no longer works
+      request = _HttpRequest(
+        method: 'GET',
+        path: '/patches',
+        headers: {'X-API-Key': apiKey},
+      );
+      response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(401)); // Revoked
+      
+      // 4. Creates new key
+      request = _HttpRequest(
+        method: 'POST',
+        path: '/auth/api-keys',
+        headers: {'Authorization': 'Bearer $token'},
+        body: {'scopes': ['patch:read']},
+      );
+      
+      response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(200));
+      
+      final newKeyData = response.body as Map<String, dynamic>;
+      final newApiKey = newKeyData['apiKey'] as String;
+      
+      // 5. New key works
+      request = _HttpRequest(
+        method: 'GET',
+        path: '/patches',
+        headers: {'X-API-Key': newApiKey},
+      );
+      response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(200));
     });
 
-    test('developer can have multiple concurrent keys', () {
+    test('E2E9: developer can have multiple concurrent keys', () {
       // 1. Create key1, key2, key3
+      final userId = 'user_e2e9';
+      final token = jwtService.generateToken(
+        userId: userId,
+        email: 'multi-key@example.com',
+        roles: ['developer'],
+      );
+      
+      final keys = <String>[];
+      for (int i = 0; i < 3; i++) {
+        final request = _HttpRequest(
+          method: 'POST',
+          path: '/auth/api-keys',
+          headers: {'Authorization': 'Bearer $token'},
+          body: {'scopes': ['patch:read']},
+        );
+        
+        final response = endpoint.handleRequest(request);
+        expect(response.statusCode, equals(200));
+        
+        final keyData = response.body as Map<String, dynamic>;
+        keys.add(keyData['apiKey'] as String);
+      }
+      
+      expect(keys.length, equals(3));
+      expect(keys[0], isNot(equals(keys[1]))); // Different keys
+      expect(keys[1], isNot(equals(keys[2])));
+      
       // 2. All three keys are active
       // 3. Each key authenticates independently
+      for (final apiKey in keys) {
+        final request = _HttpRequest(
+          method: 'GET',
+          path: '/patches',
+          headers: {'X-API-Key': apiKey},
+        );
+        
+        final response = endpoint.handleRequest(request);
+        expect(response.statusCode, equals(200));
+      }
+      
       // 4. Revoke key2
+      apiKeyService.revokeKey(keys[1]);
+      
       // 5. key1 and key3 still work, key2 fails
-      expect(true, true); // Placeholder
+      for (int i = 0; i < 3; i++) {
+        final request = _HttpRequest(
+          method: 'GET',
+          path: '/patches',
+          headers: {'X-API-Key': keys[i]},
+        );
+        
+        final response = endpoint.handleRequest(request);
+        
+        if (i == 1) {
+          expect(response.statusCode, equals(401)); // Revoked
+        } else {
+          expect(response.statusCode, equals(200)); // Still active
+        }
+      }
     });
   });
 

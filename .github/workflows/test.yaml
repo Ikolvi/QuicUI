@@ -25,28 +25,6 @@ jobs:
       with:
         flutter-version: '3.35.7'
         channel: 'stable'
-    
-    - name: Use Custom QuicUI Flutter SDK
-      run: |
-        # Clone the custom QuicUI Flutter SDK fork with specific version tag
-        mkdir -p ~/flutter-custom
-        
-        # Try to clone with retry logic using the stable version tag
-        for i in {1..3}; do
-          echo "Attempt $i to clone Flutter SDK (v3.35.7-quicui-0.9.0)..."
-          git clone --depth 1 --branch v3.35.7-quicui-0.9.0 https://x-access-token:${{ secrets.FLUTTER_SDK_TOKEN }}@github.com/Ikolvi/QuicUIFlutterSDK.git ~/flutter-custom && break
-          rm -rf ~/flutter-custom/*
-          sleep 5
-        done
-        
-        # Update PATH to use custom Flutter SDK
-        export PATH="$HOME/flutter-custom/bin:$PATH"
-        echo "$HOME/flutter-custom/bin" >> $GITHUB_PATH
-        
-        # Verify Flutter installation
-        flutter --version || echo "Custom Flutter SDK not available, using default"
-        dart --version
-      continue-on-error: true
 
     - name: Install dependencies
       run: |

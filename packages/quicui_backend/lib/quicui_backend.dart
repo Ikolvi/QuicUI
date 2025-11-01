@@ -9,6 +9,7 @@ import 'src/cache_service.dart';
 import 'src/cached_database.dart';
 import 'src/database_pool.dart';
 import 'src/response_optimization.dart';
+import 'src/metrics_service.dart';
 
 // Export security configuration for external use
 export 'src/security_config.dart' show SecurityConfig, SecurityConfigException;
@@ -24,6 +25,7 @@ class CodePushBackend {
   late CachedDatabase cachedDb;
   late DatabasePool databasePool;
   late QueryOptimizer queryOptimizer;
+  late MetricsService metricsService;
   
   CodePushBackend({
     this.host = 'localhost',
@@ -54,6 +56,9 @@ class CodePushBackend {
       // Initialize query optimizer
       queryOptimizer = QueryOptimizer();
 
+      // Initialize metrics service
+      metricsService = MetricsService();
+
       // Initialize cached database
       cachedDb = CachedDatabase(cache: cacheService);
 
@@ -80,8 +85,31 @@ class CodePushBackend {
 
       // Health check endpoint
       router.get('/health', (shelf.Request request) {
+        metricsService.updateHealth(component: 'api', healthy: true);
+        final health = {
+          'status': 'healthy',
+          'cache_service': metricsService.cacheServiceHealthy.value.toInt() == 1,
+          'database_pool': metricsService.dbPoolHealthy.value.toInt() == 1,
+          'uptime_seconds': metricsService.uptime.value.toInt(),
+        };
         return shelf.Response.ok(
-          '{"status":"healthy"}',
+          jsonEncode(health),
+          headers: {'Content-Type': 'application/json'},
+        );
+      });
+
+      // Prometheus metrics endpoint
+      router.get('/metrics/prometheus', (shelf.Request request) {
+        return shelf.Response.ok(
+          metricsService.exportPrometheus(),
+          headers: {'Content-Type': 'text/plain; charset=utf-8'},
+        );
+      });
+
+      // JSON metrics endpoint
+      router.get('/metrics/json', (shelf.Request request) {
+        return shelf.Response.ok(
+          jsonEncode(metricsService.exportJson()),
           headers: {'Content-Type': 'application/json'},
         );
       });

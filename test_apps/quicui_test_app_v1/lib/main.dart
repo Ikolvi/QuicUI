@@ -46,10 +46,11 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _initializeCodePush() async {
     try {
-      // Initialize code push configuration with local network endpoint
-      // PC Address: 192.168.20.100:8080
+      // Initialize code push using plugin defaults
+      // Backend endpoint is managed by quicui_code_push_client plugin internally
+      // App should not know about backend URL
+      // Plugin defaults to http://localhost:8080 (configurable via environment)
       codePushConfig = Config(
-        apiUrl: 'http://192.168.20.100:8080',
         appId: 'com.quicui.testapp',
         clientSecret: 'test-secret-key-12345',
         appVersion: appVersion,
@@ -64,7 +65,7 @@ class _HomePageState extends State<HomePage> {
         patchStatus = 'Ready - Waiting for patches';
       });
 
-      // Check for patches
+      // Check for patches (plugin handles backend communication)
       await _checkForPatches();
     } catch (e) {
       setState(() {
@@ -221,10 +222,10 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      _ConfigItem('Server', 'localhost:8080'),
-                      _ConfigItem('Backend', 'Dart/Shelf REST API'),
+                      _ConfigItem('Backend', 'Managed by QuicUI plugin'),
                       _ConfigItem('Compiler', 'quicui_compiler'),
                       _ConfigItem('SDK Fork', 'v3.35.7-quicui-0.9.0'),
+                      _ConfigItem('Protocol', 'HTTPS/TLS in production'),
                     ],
                   ),
                 ),

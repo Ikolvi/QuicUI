@@ -178,7 +178,7 @@ class EnhancedCodePushBackend {
       '''{
         "status": "healthy",
         "timestamp": "${DateTime.now().toIso8601String()}",
-        "version": "1.0.0"
+        "version": "0.9.0-dev"
       }''',
       headers: {'Content-Type': 'application/json'},
     );

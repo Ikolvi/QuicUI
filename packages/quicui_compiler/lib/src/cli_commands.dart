@@ -229,10 +229,10 @@ class CodePushCliCommands {
       await Future.delayed(Duration(milliseconds: 500));
 
       final versions = [
-        '1.0.0',
-        '1.0.1',
-        '1.0.2',
-        '1.1.0',
+        '0.9.0-dev',
+        '0.9.1-dev',
+        '0.9.2-dev',
+        '0.9.3-dev',
       ];
 
       print('✅ Found ${versions.length} versions:');

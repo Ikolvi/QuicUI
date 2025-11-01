@@ -56,7 +56,7 @@ void main(List<String> arguments) async {
 
       case '--version':
       case '-v':
-        print('QuicUI Code Push Compiler v1.0.0');
+        print('QuicUI Code Push Compiler v0.9.0-dev');
         break;
 
       default:
@@ -293,7 +293,7 @@ Map<String, dynamic> _parseOptions(List<String> args) {
 /// Print usage information
 void _printUsage() {
   print('''
-QuicUI Code Push Compiler v1.0.0
+QuicUI Code Push Compiler v0.9.0-dev
 Patch compilation, signing, and deployment tool
 
 USAGE:

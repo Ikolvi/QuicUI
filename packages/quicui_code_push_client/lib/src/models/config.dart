@@ -1,4 +1,5 @@
 import 'patch_info.dart';
+import 'sdk_info.dart';
 
 /// Configuration for QuicUI code push client
 class Config {
@@ -44,6 +45,12 @@ class Config {
   /// Callback when error occurs
   final Function(String)? onError;
 
+  /// Whether to include SDK info in requests
+  final bool includeSDKInfo;
+
+  /// Cached SDK information
+  final SDKInfo? sdkInfo;
+
   Config({
     required this.apiUrl,
     required this.appId,
@@ -55,6 +62,8 @@ class Config {
     this.checkIntervalSeconds = 3600,
     this.maxRetries = 3,
     this.enableDebugLogging = false,
+    this.includeSDKInfo = true,
+    this.sdkInfo,
     this.onPatchAvailable,
     this.onDownloadProgress,
     this.onPatchApplied,
@@ -62,5 +71,6 @@ class Config {
   });
 
   @override
-  String toString() => 'Config(appId: $appId, apiUrl: $apiUrl, appVersion: $appVersion)';
+  String toString() => 'Config(appId: $appId, apiUrl: $apiUrl, appVersion: $appVersion, '
+      'sdk: ${sdkInfo?.sdkStatus ?? "Not loaded"})';
 }

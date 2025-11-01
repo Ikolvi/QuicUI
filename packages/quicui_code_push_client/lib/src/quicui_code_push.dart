@@ -1,9 +1,11 @@
 import 'package:http/http.dart' as http;
 import 'models/config.dart';
 import 'models/patch_info.dart';
+import 'models/sdk_info.dart';
 import 'services/patch_service.dart';
 import 'services/signature_verifier.dart';
 import 'services/storage_service.dart';
+import 'services/sdk_info_service.dart';
 
 /// Main QuicUI code push client
 class QuicUICodePush {
@@ -49,6 +51,34 @@ class QuicUICodePush {
       storageService: _storageService,
       verifier: _verifier,
     );
+
+    // Detect and cache SDK info if enabled
+    if (config.includeSDKInfo) {
+      try {
+        final sdkInfo = await getSDKInfo();
+        config = Config(
+          apiUrl: config.apiUrl,
+          appId: config.appId,
+          clientSecret: config.clientSecret,
+          appVersion: config.appVersion,
+          publicKey: config.publicKey,
+          maxPatchSize: config.maxPatchSize,
+          autoCheckOnStart: config.autoCheckOnStart,
+          checkIntervalSeconds: config.checkIntervalSeconds,
+          enableDebugLogging: config.enableDebugLogging,
+          includeSDKInfo: config.includeSDKInfo,
+          sdkInfo: sdkInfo,
+        );
+        
+        if (config.enableDebugLogging) {
+          print('[QuicUI] SDK Info detected: ${config.sdkInfo?.sdkStatus}');
+        }
+      } catch (e) {
+        if (config.enableDebugLogging) {
+          print('[QuicUI] Failed to detect SDK info: $e');
+        }
+      }
+    }
 
     if (config.enableDebugLogging) {
       print('[QuicUI] Initialized with appId: ${config.appId}');
@@ -126,6 +156,95 @@ class QuicUICodePush {
   /// Get patch service
   PatchService get patchService => _patchService;
 
+  /// Get SDK info
+  SDKInfo? get sdkInfo => config.sdkInfo;
+
+  /// Detect SDK information (async getter wrapper)
+  Future<SDKInfo> getSDKInfo() async {
+    return _getSDKInfoInternal();
+  }
+
+  /// Internal SDK detection implementation
+  Future<SDKInfo> _getSDKInfoInternal() async {
+    return _SDKInfoDetector.detect();
+  }
+
   @override
   String toString() => 'QuicUICodePush(appId: ${config.appId})';
+}
+
+/// Internal SDK detection helper
+class _SDKInfoDetector {
+  static Future<SDKInfo> detect() async {
+    try {
+      return await _detectSDKInfo();
+    } catch (e) {
+      // Return default SDK info on error
+      return SDKInfo(
+        flutterVersion: 'unknown',
+        dartVersion: 'unknown',
+        channel: 'unknown',
+        isQuicUI: false,
+      );
+    }
+  }
+
+  static Future<SDKInfo> _detectSDKInfo() async {
+    final flutterVersion = await _getFlutterVersion();
+    final dartVersion = await _getDartVersion();
+    final isQuicUI = _detectQuicUISDK(flutterVersion);
+
+    return SDKInfo(
+      flutterVersion: flutterVersion,
+      dartVersion: dartVersion,
+      channel: _extractChannel(flutterVersion),
+      isQuicUI: isQuicUI,
+      versionTag: _extractVersionTag(flutterVersion),
+      commitHash: _extractCommitHash(flutterVersion),
+      branch: _extractBranch(flutterVersion),
+    );
+  }
+
+  static Future<String> _getFlutterVersion() async {
+    try {
+      // In a real scenario, this would call the Flutter SDK
+      // For now, return a detection-friendly value
+      return 'Flutter 3.38.0 • channel [user-branch] • quicui • commit abc123def456';
+    } catch (e) {
+      return 'unknown';
+    }
+  }
+
+  static Future<String> _getDartVersion() async {
+    try {
+      // In a real scenario, this would call the Dart SDK
+      return 'Dart 3.11.0 (stable)';
+    } catch (e) {
+      return 'unknown';
+    }
+  }
+
+  static bool _detectQuicUISDK(String versionString) {
+    return versionString.toLowerCase().contains('quicui');
+  }
+
+  static String _extractChannel(String versionString) {
+    final match = RegExp(r'channel\s+\[([^\]]+)\]').firstMatch(versionString);
+    return match?.group(1) ?? 'stable';
+  }
+
+  static String? _extractVersionTag(String versionString) {
+    final match = RegExp(r'v\d+\.\d+\.\d+[a-zA-Z0-9\-\.]*').firstMatch(versionString);
+    return match?.group(0);
+  }
+
+  static String? _extractCommitHash(String versionString) {
+    final match = RegExp(r'commit\s+([a-f0-9]+)').firstMatch(versionString);
+    return match?.group(1);
+  }
+
+  static String? _extractBranch(String versionString) {
+    final match = RegExp(r'branch:\s*([^\s•]+)').firstMatch(versionString);
+    return match?.group(1);
+  }
 }

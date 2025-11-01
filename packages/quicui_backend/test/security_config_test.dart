@@ -1,5 +1,4 @@
 import 'package:test/test.dart';
-import 'package:shelf/shelf.dart';
 import '../lib/src/security_config.dart';
 
 void main() {

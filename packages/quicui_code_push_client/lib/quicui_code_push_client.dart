@@ -58,5 +58,6 @@ export 'src/services/patch_service.dart';
 export 'src/services/signature_verifier.dart';
 export 'src/services/storage_service.dart';
 export 'src/services/sdk_info_service.dart';
+export 'src/services/method_channel.dart';
 export 'src/constants/build_sdk_info.dart';
 export 'src/binding.dart';

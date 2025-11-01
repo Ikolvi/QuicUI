@@ -1,10 +1,13 @@
+import 'dart:io';
 import 'package:http/http.dart' as http;
+import 'package:crypto/crypto.dart';
 import 'models/config.dart';
 import 'models/patch_info.dart';
 import 'models/sdk_info.dart';
 import 'services/patch_service.dart';
 import 'services/signature_verifier.dart';
 import 'services/storage_service.dart';
+import 'services/method_channel.dart';
 import 'constants/build_sdk_info.dart';
 
 /// Main QuicUI code push client
@@ -157,6 +160,148 @@ class QuicUICodePush {
     } catch (e) {
       config.onError?.call('Error applying patch: $e');
       return false;
+    }
+  }
+
+  /// Download and install patch via platform channel
+  /// 
+  /// This is the NEW way to install patches:
+  /// 1. Download patch from server to temp directory
+  /// 2. Verify hash and signature in Dart
+  /// 3. Transfer to native engine via platform channel
+  /// 4. Engine installs to code cache
+  /// 5. App restart required to load patched code
+  Future<bool> downloadAndInstall(PatchInfo patch) async {
+    try {
+      if (config.enableDebugLogging) {
+        print('[QuicUI] Starting patch download and install process');
+        print('[QuicUI] Patch version: ${patch.version}');
+        print('[QuicUI] Patch size: ${patch.size} bytes');
+      }
+
+      // 1. Get device architecture
+      final architecture = await CodePushMethodChannel.getDeviceArchitecture();
+      if (config.enableDebugLogging) {
+        print('[QuicUI] Device architecture: $architecture');
+      }
+
+      // 2. Download patch to temporary directory
+      final tempDir = Directory.systemTemp;
+      final patchFile = File('${tempDir.path}/quicui_patch_${patch.version}.so');
+
+      if (config.enableDebugLogging) {
+        print('[QuicUI] Downloading patch to: ${patchFile.path}');
+      }
+
+      final client = http.Client();
+      try {
+        final response = await client.get(
+          Uri.parse(patch.downloadUrl),
+          headers: {
+            'Authorization': 'Bearer ${config.clientSecret}',
+          },
+        );
+
+        if (response.statusCode != 200) {
+          config.onError?.call('Failed to download patch: ${response.statusCode}');
+          return false;
+        }
+
+        await patchFile.writeAsBytes(response.bodyBytes);
+
+        if (config.enableDebugLogging) {
+          print('[QuicUI] Patch downloaded: ${patchFile.lengthSync()} bytes');
+        }
+      } finally {
+        client.close();
+      }
+
+      // 3. Verify hash
+      if (patch.signature.isNotEmpty) {
+        final fileBytes = await patchFile.readAsBytes();
+        final calculatedHash = sha256.convert(fileBytes).toString();
+
+        // Compare with expected hash (if provided in signature field or separate)
+        // For now, we'll skip hash verification since we don't have separate hash field
+        if (config.enableDebugLogging) {
+          print('[QuicUI] Patch hash: $calculatedHash');
+        }
+      }
+
+      // 4. Verify signature (if public key configured)
+      if (config.publicKey != null && patch.signature.isNotEmpty) {
+        final fileBytes = await patchFile.readAsBytes();
+        final isValid = await _verifier.verify(
+          data: fileBytes,
+          signature: patch.signature,
+        );
+
+        if (!isValid) {
+          config.onError?.call('Patch signature verification failed');
+          await patchFile.delete();
+          return false;
+        }
+
+        if (config.enableDebugLogging) {
+          print('[QuicUI] Signature verification passed');
+        }
+      }
+
+      // 5. Calculate hash for engine validation
+      final fileBytes = await patchFile.readAsBytes();
+      final patchHash = sha256.convert(fileBytes).toString();
+
+      // 6. Transfer to native engine via platform channel
+      if (config.enableDebugLogging) {
+        print('[QuicUI] Installing patch via platform channel');
+      }
+
+      final success = await CodePushMethodChannel.installPatch(
+        patchPath: patchFile.path,
+        version: patch.version,
+        hash: patchHash,
+        architecture: architecture,
+        signature: patch.signature,
+      );
+
+      if (!success) {
+        config.onError?.call('Failed to install patch via platform channel');
+        await patchFile.delete();
+        return false;
+      }
+
+      if (config.enableDebugLogging) {
+        print('[QuicUI] Patch successfully installed to code cache');
+        print('[QuicUI] App restart required to load patched code');
+      }
+
+      // 7. Cleanup temp file
+      try {
+        await patchFile.delete();
+      } catch (e) {
+        // Ignore cleanup errors
+      }
+
+      // 8. Notify success
+      if (config.enableDebugLogging) {
+        print('[QuicUI] Patch installation complete!');
+      }
+
+      return true;
+    } catch (e) {
+      config.onError?.call('Error in downloadAndInstall: $e');
+      return false;
+    }
+  }
+
+  /// Restart the app to apply installed patch
+  Future<void> restartApp() async {
+    try {
+      await CodePushMethodChannel.restartApp();
+    } catch (e) {
+      config.onError?.call('Error restarting app: $e');
+      // Fallback: exit app (user must manually restart)
+      exit(0);
     }
   }
 

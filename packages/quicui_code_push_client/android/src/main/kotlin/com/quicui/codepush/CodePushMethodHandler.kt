@@ -37,6 +37,13 @@ class CodePushMethodHandler(
                 "loadPatch" -> handleLoadPatch(call, result)
                 "disableCodePush" -> handleDisableCodePush(call, result)
                 "getLoadedPatchVersion" -> handleGetLoadedPatchVersion(call, result)
+                // NEW: Platform channel methods for AOT patching
+                "installPatch" -> handleInstallPatch(call, result)
+                "hasPatch" -> handleHasPatch(call, result)
+                "getInstalledPatchVersion" -> handleGetInstalledPatchVersion(call, result)
+                "clearPatch" -> handleClearPatch(call, result)
+                "getArchitecture" -> handleGetArchitecture(call, result)
+                "restartApp" -> handleRestartApp(call, result)
                 else -> result.notImplemented()
             }
         } catch (e: Exception) {
@@ -242,6 +249,182 @@ class CodePushMethodHandler(
             android.util.Log.e("CodePush", "Error cleaning patches", e)
         }
     }
+
+    // ========================================================================
+    // NEW: AOT Patch Installation Methods (Platform Channel → Engine)
+    // ========================================================================
+
+    /**
+     * Install patch via Flutter engine
+     * Transfers Dart-downloaded patch to native engine code cache
+     */
+    private fun handleInstallPatch(call: MethodCall, result: MethodChannel.Result) {
+        val patchPath = call.argument<String>("patchPath")
+        val version = call.argument<String>("version")
+        val hash = call.argument<String>("hash")
+        val architecture = call.argument<String>("architecture")
+        val signature = call.argument<String>("signature")
+
+        if (patchPath == null || version == null) {
+            result.error("INVALID_ARGS", "patchPath and version are required", null)
+            return
+        }
+
+        executor.execute {
+            try {
+                // Use QuicUICodePushLoader from the engine
+                val codePushLoader = io.flutter.embedding.engine.loader.QuicUICodePushLoader(context)
+                
+                // Verify patch file exists
+                val patchFile = File(patchPath)
+                if (!patchFile.exists()) {
+                    Handler(Looper.getMainLooper()).post {
+                        result.error("FILE_NOT_FOUND", "Patch file not found: $patchPath", null)
+                    }
+                    return@execute
+                }
+
+                // Get device architecture if not provided
+                val arch = architecture ?: io.flutter.embedding.engine.loader.QuicUICodePushLoader.getDeviceArchitecture()
+
+                // Get code cache directory
+                val codeCacheDir = context.codeCacheDir.absolutePath
+                val patchesDir = File(codeCacheDir, "quicui_patches")
+                patchesDir.mkdirs()
+
+                // Target path: libapp_patched_<arch>.so
+                val targetFile = File(patchesDir, "libapp_patched_${arch}.so")
+
+                // Copy patch file to code cache
+                patchFile.copyTo(targetFile, overwrite = true)
+
+                // Set executable permissions
+                targetFile.setExecutable(true, false)
+                targetFile.setReadable(true, false)
+
+                // Save metadata
+                val metadataFile = File(patchesDir, "patch_metadata.json")
+                val metadata = buildString {
+                    appendLine("{")
+                    appendLine("  \"version\": \"$version\",")
+                    appendLine("  \"platform\": \"android\",")
+                    appendLine("  \"architecture\": \"$arch\",")
+                    appendLine("  \"patch_hash\": \"${hash ?: ""}\",")
+                    appendLine("  \"patch_size\": ${targetFile.length()},")
+                    appendLine("  \"signature\": \"${signature ?: ""}\",")
+                    appendLine("  \"install_date\": \"${java.time.Instant.now()}\",")
+                    appendLine("  \"requires_restart\": true")
+                    appendLine("}")
+                }
+                metadataFile.writeText(metadata)
+
+                android.util.Log.i("QuicUI", "Patch installed successfully to: ${targetFile.absolutePath}")
+                android.util.Log.i("QuicUI", "Patch size: ${targetFile.length()} bytes")
+
+                Handler(Looper.getMainLooper()).post {
+                    result.success(true)
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("QuicUI", "Failed to install patch", e)
+                Handler(Looper.getMainLooper()).post {
+                    result.error("INSTALL_FAILED", e.message, null)
+                }
+            }
+        }
+    }
+
+    /**
+     * Check if patch is installed
+     */
+    private fun handleHasPatch(call: MethodCall, result: MethodChannel.Result) {
+        try {
+            val codePushLoader = io.flutter.embedding.engine.loader.QuicUICodePushLoader(context)
+            val arch = io.flutter.embedding.engine.loader.QuicUICodePushLoader.getDeviceArchitecture()
+            val hasPatch = codePushLoader.hasPatch(arch)
+            result.success(hasPatch)
+        } catch (e: Exception) {
+            result.error("ERROR", e.message, null)
+        }
+    }
+
+    /**
+     * Get installed patch version
+     */
+    private fun handleGetInstalledPatchVersion(call: MethodCall, result: MethodChannel.Result) {
+        try {
+            val codeCacheDir = context.codeCacheDir.absolutePath
+            val metadataFile = File(codeCacheDir, "quicui_patches/patch_metadata.json")
+            
+            if (metadataFile.exists()) {
+                val metadata = metadataFile.readText()
+                // Simple JSON parsing - extract version
+                val versionRegex = "\"version\":\\s*\"([^\"]+)\"".toRegex()
+                val matchResult = versionRegex.find(metadata)
+                val version = matchResult?.groupValues?.get(1)
+                result.success(version)
+            } else {
+                result.success(null)
+            }
+        } catch (e: Exception) {
+            result.error("ERROR", e.message, null)
+        }
+    }
+
+    /**
+     * Clear installed patch (rollback)
+     */
+    private fun handleClearPatch(call: MethodCall, result: MethodChannel.Result) {
+        executor.execute {
+            try {
+                val codePushLoader = io.flutter.embedding.engine.loader.QuicUICodePushLoader(context)
+                val success = codePushLoader.clearPatch()
+                Handler(Looper.getMainLooper()).post {
+                    result.success(success)
+                }
+            } catch (e: Exception) {
+                Handler(Looper.getMainLooper()).post {
+                    result.error("ERROR", e.message, null)
+                }
+            }
+        }
+    }
+
+    /**
+     * Get device architecture
+     */
+    private fun handleGetArchitecture(call: MethodCall, result: MethodChannel.Result) {
+        try {
+            val arch = io.flutter.embedding.engine.loader.QuicUICodePushLoader.getDeviceArchitecture()
+            result.success(arch)
+        } catch (e: Exception) {
+            result.error("ERROR", e.message, null)
+        }
+    }
+
+    /**
+     * Restart the app
+     */
+    private fun handleRestartApp(call: MethodCall, result: MethodChannel.Result) {
+        try {
+            // Get the main activity intent
+            val packageManager = context.packageManager
+            val intent = packageManager.getLaunchIntentForPackage(context.packageName)
+            
+            if (intent != null) {
+                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                context.startActivity(intent)
+                
+                // Exit current process
+                android.os.Process.killProcess(android.os.Process.myPid())
+                result.success(true)
+            } else {
+                result.error("ERROR", "Could not get launch intent", null)
+            }
+        } catch (e: Exception) {
+            result.error("ERROR", e.message, null)
+        }
+    }
 }
 
 /**
@@ -251,7 +434,7 @@ class CodePushMethodHandler(
 fun registerCodePushHandler(flutterEngine: FlutterEngine, context: Context) {
     val channel = MethodChannel(
         flutterEngine.dartExecutor.binaryMessenger,
-        "com.quicui/codepush"
+        "dev.quicui.code_push"  // Updated to match Dart side
     )
     val handler = CodePushMethodHandler(context, channel)
     channel.setMethodCallHandler(handler)

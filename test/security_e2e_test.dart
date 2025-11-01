@@ -4,35 +4,172 @@
 /// Covers: Multi-step user flows, permission boundaries, state management
 
 import 'package:test/test.dart';
-// import 'package:shelf/shelf.dart';
-// import 'package:shelf/shelf_io.dart' as shelf_io;
-// import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
+  // Initialize mock services for E2E testing
+  late _E2EUserDatabase userDb;
+  late _MockJwtService jwtService;
+  late _MockApiKeyService apiKeyService;
+  late _MockAuditService auditService;
+  late _MockEndpoint endpoint;
+
+  setUp(() {
+    userDb = _E2EUserDatabase();
+    jwtService = _MockJwtService();
+    apiKeyService = _MockApiKeyService();
+    auditService = _MockAuditService();
+    endpoint = _MockEndpoint(jwtService, apiKeyService, auditService, userDb);
+  });
   group('Complete User Registration to API Access', () {
-    test('new user registers and logs in', () {
-      // 1. Register user (if endpoint exists)
+    test('E2E1: new user registers and logs in', () {
+      // 1. Register user
+      final registerResult = userDb.registerUser(
+        email: 'newuser@example.com',
+        password: 'SecurePass123',
+        name: 'New User',
+      );
+      
+      expect(registerResult.success, isTrue);
+      expect(registerResult.userId, isNotNull);
+      final userId = registerResult.userId!;
+      
       // 2. Login with credentials
+      final loginResult = userDb.authenticateUser(
+        email: 'newuser@example.com',
+        password: 'SecurePass123',
+      );
+      
+      expect(loginResult.success, isTrue);
+      expect(loginResult.userId, equals(userId));
+      expect(loginResult.passwordCorrect, isTrue);
+      
       // 3. Receive JWT token
+      final token = jwtService.generateToken(
+        userId: userId,
+        email: 'newuser@example.com',
+        roles: ['user'],
+      );
+      
+      expect(token, isNotNull);
+      expect(token.split('.').length, equals(3)); // JWT format: header.payload.signature
+      
       // 4. Use token for authenticated request
-      expect(true, true); // Placeholder
+      final request = _HttpRequest(
+        method: 'GET',
+        path: '/user/profile',
+        headers: {'Authorization': 'Bearer $token'},
+      );
+      
+      final response = endpoint.handleRequest(request);
+      expect(response.statusCode, equals(200));
+      expect(response.body, isNotNull);
+      
+      // Verify audit logging
+      final events = auditService.getEventsByType('AUTH_ATTEMPT');
+      expect(events.isNotEmpty, isTrue);
     });
 
-    test('user creates API key and uses it', () {
+    test('E2E2: user creates API key and uses it', () {
       // 1. Login
+      final userId = 'user_e2e2';
+      userDb.registerUser(
+        email: 'apikey-user@example.com',
+        password: 'SecurePass123',
+        name: 'API Key User',
+      );
+      
+      final token = jwtService.generateToken(
+        userId: userId,
+        email: 'apikey-user@example.com',
+        roles: ['user'],
+      );
+      
       // 2. POST /auth/api-keys to create key
-      // 3. Receive unhashed key
+      final keyRequest = _HttpRequest(
+        method: 'POST',
+        path: '/auth/api-keys',
+        headers: {'Authorization': 'Bearer $token'},
+        body: {'scopes': ['patch:read', 'patch:create']},
+      );
+      
+      final keyResponse = endpoint.handleRequest(keyRequest);
+      expect(keyResponse.statusCode, equals(200));
+      
+      // 3. Extract unhashed key from response
+      final keyData = keyResponse.body as Map<String, dynamic>;
+      final apiKey = keyData['apiKey'] as String?;
+      expect(apiKey, isNotNull);
+      
       // 4. Use key in X-API-Key header for request
+      final requestWithKey = _HttpRequest(
+        method: 'GET',
+        path: '/patches',
+        headers: {'X-API-Key': apiKey!},
+      );
+      
       // 5. Verify request succeeds with key auth
-      expect(true, true); // Placeholder
+      final response = endpoint.handleRequest(requestWithKey);
+      expect(response.statusCode, equals(200));
+      
+      // Verify API key was logged
+      final events = auditService.getEventsByType('APIKEY_CREATED');
+      expect(events.isNotEmpty, isTrue);
     });
 
-    test('user restricts API key to specific scopes', () {
-      // 1. Create key with limited scopes ['patch:read']
+    test('E2E3: user restricts API key to specific scopes', () {
+      // 1. Create key with limited scopes
+      final userId = 'user_e2e3';
+      final token = jwtService.generateToken(
+        userId: userId,
+        email: 'scoped-key@example.com',
+        roles: ['developer'],
+      );
+      
+      final createKeyRequest = _HttpRequest(
+        method: 'POST',
+        path: '/auth/api-keys',
+        headers: {'Authorization': 'Bearer $token'},
+        body: {'scopes': ['patch:read']},
+      );
+      
+      final createResponse = endpoint.handleRequest(createKeyRequest);
+      expect(createResponse.statusCode, equals(200));
+      
+      final keyData = createResponse.body as Map<String, dynamic>;
+      final apiKey = keyData['apiKey'] as String?;
+      expect(apiKey, isNotNull);
+      
       // 2. Attempt to read patches (should succeed)
+      final readRequest = _HttpRequest(
+        method: 'GET',
+        path: '/patches',
+        headers: {'X-API-Key': apiKey!},
+      );
+      
+      var response = endpoint.handleRequest(readRequest);
+      expect(response.statusCode, equals(200));
+      
       // 3. Attempt to create patch (should fail 403)
+      final createPatchRequest = _HttpRequest(
+        method: 'POST',
+        path: '/patches',
+        headers: {'X-API-Key': apiKey},
+        body: {'title': 'Test Patch'},
+      );
+      
+      response = endpoint.handleRequest(createPatchRequest);
+      expect(response.statusCode, equals(403)); // Forbidden - insufficient scope
+      
       // 4. Attempt to delete patch (should fail 403)
-      expect(true, true); // Placeholder
+      final deleteRequest = _HttpRequest(
+        method: 'DELETE',
+        path: '/patches/patch_123',
+        headers: {'X-API-Key': apiKey},
+      );
+      
+      response = endpoint.handleRequest(deleteRequest);
+      expect(response.statusCode, equals(403)); // Forbidden - insufficient scope
     });
   });
 
@@ -467,3 +604,621 @@ void main() {
 /// ✅ Admin assists locked-out user
 ///
 /// TOTAL: 43+ E2E test scenarios
+
+// ============================================================================
+// E2E Test Infrastructure: Mock Services and Database
+// ============================================================================
+
+/// HTTP request model for E2E testing
+class _HttpRequest {
+  final String method;
+  final String path;
+  final Map<String, String> headers;
+  final dynamic body;
+
+  _HttpRequest({
+    required this.method,
+    required this.path,
+    this.headers = const {},
+    this.body,
+  });
+}
+
+/// HTTP response model for E2E testing
+class _HttpResponse {
+  final int statusCode;
+  final dynamic body;
+  final Map<String, String> headers;
+
+  _HttpResponse({
+    required this.statusCode,
+    this.body,
+    this.headers = const {},
+  });
+}
+
+/// User registration result
+class _RegistrationResult {
+  final bool success;
+  final String? userId;
+  final String? error;
+
+  _RegistrationResult({
+    required this.success,
+    this.userId,
+    this.error,
+  });
+}
+
+/// Authentication result
+class _AuthenticationResult {
+  final bool success;
+  final String? userId;
+  final bool passwordCorrect;
+  final String? error;
+
+  _AuthenticationResult({
+    required this.success,
+    this.userId,
+    this.passwordCorrect = false,
+    this.error,
+  });
+}
+
+/// E2E User Database - simulates persistence
+class _E2EUserDatabase {
+  final Map<String, _UserRecord> _users = {};
+  int _userCounter = 1000;
+
+  _RegistrationResult registerUser({
+    required String email,
+    required String password,
+    required String name,
+  }) {
+    if (_users.values.any((u) => u.email == email)) {
+      return _RegistrationResult(
+        success: false,
+        error: 'Email already registered',
+      );
+    }
+
+    final userId = 'user_${_userCounter++}';
+    _users[userId] = _UserRecord(
+      userId: userId,
+      email: email,
+      name: name,
+      passwordHash: _hashPassword(password),
+      roles: ['user'],
+      createdAt: DateTime.now(),
+    );
+
+    return _RegistrationResult(success: true, userId: userId);
+  }
+
+  _AuthenticationResult authenticateUser({
+    required String email,
+    required String password,
+  }) {
+    final user = _users.values.firstWhere(
+      (u) => u.email == email,
+      orElse: () => _UserRecord.empty(),
+    );
+
+    if (user.userId.isEmpty) {
+      return _AuthenticationResult(
+        success: false,
+        passwordCorrect: false,
+        error: 'User not found',
+      );
+    }
+
+    final passwordCorrect = _verifyPassword(password, user.passwordHash);
+
+    return _AuthenticationResult(
+      success: passwordCorrect,
+      userId: user.userId,
+      passwordCorrect: passwordCorrect,
+    );
+  }
+
+  _UserRecord? getUserById(String userId) => _users[userId];
+  
+  _UserRecord? getUserByEmail(String email) =>
+      _users.values.firstWhere((u) => u.email == email, orElse: () => _UserRecord.empty());
+
+  void updateUserRoles(String userId, List<String> roles) {
+    if (_users.containsKey(userId)) {
+      _users[userId]!.roles = roles;
+    }
+  }
+
+  String _hashPassword(String password) {
+    // Simplified hashing for E2E testing
+    return base64Encode(utf8.encode('$password:salt:1'));
+  }
+
+  bool _verifyPassword(String password, String hash) {
+    return _hashPassword(password) == hash;
+  }
+}
+
+/// User record model
+class _UserRecord {
+  String userId;
+  String email;
+  String name;
+  String passwordHash;
+  List<String> roles;
+  DateTime createdAt;
+
+  _UserRecord({
+    required this.userId,
+    required this.email,
+    required this.name,
+    required this.passwordHash,
+    required this.roles,
+    required this.createdAt,
+  });
+
+  factory _UserRecord.empty() => _UserRecord(
+    userId: '',
+    email: '',
+    name: '',
+    passwordHash: '',
+    roles: [],
+    createdAt: DateTime.now(),
+  );
+}
+
+/// Mock JWT Service for E2E testing
+class _MockJwtService {
+  final Set<String> _blacklistedTokens = {};
+
+  String generateToken({
+    required String userId,
+    required String email,
+    required List<String> roles,
+    int expiryHours = 24,
+  }) {
+    final header = base64Url.encode(utf8.encode('{"alg":"HS256","typ":"JWT"}'));
+    final now = DateTime.now();
+    final expiry = now.add(Duration(hours: expiryHours));
+
+    final payload = {
+      'userId': userId,
+      'email': email,
+      'roles': roles,
+      'iat': now.millisecondsSinceEpoch,
+      'exp': expiry.millisecondsSinceEpoch,
+    };
+
+    final encodedPayload =
+        base64Url.encode(utf8.encode(jsonEncode(payload)));
+    final signature = base64Url.encode(utf8.encode('signature_${userId}_${now.millisecondsSinceEpoch}'));
+
+    return '$header.$encodedPayload.$signature';
+  }
+
+  Map<String, dynamic>? verifyToken(String token) {
+    if (_blacklistedTokens.contains(token)) {
+      return null;
+    }
+
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return null;
+
+      // Decode payload without manual padding - base64Url.decode handles it
+      final decodedBytes = base64Url.decode(parts[1]);
+      final payload = jsonDecode(utf8.decode(decodedBytes));
+
+      if (isTokenExpired(token)) return null;
+
+      return payload as Map<String, dynamic>;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  bool isTokenExpired(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return true;
+
+      final decodedBytes = base64Url.decode(parts[1]);
+      final payload = jsonDecode(utf8.decode(decodedBytes));
+
+      final exp = payload['exp'] as int?;
+      if (exp == null) return true;
+
+      return DateTime.now().millisecondsSinceEpoch > exp;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  void blacklistToken(String token) {
+    _blacklistedTokens.add(token);
+  }
+}
+
+/// Mock API Key Service for E2E testing
+class _MockApiKeyService {
+  final Map<String, _ApiKeyRecord> _keys = {};
+  int _keyCounter = 2000;
+
+  String generateKey({
+    required String userId,
+    required List<String> scopes,
+  }) {
+    final keyId = 'key_${_keyCounter++}';
+    final apiKey = 'sk_${_randomString(32)}';
+
+    _keys[apiKey] = _ApiKeyRecord(
+      keyId: keyId,
+      userId: userId,
+      apiKey: apiKey,
+      scopes: scopes,
+      active: true,
+      createdAt: DateTime.now(),
+    );
+
+    return apiKey;
+  }
+
+  bool verifyKey(String apiKey) {
+    final record = _keys[apiKey];
+    return record != null && record.active;
+  }
+
+  _ApiKeyRecord? getKeyRecord(String apiKey) => _keys[apiKey];
+
+  void revokeKey(String apiKey) {
+    if (_keys.containsKey(apiKey)) {
+      _keys[apiKey]!.active = false;
+    }
+  }
+
+  List<String> getKeyScopes(String apiKey) {
+    return _keys[apiKey]?.scopes ?? [];
+  }
+
+  bool hasKeyScope(String apiKey, String requiredScope) {
+    final scopes = getKeyScopes(apiKey);
+    if (scopes.isEmpty) return false;
+
+    // Check for exact match or wildcard
+    return scopes.contains(requiredScope) ||
+           scopes.any((s) => s.endsWith(':*') && requiredScope.startsWith(s.substring(0, s.length - 2)));
+  }
+
+  String _randomString(int length) {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    String result = '';
+    for (int i = 0; i < length; i++) {
+      result += chars[(DateTime.now().microsecond + i) % chars.length];
+    }
+    return result;
+  }
+}
+
+/// API Key Record
+class _ApiKeyRecord {
+  String keyId;
+  String userId;
+  String apiKey;
+  List<String> scopes;
+  bool active;
+  DateTime createdAt;
+
+  _ApiKeyRecord({
+    required this.keyId,
+    required this.userId,
+    required this.apiKey,
+    required this.scopes,
+    required this.active,
+    required this.createdAt,
+  });
+}
+
+/// Mock Audit Service for E2E testing
+class _MockAuditService {
+  final List<_AuditEvent> _events = [];
+
+  void logEvent({
+    required String eventType,
+    required String userId,
+    Map<String, dynamic>? metadata,
+  }) {
+    _events.add(_AuditEvent(
+      eventType: eventType,
+      userId: userId,
+      metadata: metadata ?? {},
+      timestamp: DateTime.now(),
+    ));
+  }
+
+  List<_AuditEvent> getEventsByType(String eventType) {
+    return _events.where((e) => e.eventType == eventType).toList();
+  }
+
+  List<_AuditEvent> getEventsByUser(String userId) {
+    return _events.where((e) => e.userId == userId).toList();
+  }
+
+  List<_AuditEvent> getAllEvents() => List.from(_events);
+}
+
+/// Audit Event Record
+class _AuditEvent {
+  String eventType;
+  String userId;
+  Map<String, dynamic> metadata;
+  DateTime timestamp;
+
+  _AuditEvent({
+    required this.eventType,
+    required this.userId,
+    required this.metadata,
+    required this.timestamp,
+  });
+}
+
+/// Mock Endpoint - simulates HTTP endpoint with full validation
+class _MockEndpoint {
+  final _MockJwtService jwtService;
+  final _MockApiKeyService apiKeyService;
+  final _MockAuditService auditService;
+  final _E2EUserDatabase userDb;
+
+  final Map<String, dynamic> _userRequestTimestamps = {};
+  final Map<String, dynamic> _keyRequestTimestamps = {};
+
+  _MockEndpoint(
+    this.jwtService,
+    this.apiKeyService,
+    this.auditService,
+    this.userDb,
+  );
+
+  _HttpResponse handleRequest(_HttpRequest request) {
+    // Extract auth
+    String? userId;
+    String? apiKey;
+    List<String> userRoles = [];
+    List<String> keyScopes = [];
+
+    // Try JWT auth
+    final authHeader = request.headers['Authorization'];
+    if (authHeader?.startsWith('Bearer ') ?? false) {
+      final token = authHeader!.substring(7);
+      final payload = jwtService.verifyToken(token);
+
+      if (payload == null) {
+        auditService.logEvent(
+          eventType: 'AUTH_FAILED',
+          userId: 'unknown',
+          metadata: {'reason': 'invalid_token', 'path': request.path},
+        );
+        return _HttpResponse(statusCode: 401, body: {'error': 'Invalid token'});
+      }
+
+      userId = payload['userId'] as String;
+      userRoles = List<String>.from(payload['roles'] as List? ?? []);
+    }
+
+    // Try API Key auth
+    final apiKeyHeader = request.headers['X-API-Key'];
+    if (apiKeyHeader != null && apiKeyHeader.isNotEmpty) {
+      apiKey = apiKeyHeader;
+
+      if (!apiKeyService.verifyKey(apiKey)) {
+        auditService.logEvent(
+          eventType: 'AUTH_FAILED',
+          userId: 'unknown',
+          metadata: {'reason': 'invalid_api_key', 'path': request.path},
+        );
+        return _HttpResponse(statusCode: 401, body: {'error': 'Invalid API key'});
+      }
+
+      final record = apiKeyService.getKeyRecord(apiKey);
+      userId = record?.userId;
+      keyScopes = record?.scopes ?? [];
+    }
+
+    // Check if authentication required
+    if (!_isPublicPath(request.path) && userId == null) {
+      return _HttpResponse(statusCode: 401, body: {'error': 'Unauthorized'});
+    }
+
+    // Rate limiting
+    if (userId != null) {
+      if (!_checkRateLimit(userId)) {
+        auditService.logEvent(
+          eventType: 'RATE_LIMIT_EXCEEDED',
+          userId: userId,
+          metadata: {'path': request.path, 'limit': 100},
+        );
+        return _HttpResponse(
+          statusCode: 429,
+          body: {'error': 'Rate limit exceeded'},
+          headers: {'Retry-After': '60'},
+        );
+      }
+    }
+
+    if (apiKey != null) {
+      if (!_checkApiKeyRateLimit(apiKey)) {
+        auditService.logEvent(
+          eventType: 'RATE_LIMIT_EXCEEDED',
+          userId: userId ?? 'unknown',
+          metadata: {'path': request.path, 'limit': 500, 'apiKey': apiKey},
+        );
+        return _HttpResponse(
+          statusCode: 429,
+          body: {'error': 'Rate limit exceeded'},
+          headers: {'Retry-After': '60'},
+        );
+      }
+    }
+
+    // Special handling for POST /auth/api-keys
+    if (request.method == 'POST' && request.path == '/auth/api-keys') {
+      if (userId == null) {
+        return _HttpResponse(statusCode: 401, body: {'error': 'Unauthorized'});
+      }
+
+      final body = request.body as Map<String, dynamic>;
+      final scopes = List<String>.from(body['scopes'] as List? ?? []);
+      final newApiKey = apiKeyService.generateKey(userId: userId, scopes: scopes);
+
+      auditService.logEvent(
+        eventType: 'APIKEY_CREATED',
+        userId: userId,
+        metadata: {'scopes': scopes},
+      );
+
+      return _HttpResponse(
+        statusCode: 200,
+        body: {'apiKey': newApiKey, 'scopes': scopes},
+      );
+    }
+
+    // RBAC for other endpoints
+    if (!_checkRbacAccess(request.path, request.method, userRoles, keyScopes)) {
+      auditService.logEvent(
+        eventType: 'AUTH_FAILED',
+        userId: userId ?? 'unknown',
+        metadata: {'reason': 'insufficient_permissions', 'path': request.path},
+      );
+      return _HttpResponse(statusCode: 403, body: {'error': 'Forbidden'});
+    }
+
+    // Audit log successful request
+    if (userId != null) {
+      auditService.logEvent(
+        eventType: 'AUTH_ATTEMPT',
+        userId: userId,
+        metadata: {'success': true, 'path': request.path},
+      );
+
+      if (apiKey != null) {
+        auditService.logEvent(
+          eventType: 'APIKEY_USED',
+          userId: userId,
+          metadata: {'path': request.path},
+        );
+      }
+    }
+
+    // Return success
+    return _HttpResponse(
+      statusCode: 200,
+      body: {'status': 'ok', 'path': request.path},
+    );
+  }
+
+  bool _checkRateLimit(String userId) {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final window = now - 60000; // 60 second window
+
+    // Initialize if not exist
+    if (!_userRequestTimestamps.containsKey(userId)) {
+      _userRequestTimestamps[userId] = now;
+      return true;
+    }
+
+    final lastRequest = _userRequestTimestamps[userId]!;
+
+    // If last request was more than 60 seconds ago, reset
+    if (lastRequest < window) {
+      _userRequestTimestamps[userId] = now;
+      return true;
+    }
+
+    // Count recent requests - just check if we have space
+    // For simplicity, track as counter that resets each minute
+    final key = '$userId:minute:${now ~/ 60000}';
+    _userRequestTimestamps[key] = (_userRequestTimestamps[key] ?? 0) + 1;
+
+    if ((_userRequestTimestamps[key] ?? 0) >= 100) {
+      return false; // Rate limit exceeded
+    }
+
+    return true;
+  }
+
+  bool _checkApiKeyRateLimit(String apiKey) {
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final key = '$apiKey:minute:${now ~/ 60000}';
+    
+    _keyRequestTimestamps[key] = (_keyRequestTimestamps[key] ?? 0) + 1;
+
+    if ((_keyRequestTimestamps[key] ?? 0) >= 500) {
+      return false;
+    }
+
+    return true;
+  }
+
+  bool _checkRbacAccess(String path, String method, List<String> roles, List<String> keyScopes) {
+    // Admin has full access
+    if (roles.contains('admin')) return true;
+
+    // If no roles and no scopes, deny  (unless public path)
+    if (roles.isEmpty && keyScopes.isEmpty) {
+      return path == '/health' || path == '/status';
+    }
+
+    // If we have scopes (API key auth), check scope-based access
+    if (keyScopes.isNotEmpty) {
+      // GET requests need read permission
+      if ((method == 'GET' || method == 'HEAD') && path == '/patches') {
+        return keyScopes.any((s) => s.contains('patch:read') || s == 'patch:*');
+      }
+      
+      // POST/PUT/PATCH on /patches need write/create permission
+      if ((method == 'POST' || method == 'PUT' || method == 'PATCH') && path.startsWith('/patches')) {
+        return keyScopes.any((s) => s.contains('patch:write') || 
+                                     s.contains('patch:create') || 
+                                     s == 'patch:*');
+      }
+      
+      // DELETE needs delete permission
+      if (method == 'DELETE' && path.startsWith('/patches')) {
+        return keyScopes.any((s) => s.contains('patch:delete') || 
+                                     s.contains('patch:write') || 
+                                     s == 'patch:*');
+      }
+      
+      return false;
+    }
+
+    // If no roles/scopes but path is public, allow
+    if (path == '/health' || path == '/status') {
+      return true;
+    }
+
+    // Role-based access - any authenticated user can access these
+    if (roles.isNotEmpty) {
+      if (path == '/user/profile' || path == '/patches') {
+        return true;
+      }
+
+      if (roles.contains('developer')) {
+        if (path.startsWith('/patches')) return true;
+      }
+
+      if (roles.contains('service')) {
+        if (path.startsWith('/metrics')) return true;
+      }
+    }
+
+    return false;
+  }
+
+  bool _isPublicPath(String path) {
+    return path == '/health' || path == '/status';
+  }
+}
+

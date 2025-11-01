@@ -15,6 +15,7 @@ echo ""
 
 # Configuration
 TEST_APP_DIR="/Users/admin/Documents/quicui2/test_apps/quicui_test_app_v1"
+QUICUI_FLUTTER_SDK="/Users/admin/Documents/quicui2/forks/flutter-official"
 BACKEND_HOST="192.168.20.100"
 BACKEND_PORT="8080"
 BACKEND_URL="http://$BACKEND_HOST:$BACKEND_PORT"
@@ -44,19 +45,33 @@ log_warning() {
 }
 
 # Step 1: Verify Flutter SDK
-log_step "Step 1: Verify Flutter SDK"
+log_step "Step 1: Configure & Verify QuicUI Flutter SDK"
+echo "Setting up QuicUI Flutter SDK from: $QUICUI_FLUTTER_SDK"
+
+if [ ! -d "$QUICUI_FLUTTER_SDK" ]; then
+    log_error "QuicUI Flutter SDK not found at $QUICUI_FLUTTER_SDK"
+    exit 1
+fi
+
+# Export Flutter environment to use QuicUI fork
+export FLUTTER_ROOT="$QUICUI_FLUTTER_SDK"
+export PATH="$QUICUI_FLUTTER_SDK/bin:$PATH"
+log_success "FLUTTER_ROOT set to: $FLUTTER_ROOT"
+
+# Verify Flutter version
 echo "Checking Flutter version..."
 flutter_version=$(flutter --version 2>&1 | head -1)
 echo "  $flutter_version"
 
-# Check if using QuicUI SDK
-flutter_root=$(flutter config --list 2>/dev/null | grep "flutter-root" | cut -d' ' -f5)
-if [[ "$flutter_root" == *"QuicUI"* ]] || [[ "$flutter_root" == *"quicui"* ]]; then
-    log_success "Using QuicUI Flutter SDK: $flutter_root"
+# Verify we're using the correct SDK
+flutter_root=$(flutter config --list 2>/dev/null | grep "flutter-root" | awk '{print $NF}')
+if [[ "$flutter_root" == *"forks/flutter-official"* ]]; then
+    log_success "✅ Confirmed: Using QuicUI Flutter SDK from: $flutter_root"
 else
-    log_warning "Not explicitly using QuicUI SDK path"
-    log_warning "Current Flutter root: $flutter_root"
-    log_warning "Note: Build will proceed - verify manually if QuicUI SDK is needed"
+    log_warning "⚠️  Flutter root doesn't match expected path"
+    log_warning "Expected: *forks/flutter-official*"
+    log_warning "Actual: $flutter_root"
+    log_warning "Continuing anyway..."
 fi
 
 # Step 2: Verify network connectivity

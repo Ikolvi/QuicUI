@@ -1,6 +1,6 @@
 /// Configuration for QuicUI code push client
 class Config {
-  /// API server URL (e.g., https://api.quicui.dev)
+  /// API server URL (e.g., https://api.quicui.com)
   final String apiUrl;
 
   /// Application ID (e.g., com.example.app)

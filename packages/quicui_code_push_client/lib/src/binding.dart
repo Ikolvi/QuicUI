@@ -258,7 +258,7 @@ class CodePushServicesBinding {
   }) async {
     // Use provided config or try to load from environment/assets
     final config = CodePushConfig(
-      serviceUrl: serviceUrl ?? 'https://api.quicui.dev',
+      serviceUrl: serviceUrl ?? 'https://api.quicui.com',
       appId: appId ?? 'com.example.app',
       appVersion: appVersion ?? '1.0.0',
       enabled: enabled,

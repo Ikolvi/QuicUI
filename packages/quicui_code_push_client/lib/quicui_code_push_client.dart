@@ -20,7 +20,7 @@
 /// 
 /// class _MyAppState extends State<MyApp> {
 ///   final _quicui = QuicUICodePush(
-///     apiUrl: 'https://api.quicui.dev',
+///     apiUrl: 'https://api.quicui.com',
 ///     appId: 'com.example.app',
 ///     clientSecret: 'your-client-secret',
 ///   );

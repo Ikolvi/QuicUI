@@ -49,7 +49,7 @@ class _CodePushDemoScreenState extends State<CodePushDemoScreen> {
       _codePushClient = CodePushClient();
 
       final config = CodePushConfig(
-        serviceUrl: 'https://api.quicui.dev',
+        serviceUrl: 'https://api.quicui.com',
         appId: 'com.example.codepush.demo',
         appVersion: '1.0.0',
       );
@@ -373,7 +373,7 @@ class _CodePushDemoScreenState extends State<CodePushDemoScreen> {
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                     Text(
-                      'Service URL: https://api.quicui.dev',
+                      'Service URL: https://api.quicui.com',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],

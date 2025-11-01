@@ -7,9 +7,9 @@ import 'package:quicui_compiler/src/kernel_analysis.dart';
 /// 
 /// Usage:
 ///   quicui-compiler build <old-kernel> <new-kernel> --version=1.0.1
-///   quicui-compiler upload <patch-version> --service-url=https://api.quicui.dev
+///   quicui-compiler upload <patch-version> --service-url=https://api.quicui.com
 ///   quicui-compiler rollout <patch-version> --percentage=10
-///   quicui-compiler version list --service-url=https://api.quicui.dev
+///   quicui-compiler version list --service-url=https://api.quicui.com
 ///   quicui-compiler keygen
 ///   quicui-compiler verify <patch-file> <key-file> <manifest-file>
 
@@ -315,12 +315,12 @@ EXAMPLES:
 
   # Upload to service
   quicui-compiler upload 1.0.1 \\
-    --service-url=https://api.quicui.dev \\
+    --service-url=https://api.quicui.com \\
     --app-id=com.example.app
 
   # Rollout patch gradually
   quicui-compiler rollout 1.0.1 \\
-    --service-url=https://api.quicui.dev \\
+    --service-url=https://api.quicui.com \\
     --app-id=com.example.app \\
     --percentage=10
 
@@ -329,7 +329,7 @@ EXAMPLES:
 
   # List available versions
   quicui-compiler version list \\
-    --service-url=https://api.quicui.dev \\
+    --service-url=https://api.quicui.com \\
     --app-id=com.example.app
 
   # Verify patch signature
@@ -349,7 +349,7 @@ OPTIONS:
   --auth-token=TOKEN      Authentication token
 
 DOCUMENTATION:
-  For more information, visit: https://quicui.dev/docs/compiler
+  For more information, visit: https://quicui.com/docs/compiler
 
 For help with a specific command:
   quicui-compiler <command> --help

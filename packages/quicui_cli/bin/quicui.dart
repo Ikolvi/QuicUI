@@ -27,7 +27,7 @@ class AuthCommand {
 
   AuthCommand() {
     argParser.addOption('token', help: 'API token');
-    argParser.addOption('server', help: 'Server URL', defaultsTo: 'https://api.quicui.dev');
+    argParser.addOption('server', help: 'Server URL', defaultsTo: 'https://api.quicui.com');
   }
 
   @override

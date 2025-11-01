@@ -39,7 +39,7 @@ void main() {
     group('Initialization', () {
       test('initializes with valid configuration', () async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -61,7 +61,7 @@ void main() {
 
       test('fails with empty app ID', () async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: '',
           appVersion: '1.0.0',
         );
@@ -72,7 +72,7 @@ void main() {
 
       test('fails with empty app version', () async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '',
         );
@@ -83,7 +83,7 @@ void main() {
 
       test('stores configuration after successful initialization', () async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -96,7 +96,7 @@ void main() {
     group('Patch Checking', () {
       setUp(() async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -141,7 +141,7 @@ void main() {
     group('Patch Loading', () {
       setUp(() async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -186,7 +186,7 @@ void main() {
     group('Patch Disabling', () {
       test('disables code push successfully', () async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -213,7 +213,7 @@ void main() {
 
       test('reports initialized state correctly after initialization', () async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -224,7 +224,7 @@ void main() {
 
       test('retrieves loaded patch version', () async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -239,7 +239,7 @@ void main() {
     group('Error Handling', () {
       test('catches and handles platform exceptions', () async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -256,7 +256,7 @@ void main() {
       test('provides meaningful error messages', () async {
         try {
           final config = CodePushConfig(
-            serviceUrl: 'https://api.quicui.dev',
+            serviceUrl: 'https://api.quicui.com',
             appId: 'com.example.app',
             appVersion: '1.0.0',
           );
@@ -284,7 +284,7 @@ void main() {
     group('Concurrent Operations', () {
       setUp(() async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -311,7 +311,7 @@ void main() {
 
       test('maintains consistency under concurrent access', () async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -328,7 +328,7 @@ void main() {
     group('Performance', () {
       setUp(() async {
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -339,7 +339,7 @@ void main() {
         final stopwatch = Stopwatch()..start();
         
         final config = CodePushConfig(
-          serviceUrl: 'https://api.quicui.dev',
+          serviceUrl: 'https://api.quicui.com',
           appId: 'com.example.app',
           appVersion: '1.0.0',
         );
@@ -366,12 +366,12 @@ void main() {
   group('CodePushConfig Tests', () {
     test('creates config with all fields', () {
       final config = CodePushConfig(
-        serviceUrl: 'https://api.quicui.dev',
+        serviceUrl: 'https://api.quicui.com',
         appId: 'com.example.app',
         appVersion: '1.0.0',
       );
 
-      expect(config.serviceUrl, equals('https://api.quicui.dev'));
+      expect(config.serviceUrl, equals('https://api.quicui.com'));
       expect(config.appId, equals('com.example.app'));
       expect(config.appVersion, equals('1.0.0'));
     });

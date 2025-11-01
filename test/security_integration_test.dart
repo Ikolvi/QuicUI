@@ -209,12 +209,12 @@ void main() {
     test('INTEG11: API key generation through creation endpoint', () {
       final createRequest = {
         'name': 'Mobile App Key',
-        'scopes': ['patch:read', 'patch:publish'],
+        'scopes': <String>['patch:read', 'patch:publish'],
       };
 
       final apiKey = _mockApiKeyService.generateKey(
-        name: createRequest['name'],
-        scopes: createRequest['scopes'],
+        name: createRequest['name'] as String,
+        scopes: createRequest['scopes'] as List<String>,
       );
 
       expect(apiKey, isNotNull);
@@ -1174,91 +1174,431 @@ final _mockEndpoint = _EndpointMock();
 
 class _JwtServiceMock {
   final List<String> _blacklist = [];
+  final Map<String, int> _tokenExpiry = {}; // Track token expiry times
+  int _tokenCounter = 0;
 
   String generateToken({
     required String userId,
     required String email,
     required List<String> roles,
   }) {
-    return 'eyJ.${base64.encode(utf8.encode(jsonEncode({'userId': userId, 'email': email, 'roles': roles})))}.sig';
+    _tokenCounter++;
+    
+    // Generate JWT with proper structure
+    final header = base64.encode(utf8.encode(jsonEncode({'alg': 'HS256', 'typ': 'JWT'})));
+    final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    final expiry = now + 86400; // 24 hours
+    
+    final payload = base64.encode(utf8.encode(jsonEncode({
+      'userId': userId,
+      'email': email,
+      'roles': roles,
+      'iat': now,
+      'exp': expiry,
+      'jti': 'token_$_tokenCounter', // Unique token ID
+    })));
+    
+    final signature = base64.encode(utf8.encode('signature_$_tokenCounter'));
+    final token = '$header.$payload.$signature';
+    
+    // Store expiry for validation
+    _tokenExpiry[token] = expiry;
+    
+    return token;
   }
 
   Map<String, dynamic>? verifyToken(String token) {
+    // Validate token format and state
     if (token.isEmpty || !token.contains('.') || _blacklist.contains(token)) {
       return null;
     }
+    
     try {
       final parts = token.split('.');
       if (parts.length != 3) return null;
-      return jsonDecode(utf8.decode(base64.decode(parts[1]))) as Map<String, dynamic>;
+      
+      // Decode payload (properly handle base64 padding)
+      final payloadStr = parts[1];
+      final paddingNeeded = 4 - (payloadStr.length % 4);
+      final paddedPayload = payloadStr + ('=' * (paddingNeeded == 4 ? 0 : paddingNeeded));
+      
+      final payload = jsonDecode(utf8.decode(base64.decode(paddedPayload))) as Map<String, dynamic>;
+      
+      // Check expiry
+      final exp = payload['exp'] as int?;
+      if (exp != null) {
+        final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+        if (now >= exp) {
+          return null; // Token expired
+        }
+      }
+      
+      return payload;
     } catch (e) {
       return null;
     }
   }
 
-  bool isTokenExpired(String token) => true;
+  bool isTokenExpired(String token) {
+    final payload = verifyToken(token);
+    return payload == null;
+  }
+
   void blacklistToken(String token) => _blacklist.add(token);
 }
 
 class _ApiKeyServiceMock {
-  final Map<String, bool> _keys = {};
+  final Map<String, _ApiKeyData> _keys = {};
+  int _keyCounter = 0;
 
-  String generateKey({required String name, required List<String> scopes}) {
-    final key = 'pk_live_sk${DateTime.now().millisecondsSinceEpoch}';
-    _keys[key] = true;
+  String generateKey({
+    required String name, 
+    required List<String> scopes,
+    String userId = 'user_default',
+  }) {
+    _keyCounter++;
+    final key = 'pk_${DateTime.now().millisecondsSinceEpoch}_$_keyCounter';
+    final hash = _hashKey(key);
+    
+    _keys[key] = _ApiKeyData(
+      name: name,
+      scopes: scopes,
+      hash: hash,
+      userId: userId,
+      createdAt: DateTime.now(),
+      lastUsedAt: null,
+      isActive: true,
+    );
+    
     return key;
   }
 
-  bool verifyKey(String key) => _keys[key] ?? false;
-  void revokeKey(String key) => _keys[key] = false;
-}
+  bool verifyKey(String key) {
+    if (!_keys.containsKey(key)) return false;
+    
+    final keyData = _keys[key]!;
+    if (!keyData.isActive) return false;
+    
+    // Update last used time
+    keyData.lastUsedAt = DateTime.now();
+    
+    return true;
+  }
 
-class _AuditServiceMock {
-  final List<Map<String, dynamic>> _logs = [];
+  void revokeKey(String key) {
+    if (_keys.containsKey(key)) {
+      _keys[key]!.isActive = false;
+    }
+  }
 
-  List<Map<String, dynamic>> queryLogs({String? userId, String? eventType}) {
-    return _logs
-        .where((log) => (userId == null || log['userId'] == userId) &&
-            (eventType == null || log['eventType'] == eventType))
+  bool hasPermission(String key, String permission) {
+    if (!_keys.containsKey(key)) return false;
+    
+    final keyData = _keys[key]!;
+    if (!keyData.isActive) return false;
+    
+    return keyData.scopes.contains(permission) || 
+           keyData.scopes.any((scope) => scope.endsWith(':*') && permission.startsWith(scope.substring(0, scope.length - 2)));
+  }
+
+  List<String> getKeysByUser(String userId) {
+    return _keys.entries
+        .where((e) => e.value.userId == userId && e.value.isActive)
+        .map((e) => e.key)
         .toList();
   }
 
+  String _hashKey(String key) {
+    return 'hash_${key.hashCode.abs()}';
+  }
+}
+
+class _ApiKeyData {
+  final String name;
+  final List<String> scopes;
+  final String hash;
+  final String userId;
+  final DateTime createdAt;
+  DateTime? lastUsedAt;
+  bool isActive;
+
+  _ApiKeyData({
+    required this.name,
+    required this.scopes,
+    required this.hash,
+    required this.userId,
+    required this.createdAt,
+    required this.lastUsedAt,
+    required this.isActive,
+  });
+}
+
+class _AuditServiceMock {
+  final List<_AuditEvent> _logs = [];
+
+  void logEvent({
+    required String eventType,
+    required String userId,
+    required String action,
+    required String status,
+    Map<String, dynamic>? details,
+  }) {
+    _logs.add(_AuditEvent(
+      eventType: eventType,
+      userId: userId,
+      action: action,
+      status: status,
+      details: details ?? {},
+      timestamp: DateTime.now(),
+    ));
+  }
+
+  List<Map<String, dynamic>> queryLogs({
+    String? userId,
+    String? eventType,
+    int? limit,
+  }) {
+    var results = _logs
+        .where((log) => (userId == null || log.userId == userId) &&
+            (eventType == null || log.eventType == eventType))
+        .toList();
+    
+    // Sort by timestamp (newest first)
+    results.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    
+    if (limit != null) {
+      results = results.take(limit).toList();
+    }
+    
+    return results.map((e) => e.toMap()).toList();
+  }
+
   List<Map<String, dynamic>> queryLogsByDateRange(DateTime start, DateTime end) {
-    return _logs;
+    final results = _logs
+        .where((log) => log.timestamp.isAfter(start) && log.timestamp.isBefore(end))
+        .toList()
+        ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    
+    return results.map((e) => e.toMap()).toList();
+  }
+
+  List<Map<String, dynamic>> getAllLogs() {
+    final sortedLogs = _logs.toList()
+        ..sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    
+    return sortedLogs.map((e) => e.toMap()).toList();
+  }
+}
+
+class _AuditEvent {
+  final String eventType;
+  final String userId;
+  final String action;
+  final String status;
+  final Map<String, dynamic> details;
+  final DateTime timestamp;
+
+  _AuditEvent({
+    required this.eventType,
+    required this.userId,
+    required this.action,
+    required this.status,
+    required this.details,
+    required this.timestamp,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'eventType': eventType,
+      'userId': userId,
+      'action': action,
+      'status': status,
+      'details': details,
+      'timestamp': timestamp.toIso8601String(),
+    };
   }
 }
 
 class _EndpointMock {
+  int _requestCount = 0;
+  final List<Map<String, dynamic>> _requests = [];
+
   Map<String, dynamic> handleRequest({
     required String method,
     required String path,
     Map<String, String> headers = const {},
+    Map<String, dynamic>? body,
     bool simulateError = false,
   }) {
-    if (simulateError) return {'statusCode': 500};
-    if (headers.isEmpty) return {'statusCode': 401, 'error': 'Unauthorized'};
-    return {'statusCode': 200, 'data': {}};
+    _requestCount++;
+    
+    // Store request for audit
+    _requests.add({
+      'method': method,
+      'path': path,
+      'headers': headers,
+      'body': body,
+      'timestamp': DateTime.now().toIso8601String(),
+    });
+
+    // Simulate error handling
+    if (simulateError) {
+      return {
+        'statusCode': 500,
+        'error': 'Internal Server Error',
+        'message': 'Simulated error',
+      };
+    }
+
+    // Check authentication
+    if (headers.isEmpty && !_isPublicPath(path)) {
+      return {
+        'statusCode': 401,
+        'error': 'Unauthorized',
+        'message': 'Missing authentication credentials',
+      };
+    }
+
+    // Route handling
+    if (method == 'GET' && path == '/user/profile') {
+      return {
+        'statusCode': 200,
+        'data': {
+          'userId': 'user_123',
+          'email': 'user@example.com',
+          'roles': ['user'],
+        },
+      };
+    }
+
+    if (method == 'GET' && path == '/admin/users') {
+      return {
+        'statusCode': 200,
+        'data': [
+          {'userId': 'user_1', 'email': 'user1@example.com', 'roles': ['user']},
+          {'userId': 'admin_1', 'email': 'admin@example.com', 'roles': ['admin']},
+        ],
+      };
+    }
+
+    if (method == 'POST' && path == '/auth/login') {
+      return {
+        'statusCode': 200,
+        'data': {
+          'token': 'token_abc123',
+          'expiresIn': 86400,
+        },
+      };
+    }
+
+    if (method == 'POST' && path == '/apikeys/generate') {
+      return {
+        'statusCode': 201,
+        'data': {
+          'key': 'pk_generated_key_${_requestCount}',
+          'scopes': body?['scopes'] ?? [],
+        },
+      };
+    }
+
+    if (method == 'GET' && path.startsWith('/patches/')) {
+      return {
+        'statusCode': 200,
+        'data': {
+          'patchId': path.split('/').last,
+          'content': 'Patch content here',
+        },
+      };
+    }
+
+    // Default success response
+    return {
+      'statusCode': 200,
+      'data': {'success': true},
+    };
   }
+
+  int getRequestCount() => _requestCount;
+  
+  List<Map<String, dynamic>> getRequests() => _requests.toList();
 }
 
-// Helper functions
-String _generateExpiredToken() => 'expired.token.sig';
+// Helper functions with proper implementations
 
-bool _hasApiKeyPermission(String key, String permission) => true;
+String _generateExpiredToken() {
+  final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  final expiry = now - 3600; // 1 hour ago
+  
+  final payload = base64.encode(utf8.encode(jsonEncode({
+    'userId': 'user_expired',
+    'exp': expiry,
+  })));
+  
+  return 'eyJ.$payload.sig';
+}
 
-bool _checkRbacAccess(Map<String, dynamic>? payload, String resource) => true;
+bool _hasApiKeyPermission(String key, String permission) {
+  // Check if key has permission via API key service
+  return _mockApiKeyService.hasPermission(key, permission);
+}
 
-bool _checkServicePermission(String key) => true;
+bool _checkRbacAccess(Map<String, dynamic>? payload, String resource) {
+  if (payload == null) return false;
+  
+  final roles = (payload['roles'] as List?) ?? [];
+  
+  // Check role-based access
+  if (resource == '/admin/users') {
+    return roles.contains('admin');
+  }
+  
+  if (resource == '/user/profile') {
+    return true; // All authenticated users
+  }
+  
+  return false;
+}
 
-bool _checkOwnershipAccess(String token, String userId, String resource) => true;
+bool _checkServicePermission(String key) {
+  // Service-to-service authentication
+  return _mockApiKeyService.verifyKey(key);
+}
+
+bool _checkOwnershipAccess(String token, String userId, String resource) {
+  // Check if user owns the resource
+  final payload = _mockJwtService.verifyToken(token);
+  if (payload == null) return false;
+  
+  final tokenUserId = payload['userId'] as String?;
+  return tokenUserId == userId;
+}
 
 bool _middlewareCheckEndpointAccess(String token, String method, String path) {
-  return method == 'GET' && path == '/user/profile';
+  final payload = _mockJwtService.verifyToken(token);
+  if (payload == null) return false;
+  
+  final roles = (payload['roles'] as List?) ?? [];
+  
+  // Check specific endpoint access
+  if (path == '/admin/users' && method == 'GET') {
+    return roles.contains('admin');
+  }
+  
+  if (path == '/user/profile' && method == 'GET') {
+    return true;
+  }
+  
+  return false;
 }
 
-bool _isPublicPath(String path) => path == '/health';
+bool _isPublicPath(String path) {
+  final publicPaths = ['/health', '/status', '/auth/login', '/docs'];
+  return publicPaths.contains(path);
+}
 
-int _getWindowReset() => DateTime.now().millisecondsSinceEpoch + 60000;
+int _getWindowReset() {
+  return DateTime.now().millisecondsSinceEpoch + 60000; // 1 minute window
+}
 
 // Matcher for one of multiple values
 Matcher oneOf(List<dynamic> values) => _OneOfMatcher(values);

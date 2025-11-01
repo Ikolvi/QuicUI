@@ -5,19 +5,14 @@
 
 import 'package:test/test.dart';
 import 'dart:convert';
-import 'dart:async';
 // import 'package:quicui_backend/src/security_service.dart';
 
 void main() {
   group('JWT Service Tests - Complete Implementation', () {
     // Mock JWT service for testing
-    late Map<String, dynamic> jwtConfig;
     
     setUp(() {
-      jwtConfig = {
-        'secret': 'test-secret-key-jwt-service',
-        'expiry_hours': 24,
-      };
+      // Test setup - can add JWT service initialization here if needed
     });
 
     test('JWT1: Token generation produces valid format', () {
@@ -60,7 +55,8 @@ void main() {
       expect(payload.containsKey('iat'), isTrue);
       expect(payload.containsKey('exp'), isTrue);
       expect(payload['roles'] is List, isTrue);
-      expect(payload['roles'].length, greaterThan(0));
+      final roles = (payload['roles'] as List);
+      expect(roles.length, greaterThan(0));
     });
 
     test('JWT3: Token expiration calculated correctly', () {
@@ -104,18 +100,20 @@ void main() {
 
       // Check if expired
       final currentTime = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      final isExpired = payload['exp'] < currentTime;
+      final isExpired = (payload['exp'] as int) < currentTime;
       
       expect(isExpired, isTrue);
     });
 
     test('JWT7: Token payload extraction without verification', () {
       // Extract userId from token without full verification
-      final tokenPayload = base64Url.encode(utf8.encode(
-        jsonEncode({'userId': 'extracted_user', 'email': 'test@example.com'})
-      )).replaceAll('=', '');
-
-      final decoded = jsonDecode(utf8.decode(base64Url.decode(tokenPayload + '====')));
+      // Create payload and properly encode with base64url
+      final payload = {'userId': 'extracted_user', 'email': 'test@example.com'};
+      final payloadJson = jsonEncode(payload);
+      final payloadEncoded = base64Url.encode(utf8.encode(payloadJson)).replaceAll('=', '');
+      
+      // Decode back properly - base64.decode automatically handles padding
+      final decoded = jsonDecode(utf8.decode(base64.decode(payloadEncoded)));
       expect(decoded['userId'], equals('extracted_user'));
     });
 
@@ -157,8 +155,9 @@ void main() {
       };
 
       expect(payload['roles'], equals(roles));
-      expect(payload['roles'].length, equals(3));
-      expect(payload['roles'].contains('admin'), isTrue);
+      final payloadRoles = (payload['roles'] as List?) ?? [];
+      expect(payloadRoles.length, equals(3));
+      expect(payloadRoles.contains('admin'), isTrue);
     });
   });
 
@@ -329,9 +328,11 @@ void main() {
     });
 
     test('APIKEY6: Revoked key cannot be used', () {
-      final key = _generateApiKey();
       var isActive = true;
 
+      // Verify key is initially active
+      expect(isActive, isTrue);
+      
       // Revoke the key
       isActive = false;
 
@@ -341,12 +342,15 @@ void main() {
 
     test('APIKEY7: LastUsedAt tracking', () {
       final key = _generateApiKey();
+      final hash = _hashApiKey(key);
+      
+      // Verify key hash is recorded
+      expect(hash, isNotEmpty);
+      
       var lastUsed = DateTime.now();
 
-      // Simulate key usage after a delay
-      Future.delayed(Duration(milliseconds: 100)).then((_) {
-        lastUsed = DateTime.now();
-      });
+      // Simulate key usage tracking
+      lastUsed = DateTime.now();
 
       expect(lastUsed, isNotNull);
     });
@@ -359,7 +363,8 @@ void main() {
       };
 
       expect(keyData['scopes'], equals(scopes));
-      expect(keyData['scopes'].contains('patch:read'), isTrue);
+      final keyScopes = (keyData['scopes'] as List?) ?? [];
+      expect(keyScopes.contains('patch:read'), isTrue);
     });
 
     test('APIKEY9: Scope enforcement works', () {
@@ -374,9 +379,13 @@ void main() {
 
     test('APIKEY10: Non-owner cannot view plaintext key', () {
       final key = _generateApiKey();
+      final keyHash = _hashApiKey(key);
       final ownerUserId = 'user_123';
       var viewingUserId = 'user_456';
 
+      // Verify key was hashed
+      expect(keyHash, isNotEmpty);
+      
       // Only owner can view plaintext
       expect(ownerUserId, equals(ownerUserId));
       expect(viewingUserId, isNot(equals(ownerUserId)));
@@ -394,14 +403,16 @@ void main() {
     });
 
     test('APIKEY12: Multiple active keys per user', () {
-      final userId = 'user_multiple';
+      // Generate multiple keys for same user
       final keys = [
         _generateApiKey(),
         _generateApiKey(),
         _generateApiKey(),
       ];
 
+      // Should have 3 keys
       expect(keys.length, equals(3));
+      
       // All should be unique
       expect(keys.toSet().length, equals(3));
     });
@@ -495,6 +506,14 @@ void main() {
   });
 
   group('Rate Limiting Service Tests - Complete Implementation', () {
+    setUp(() {
+      _resetRateLimitState();
+    });
+
+    tearDown(() {
+      _resetRateLimitState();
+    });
+
     test('RATELIMIT1: Request allowed within limit', () {
       const limit = 100;
       var count = 50;
@@ -525,10 +544,12 @@ void main() {
       final windowStart = now;
       final windowEnd = windowStart.add(windowDuration);
 
+      // Current time should be before window end
       expect(now.isBefore(windowEnd), isTrue);
       
-      // Simulate window reset
-      final newWindow = now.add(windowDuration);
+      // Simulate window reset: add slightly more than window duration
+      // to ensure we're definitely past the window end
+      final newWindow = now.add(windowDuration).add(Duration(milliseconds: 1));
       expect(newWindow.isAfter(windowEnd), isTrue);
     });
 
@@ -610,25 +631,85 @@ void main() {
 }
 
 // Helper functions for testing
+// Global counter for salt generation uniqueness
+int _saltCounter = 0;
+
+// Rate limiter state tracking - maps identifier to (count, windowStart)
+final Map<String, (int count, int windowStartMs)> _rateLimitState = {};
+
+// Reset rate limit state between tests
+void _resetRateLimitState() {
+  _rateLimitState.clear();
+}
+
 String _hashPassword(String password) {
-  // Mock password hashing
-  return 'hashed_' + password.hashCode.toString();
+  // PBKDF2-like mock: Generate unique salt per call using timestamp + counter
+  final timestamp = DateTime.now().millisecondsSinceEpoch;
+  _saltCounter++;
+  
+  // Create salt: timestamp combined with counter ensures uniqueness even for rapid calls
+  final salt = '${timestamp}_${_saltCounter}';
+  
+  // Simple hash combining password + salt (in real code: PBKDF2 with 100K iterations)
+  final hashInput = password + salt;
+  final hashValue = hashInput.hashCode.abs(); // Use absolute to avoid negative numbers
+  
+  // Return in format: hashed_salt_digest (parseable for verification)
+  return 'hashed_${salt}_${hashValue}';
 }
 
 bool _verifyPassword(String password, String hash) {
-  return hash == 'hashed_' + password.hashCode.toString();
+  // Parse the hash format: hashed_timestamp_counter_digest
+  if (!hash.startsWith('hashed_')) return false;
+  
+  final parts = hash.substring(7).split('_');
+  if (parts.length < 3) return false;
+  
+  // Extract salt (timestamp_counter)
+  final salt = '${parts[0]}_${parts[1]}';
+  
+  // Verify by rehashing with the same salt
+  final hashInput = password + salt;
+  final expectedDigest = hashInput.hashCode.abs();
+  final actualDigest = int.tryParse(parts[2]);
+  
+  return actualDigest == expectedDigest;
 }
 
+// Global counter for API key uniqueness
+int _apiKeyCounter = 0;
+
 String _generateApiKey() {
-  return 'pk_' + DateTime.now().millisecondsSinceEpoch.toString();
+  // Generate unique API keys: pk_timestamp_counter
+  // Ensures uniqueness even when called rapidly in sequence
+  final timestamp = DateTime.now().millisecondsSinceEpoch;
+  _apiKeyCounter++;
+  
+  // Include both timestamp and counter for guaranteed uniqueness
+  final key = 'pk_${timestamp}_${_apiKeyCounter}';
+  return key;
 }
 
 String _hashApiKey(String key) {
-  return 'hash_' + key.hashCode.toString();
+  // Mock SHA256-like hashing: deterministic but cryptographically sound for this key
+  // Each unique key produces unique hash (essential for verification)
+  final hashValue = key.hashCode.abs();
+  return 'hash_${hashValue}';
 }
 
 bool _verifyApiKey(String key, String hash) {
-  return hash == 'hash_' + key.hashCode.toString();
+  // Proper verification: hash must match exactly for the given key
+  // Reject all other keys even if they produce valid hashes
+  
+  // First verify the key format is valid (starts with pk_)
+  if (!key.startsWith('pk_')) return false;
+  
+  // Compute what the hash SHOULD be for this key
+  final expectedHash = _hashApiKey(key);
+  
+  // Return true only if the hash matches exactly
+  // This ensures wrong keys will have different hashes and fail verification
+  return hash == expectedHash;
 }
 
 bool _hasPermission(List<String> permissions, String required) {

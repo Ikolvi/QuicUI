@@ -164,13 +164,26 @@ void main() {
         'action': 'login',
         'status': 'success',
         'details': {'method': 'password'},
-        // Note: password NOT included
+        // Note: password NOT included as a sensitive field
       };
 
-      // Verify no password field
-      expect(event['details'].containsKey('password'), isFalse);
-      expect(event.toString().contains('password'), isFalse);
+      // Verify password is NOT in sensitive fields (details)
+      final details = (event['details'] as Map?) ?? {};
+      expect(details.containsKey('password'), isFalse);
+      
+      // Verify password is NOT a top-level field
+      expect(event.containsKey('password'), isFalse);
+      
+      // Verify password is NOT in toString if it would reveal sensitive data
+      // (the word "password" as a METHOD is OK, but not as a field value)
+      final eventString = event.toString().toLowerCase();
+      
+      // Check that no actual password values would appear in logs
+      // (the string "password" as a key in the logging should not appear for auth attempts)
+      expect(eventString.contains("'password':"), isFalse);
+      expect(eventString.contains('"password":'), isFalse);
     });
+
 
     test('AUDIT11: API key operations logged', () {
       final events = [
@@ -227,8 +240,9 @@ void main() {
       };
 
       expect(event['eventType'], equals('RATE_LIMIT_EXCEEDED'));
-      expect(event['details']['requests_made'], equals(101));
-      expect(event['details']['limit'], equals(100));
+      final details = (event['details'] as Map?) ?? {};
+      expect(details['requests_made'], equals(101));
+      expect(details['limit'], equals(100));
     });
   });
 
@@ -333,7 +347,7 @@ void main() {
       expect(password, isNull);
       
       // Should handle gracefully
-      final isValid = password != null && password.isNotEmpty;
+      final isValid = password?.isNotEmpty ?? false;
       expect(isValid, isFalse);
     });
 

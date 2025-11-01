@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'kernel_analysis.dart';
 import 'signing_utils.dart';
@@ -125,7 +124,8 @@ class CodePushCliCommands {
 
       // Read patch data
       final patchData = await patchFile.readAsBytes();
-      final manifestData = await manifestFile.readAsString();
+      // Note: manifestData not currently used
+      // final manifestData = await manifestFile.readAsString();
 
       // Prepare upload payload
       final uploadUrl = '$serviceUrl/api/v1/patches/upload';
@@ -179,14 +179,14 @@ class CodePushCliCommands {
       print('   Rollout: $rolloutPercentage%');
       print('   Critical: $critical');
 
-      // Prepare rollout payload
-      final rolloutPayload = {
-        'version': patchVersion,
-        'environment': environment ?? 'production',
-        'rolloutPercentage': rolloutPercentage,
-        'critical': critical,
-        'timestamp': DateTime.now().toIso8601String(),
-      };
+      // Prepare rollout payload (currently not sent)
+      // final rolloutPayload = {
+      //   'version': patchVersion,
+      //   'environment': environment ?? 'production',
+      //   'rolloutPercentage': rolloutPercentage,
+      //   'critical': critical,
+      //   'timestamp': DateTime.now().toIso8601String(),
+      // };
 
       print('📊 Starting gradual rollout...');
 

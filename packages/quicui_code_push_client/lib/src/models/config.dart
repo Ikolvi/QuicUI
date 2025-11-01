@@ -1,3 +1,5 @@
+import 'patch_info.dart';
+
 /// Configuration for QuicUI code push client
 class Config {
   /// API server URL (e.g., https://api.quicui.com)

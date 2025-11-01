@@ -313,14 +313,14 @@ String _bytesToHex(Uint8List bytes) {
   return buffer.toString();
 }
 
-/// Convert hex string to bytes
-Uint8List _hexToBytes(String hex) {
-  final bytes = <int>[];
-  for (int i = 0; i < hex.length; i += 2) {
-    bytes.add(int.parse(hex.substring(i, i + 2), radix: 16));
-  }
-  return Uint8List.fromList(bytes);
-}
+/// Convert hex string to bytes (currently unused)
+// Uint8List _hexToBytes(String hex) {
+//   final bytes = <int>[];
+//   for (int i = 0; i < hex.length; i += 2) {
+//     bytes.add(int.parse(hex.substring(i, i + 2), radix: 16));
+//   }
+//   return Uint8List.fromList(bytes);
+// }
 
 /// Base64 encode
 String _base64Encode(Uint8List bytes) {

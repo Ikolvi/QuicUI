@@ -1,9 +1,7 @@
-import 'package:json_serializable/json_serializable.dart';
-
-part 'patch_info.g.dart';
+// Manual JSON serialization (no code generation required)
 
 /// Information about a code patch
-@JsonSerializable()
+// @JsonSerializable()  // Manual implementation instead of code generation
 class PatchInfo {
   /// Unique patch identifier
   final String patchId;
@@ -88,9 +86,37 @@ class PatchInfo {
     return 0;
   }
 
-  factory PatchInfo.fromJson(Map<String, dynamic> json) => _$PatchInfoFromJson(json);
+  /// Manual JSON serialization (replacing code generation)
+  factory PatchInfo.fromJson(Map<String, dynamic> json) {
+    return PatchInfo(
+      patchId: json['patchId'] as String,
+      version: json['version'] as String,
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      size: json['size'] as int,
+      downloadUrl: json['downloadUrl'] as String,
+      signature: json['signature'] as String,
+      changelog: json['changelog'] as String?,
+      mandatory: json['mandatory'] as bool? ?? false,
+      rolloutPercentage: json['rolloutPercentage'] as int? ?? 100,
+      minAppVersion: json['minAppVersion'] as String?,
+      maxAppVersion: json['maxAppVersion'] as String?,
+    );
+  }
 
-  Map<String, dynamic> toJson() => _$PatchInfoToJson(this);
+  /// Manual JSON deserialization (replacing code generation)
+  Map<String, dynamic> toJson() => {
+    'patchId': patchId,
+    'version': version,
+    'createdAt': createdAt.toIso8601String(),
+    'size': size,
+    'downloadUrl': downloadUrl,
+    'signature': signature,
+    'changelog': changelog,
+    'mandatory': mandatory,
+    'rolloutPercentage': rolloutPercentage,
+    'minAppVersion': minAppVersion,
+    'maxAppVersion': maxAppVersion,
+  };
 
   @override
   String toString() => 'PatchInfo(patchId: $patchId, version: $version, status: $status)';

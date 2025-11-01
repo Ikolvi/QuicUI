@@ -1,5 +1,4 @@
 import 'dart:typed_data';
-import 'package:crypto/crypto.dart';
 
 /// Signature verification using Ed25519
 class SignatureVerifier {
@@ -50,8 +49,8 @@ class SignatureVerifier {
     return Uint8List.fromList(buffer.toString().codeUnits);
   }
 
-  /// Convert bytes to hex string
-  String _bytesToHex(Uint8List bytes) {
-    return bytes.map((e) => e.toRadixString(16).padLeft(2, '0')).join();
-  }
+  /// Convert bytes to hex string (currently unused)
+  // String _bytesToHex(Uint8List bytes) {
+  //   return bytes.map((e) => e.toRadixString(16).padLeft(2, '0')).join();
+  // }
 }

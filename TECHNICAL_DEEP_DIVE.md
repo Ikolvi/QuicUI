@@ -527,7 +527,7 @@ info:
   description: API for managing patches and deployments
 
 servers:
-  - url: https://api.quicui.dev/v1
+  - url: https://api.quicui.com/v1
   - url: http://localhost:8080/v1
 
 paths:

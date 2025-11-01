@@ -463,7 +463,7 @@ class CodePushBackend {
   /// GET /api/v1/apps/{appId}/patches/{version}
   FutureOr<Response> _getPatch(Request request) {
     return Response.ok(
-      '''{"version":"1.0.1","size":512,"critical":false,"signature":"sig123","downloadUrl":"https://cdn.quicui.dev/patch.bin","createdAt":"2024-11-02T00:00:00Z"}''',
+      '''{"version":"1.0.1","size":512,"critical":false,"signature":"sig123","downloadUrl":"https://cdn.quicui.com/patch.bin","createdAt":"2024-11-02T00:00:00Z"}''',
       headers: {'Content-Type': 'application/json'},
     );
   }

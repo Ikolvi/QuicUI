@@ -44,7 +44,7 @@ class CodePushMethodHandler: NSObject, FlutterMethodCallDelegate {
             return
         }
         
-        serviceUrl = args["serviceUrl"] as? String ?? "https://api.quicui.dev"
+        serviceUrl = args["serviceUrl"] as? String ?? "https://api.quicui.com"
         appId = args["appId"] as? String ?? "com.example.app"
         appVersion = args["appVersion"] as? String ?? "1.0.0"
         

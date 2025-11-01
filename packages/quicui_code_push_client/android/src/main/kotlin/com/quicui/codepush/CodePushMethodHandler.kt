@@ -48,7 +48,7 @@ class CodePushMethodHandler(
      * Initialize code push with service configuration
      */
     private fun handleInitCodePush(call: MethodCall, result: MethodChannel.Result) {
-        serviceUrl = call.argument<String>("serviceUrl") ?: "https://api.quicui.dev"
+        serviceUrl = call.argument<String>("serviceUrl") ?: "https://api.quicui.com"
         appId = call.argument<String>("appId") ?: "com.example.app"
         appVersion = call.argument<String>("appVersion") ?: "1.0.0"
 

@@ -622,7 +622,7 @@ services:
     "patch_id": "patch_abc123",
     "from_version": "1.0.0",
     "to_version": "1.0.1",
-    "download_url": "https://cdn.quicui.dev/patch_abc123.bin",
+    "download_url": "https://cdn.quicui.com/patch_abc123.bin",
     "size_bytes": 45120,
     "signature": "base64_encoded_signature_here",
     "requires_restart": false
@@ -637,7 +637,7 @@ services:
   "status": "uploaded",
   "size_bytes": 45120,
   "compression_ratio": 0.85,
-  "url": "https://api.quicui.dev/patches/patch_abc123",
+  "url": "https://api.quicui.com/patches/patch_abc123",
   "created_at": "2025-11-01T10:30:00Z"
 }
 ```

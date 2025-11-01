@@ -86,7 +86,7 @@ All foundational work is done. The QuicUI project now has:
 **Pattern**: Configuration object with callbacks
 ```dart
 Config(
-  apiUrl: 'https://api.quicui.dev',
+  apiUrl: 'https://api.quicui.com',
   appId: 'com.example.app',
   onPatchAvailable: (patch) => showDialog(...),
   onError: (error) => logError(error),

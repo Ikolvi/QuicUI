@@ -83,7 +83,7 @@ TEST_F(CodePushLoaderTest, InitializeLoadsConfiguration) {
   CodePushLoader loader;
   
   CodePushConfig config;
-  config.service_url = "https://api.quicui.dev";
+  config.service_url = "https://api.quicui.com";
   config.app_id = "com.example.app";
   config.app_version = "1.0.0";
   config.cache_dir = test_cache_dir_;
@@ -107,7 +107,7 @@ TEST_F(CodePushLoaderTest, CheckPatchMetadataAsyncExecutesCallback) {
   CodePushLoader loader;
   
   CodePushConfig config;
-  config.service_url = "https://api.quicui.dev";
+  config.service_url = "https://api.quicui.com";
   config.app_id = "com.example.app";
   config.app_version = "1.0.0";
   config.cache_dir = test_cache_dir_;
@@ -152,7 +152,7 @@ TEST_F(CodePushLoaderTest, CachePatchStoresPatchLocally) {
   CodePushLoader loader;
   
   CodePushConfig config;
-  config.service_url = "https://api.quicui.dev";
+  config.service_url = "https://api.quicui.com";
   config.app_id = "com.example.app";
   config.app_version = "1.0.0";
   config.cache_dir = test_cache_dir_;
@@ -176,7 +176,7 @@ TEST_F(CodePushLoaderTest, GetCachedPatchRetrievesCachedPatch) {
   CodePushLoader loader;
   
   CodePushConfig config;
-  config.service_url = "https://api.quicui.dev";
+  config.service_url = "https://api.quicui.com";
   config.app_id = "com.example.app";
   config.app_version = "1.0.0";
   config.cache_dir = test_cache_dir_;
@@ -201,7 +201,7 @@ TEST_F(CodePushLoaderTest, CleanupOldPatchesRemovesExpiredPatches) {
   CodePushLoader loader;
   
   CodePushConfig config;
-  config.service_url = "https://api.quicui.dev";
+  config.service_url = "https://api.quicui.com";
   config.app_id = "com.example.app";
   config.app_version = "1.0.0";
   config.cache_dir = test_cache_dir_;
@@ -241,7 +241,7 @@ TEST_F(CodePushLoaderTest, LoadKernelValidatesKernelFile) {
   CodePushLoader loader;
   
   CodePushConfig config;
-  config.service_url = "https://api.quicui.dev";
+  config.service_url = "https://api.quicui.com";
   config.app_id = "com.example.app";
   config.app_version = "1.0.0";
   config.cache_dir = test_cache_dir_;
@@ -260,7 +260,7 @@ TEST_F(CodePushLoaderTest, ConcurrentPatchCheckingHandlesMultipleRequests) {
   CodePushLoader loader;
   
   CodePushConfig config;
-  config.service_url = "https://api.quicui.dev";
+  config.service_url = "https://api.quicui.com";
   config.app_id = "com.example.app";
   config.app_version = "1.0.0";
   config.cache_dir = test_cache_dir_;
@@ -293,7 +293,7 @@ TEST_F(CodePushLoaderTest, ThreadSafetyOfCacheOperations) {
   CodePushLoader loader;
   
   CodePushConfig config;
-  config.service_url = "https://api.quicui.dev";
+  config.service_url = "https://api.quicui.com";
   config.app_id = "com.example.app";
   config.app_version = "1.0.0";
   config.cache_dir = test_cache_dir_;
@@ -350,7 +350,7 @@ TEST_F(CodePushLoaderTest, HandlesMissingCacheDirectoryGracefully) {
   CodePushLoader loader;
   
   CodePushConfig config;
-  config.service_url = "https://api.quicui.dev";
+  config.service_url = "https://api.quicui.com";
   config.app_id = "com.example.app";
   config.app_version = "1.0.0";
   config.cache_dir = "/nonexistent/path/that/does/not/exist";

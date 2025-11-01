@@ -165,7 +165,7 @@ fun testInitCodePush() {
     val handler = CodePushMethodHandler(context, channel)
     handler.onMethodCall(
         MethodCall("initCodePush", mapOf(
-            "serviceUrl" to "https://api.quicui.dev",
+            "serviceUrl" to "https://api.quicui.com",
             "appId" to "test_app"
         )),
         object : MethodChannel.Result {
@@ -281,7 +281,7 @@ class CodePushMethodHandlerTests: XCTestCase {
         let call = FlutterMethodCall(
             methodName: "initCodePush",
             arguments: [
-                "serviceUrl": "https://api.quicui.dev",
+                "serviceUrl": "https://api.quicui.com",
                 "appId": "test_app"
             ]
         )
@@ -442,7 +442,7 @@ Ready for:
 {
   "method": "initCodePush",
   "arguments": {
-    "serviceUrl": "https://api.quicui.dev",
+    "serviceUrl": "https://api.quicui.com",
     "appId": "com.example.app",
     "appVersion": "1.0.0"
   }

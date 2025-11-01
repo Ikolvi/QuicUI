@@ -37,7 +37,7 @@ cd quicui-platform
 
 # Initialize Git repo
 git init
-git config user.email "dev@quicui.dev"
+git config user.email "dev@quicui.com"
 git config user.name "QuicUI Dev"
 
 # Create directory structure

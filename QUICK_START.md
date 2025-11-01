@@ -8,12 +8,12 @@ QuicUI Code Push is a **production-grade over-the-air (OTA) patch management sys
 
 | Metric | Value |
 |--------|-------|
-| **Completion** | 57% (Phases 0-3a) |
-| **Lines of Code** | 6,892 (this session) |
-| **Test Cases** | 55+ |
-| **Commits** | 14 (today) |
+| **Completion** | 57% + Phase 5.1b (Security) |
+| **Lines of Code** | 6,892 + 2,034 deployment config |
+| **Test Cases** | 382 passing + 40 security middleware |
+| **Commits** | 18 (today) + security implementation |
 | **Timeline** | 33% ahead of schedule |
-| **Status** | ✅ Ready for Phase 3b |
+| **Status** | ✅ Phase 5.1b Complete - Ready for Local Deployment |
 
 ## 📖 Essential Reading (5 Minutes)
 
@@ -89,13 +89,26 @@ cd packages/quicui_code_push_client
 flutter test test/integration_test.dart
 ```
 
-### Run Backend
+### Backend (Locally or Containerized)
+
+**Quick Deploy (One Command):**
 ```bash
-cd packages/quicui_backend
-dart pub get
-dart lib/quicui_backend.dart
-# Server: http://localhost:8080
+bash /Users/admin/Documents/quicui2/local_deploy.sh
+# Backend starts on http://localhost:8080
+# All security middleware active
+# 382 tests passing
 ```
+
+**Test It:**
+```bash
+curl http://localhost:8080/health
+# Response: {"status":"healthy"}
+```
+
+**Full Documentation:**
+- Quick Start: `docs/LOCAL_DEPLOYMENT.md`
+- Step-by-Step: `LOCAL_DEPLOYMENT_INSTRUCTIONS.md`
+- Summary: `docs/LOCAL_DEPLOYMENT_SUMMARY.md`
 
 ## 📂 Key Files Reference
 

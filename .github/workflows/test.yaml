@@ -18,24 +18,76 @@ jobs:
       with:
         sdk: stable
 
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: latest
+
     - name: Install dependencies
       run: |
         dart pub get
-        cd packages/quicui_code_push_client && dart pub get && cd ../..
-        cd packages/quicui_cli && dart pub get && cd ../..
-        cd packages/quicui_compiler && dart pub get && cd ../..
-        cd packages/quicui_backend && dart pub get && cd ../..
+        
+        # Install dependencies for Dart-only packages
+        if [ -d "packages/quicui_cli" ]; then
+          cd packages/quicui_cli && dart pub get && cd ../..
+        fi
+        
+        if [ -d "packages/quicui_compiler" ]; then
+          cd packages/quicui_compiler && dart pub get && cd ../..
+        fi
+        
+        if [ -d "packages/quicui_backend" ]; then
+          cd packages/quicui_backend && dart pub get && cd ../..
+        fi
+        
+        # Install dependencies for Flutter package
+        if [ -d "packages/quicui_code_push_client" ]; then
+          cd packages/quicui_code_push_client && flutter pub get && cd ../..
+        fi
 
     - name: Analyze
-      run: dart analyze
+      run: |
+        dart analyze
+        
+        # Analyze Dart packages if they exist
+        if [ -d "packages/quicui_cli" ]; then
+          dart analyze packages/quicui_cli
+        fi
+        
+        if [ -d "packages/quicui_compiler" ]; then
+          dart analyze packages/quicui_compiler
+        fi
+        
+        if [ -d "packages/quicui_backend" ]; then
+          dart analyze packages/quicui_backend
+        fi
+        
+        # Analyze Flutter package if it exists
+        if [ -d "packages/quicui_code_push_client" ]; then
+          cd packages/quicui_code_push_client && flutter analyze && cd ../..
+        fi
 
     - name: Run tests
       run: |
         dart pub global activate coverage
-        cd packages/quicui_code_push_client && dart test && cd ../..
-        cd packages/quicui_cli && dart test && cd ../..
-        cd packages/quicui_compiler && dart test && cd ../..
-        cd packages/quicui_backend && dart test && cd ../..
+        
+        # Run tests for Dart packages if they exist
+        if [ -d "packages/quicui_cli" ]; then
+          cd packages/quicui_cli && dart test && cd ../..
+        fi
+        
+        if [ -d "packages/quicui_compiler" ]; then
+          cd packages/quicui_compiler && dart test && cd ../..
+        fi
+        
+        if [ -d "packages/quicui_backend" ]; then
+          cd packages/quicui_backend && dart test && cd ../..
+        fi
+        
+        # Run tests for Flutter package if it exists
+        if [ -d "packages/quicui_code_push_client" ]; then
+          cd packages/quicui_code_push_client && flutter test && cd ../..
+        fi
 
     - name: Upload coverage
       uses: codecov/codecov-action@v3

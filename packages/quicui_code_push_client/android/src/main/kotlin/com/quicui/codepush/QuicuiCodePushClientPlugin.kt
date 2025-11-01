@@ -23,6 +23,13 @@ class QuicuiCodePushClientPlugin : FlutterPlugin {
         val context = binding.applicationContext
         val messenger = binding.binaryMessenger
         
+        // Check if using QuicUI Flutter SDK
+        if (!FlutterSdkDetector.isQuicUiFlutterSdk()) {
+            // Log warning but still register the handler for graceful degradation
+            android.util.Log.w("QuicuiCodePushClientPlugin", 
+                "Code Push functionality disabled - QuicUI Flutter SDK not detected")
+        }
+        
         // Create and attach the method channel handler
         methodHandler = CodePushMethodHandler.createAndAttach(
             context = context,

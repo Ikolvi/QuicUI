@@ -108,4 +108,41 @@ class CodePushMethodChannel {
       exit(0);
     }
   }
+
+  /// Check if the app is using QuicUI-modified Flutter SDK
+  /// 
+  /// Returns true if QuicUI SDK is detected, false if using standard Flutter SDK.
+  /// 
+  /// When false, code push features will be disabled and methods will fail with
+  /// SDK_NOT_SUPPORTED errors.
+  static Future<bool> isQuicUiFlutterSdk() async {
+    try {
+      // Try to call a QuicUI-specific method
+      await _channel.invokeMethod<bool>('hasPatch');
+      return true;
+    } on PlatformException catch (e) {
+      if (e.code == 'SDK_NOT_SUPPORTED') {
+        return false;
+      }
+      // Other errors don't indicate SDK incompatibility
+      return true;
+    } catch (e) {
+      // Unknown error, assume SDK is present
+      return true;
+    }
+  }
+
+  /// Get SDK information for debugging
+  /// 
+  /// Returns a map with SDK details including whether QuicUI SDK is detected,
+  /// required class names, and repository information.
+  static Future<Map<String, dynamic>> getSdkInfo() async {
+    final isQuicUi = await isQuicUiFlutterSdk();
+    return {
+      'isQuicUiSdk': isQuicUi,
+      'repository': 'https://github.com/Ikolvi/QuicUIFlutterSDK',
+      'tag': 'quicui-v1.0.0-engine',
+      'platform': Platform.operatingSystem,
+    };
+  }
 }

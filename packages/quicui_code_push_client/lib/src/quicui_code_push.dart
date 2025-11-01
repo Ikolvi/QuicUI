@@ -62,6 +62,15 @@ class QuicUICodePush {
 
   /// Initialize the code push client
   Future<void> initialize() async {
+    // Check SDK compatibility first
+    final isQuicUiSdk = await CodePushMethodChannel.isQuicUiFlutterSdk();
+    if (!isQuicUiSdk) {
+      print('⚠️  WARNING: QuicUI Code Push requires the modified Flutter SDK!');
+      print('   Standard Flutter SDK detected - Code Push features will be disabled.');
+      print('   See: https://github.com/Ikolvi/QuicUIFlutterSDK for installation.');
+      print('   Tag: quicui-v1.0.0-engine');
+    }
+    
     _storageService = StorageService();
     await _storageService.initialize();
 

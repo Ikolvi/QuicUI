@@ -42,6 +42,23 @@ class CodePushMethodHandler(
     private var appId: String = ""
     private var appVersion: String = ""
 
+    /**
+     * Check if QuicUI Flutter SDK is available
+     * Returns error via result channel if not available
+     */
+    private fun checkQuicUiSdk(result: MethodChannel.Result): Boolean {
+        if (!FlutterSdkDetector.isQuicUiFlutterSdk()) {
+            result.error(
+                "SDK_NOT_SUPPORTED",
+                "QuicUI Code Push requires the modified Flutter SDK. " +
+                "See https://github.com/Ikolvi/QuicUIFlutterSDK for installation instructions.",
+                FlutterSdkDetector.getSdkInfo()
+            )
+            return false
+        }
+        return true
+    }
+
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         try {
             when (call.method) {
@@ -272,6 +289,11 @@ class CodePushMethodHandler(
      * Transfers Dart-downloaded patch to native engine code cache
      */
     private fun handleInstallPatch(call: MethodCall, result: MethodChannel.Result) {
+        // Check if QuicUI SDK is available
+        if (!checkQuicUiSdk(result)) {
+            return
+        }
+        
         val patchPath = call.argument<String>("patchPath")
         val version = call.argument<String>("version")
         val hash = call.argument<String>("hash")
@@ -350,6 +372,11 @@ class CodePushMethodHandler(
      * Check if patch is installed
      */
     private fun handleHasPatch(call: MethodCall, result: MethodChannel.Result) {
+        // Check if QuicUI SDK is available
+        if (!checkQuicUiSdk(result)) {
+            return
+        }
+        
         try {
             val codePushLoader = io.flutter.embedding.engine.loader.QuicUICodePushLoader(context)
             val arch = io.flutter.embedding.engine.loader.QuicUICodePushLoader.getDeviceArchitecture()
@@ -387,6 +414,11 @@ class CodePushMethodHandler(
      * Clear installed patch (rollback)
      */
     private fun handleClearPatch(call: MethodCall, result: MethodChannel.Result) {
+        // Check if QuicUI SDK is available
+        if (!checkQuicUiSdk(result)) {
+            return
+        }
+        
         executor.execute {
             try {
                 val codePushLoader = io.flutter.embedding.engine.loader.QuicUICodePushLoader(context)
@@ -406,6 +438,11 @@ class CodePushMethodHandler(
      * Get device architecture
      */
     private fun handleGetArchitecture(call: MethodCall, result: MethodChannel.Result) {
+        // Check if QuicUI SDK is available
+        if (!checkQuicUiSdk(result)) {
+            return
+        }
+        
         try {
             val arch = io.flutter.embedding.engine.loader.QuicUICodePushLoader.getDeviceArchitecture()
             result.success(arch)

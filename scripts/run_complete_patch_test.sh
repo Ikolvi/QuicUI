@@ -1,8 +1,20 @@
 #!/bin/bash
 
+#!/bin/bash
+
 # QuicUI Code Push - End-to-End Patch Test Orchestrator
-# Complete workflow: Backend → App Install → Patch Create → Notify → Verify
-# This is Phase 5.5 - Complete Testing & Verification
+# Runs complete 7-phase workflow: Backend → Install → Patch → Notify → Monitor → Verify → Cleanup
+
+set -e
+
+# Configuration
+ANDROID_SDK="/Users/admin/Library/Android/sdk"
+FLUTTER_ROOT="/Users/admin/Documents/quicui2/forks/flutter-official"
+BACKEND_SCRIPT="/Users/admin/Documents/quicui2/scripts/start_backend_dev.sh"
+INSTALL_SCRIPT="/Users/admin/Documents/quicui2/scripts/install_and_launch.sh"
+PATCH_SCRIPT="/Users/admin/Documents/quicui2/scripts/create_and_upload_patch.sh"
+NOTIFY_SCRIPT="/Users/admin/Documents/quicui2/scripts/notify_patch_available.sh"
+BACKEND_URL="http://localhost:8080"
 
 set -e
 
@@ -55,6 +67,13 @@ for script in "$BACKEND_SCRIPT" "$INSTALL_SCRIPT" "$PATCH_SCRIPT" "$NOTIFY_SCRIP
 done
 log_success "All scripts found"
 
+# Check Flutter SDK (QuicUI fork)
+if [ ! -d "$FLUTTER_ROOT" ]; then
+    log_error "QuicUI Flutter fork not found at: $FLUTTER_ROOT"
+    exit 1
+fi
+log_success "QuicUI Flutter fork available: $FLUTTER_ROOT"
+
 # Check Android SDK
 if [ ! -d "$ANDROID_SDK" ]; then
     log_error "Android SDK not found at: $ANDROID_SDK"
@@ -63,7 +82,8 @@ fi
 log_success "Android SDK available: $ANDROID_SDK"
 
 # Add to PATH
-export PATH="$ANDROID_SDK/platform-tools:$ANDROID_SDK/tools:$PATH"
+export FLUTTER_ROOT="$FLUTTER_ROOT"
+export PATH="$FLUTTER_ROOT/bin:$ANDROID_SDK/platform-tools:$ANDROID_SDK/tools:$PATH"
 
 # Check adb
 if ! command -v adb &> /dev/null; then
@@ -71,6 +91,14 @@ if ! command -v adb &> /dev/null; then
     exit 1
 fi
 log_success "adb available"
+
+# Verify Flutter (QuicUI fork)
+FLUTTER_VERSION=$(flutter --version | head -1)
+if [[ "$FLUTTER_VERSION" == *"user-branch"* ]]; then
+    log_success "Using QuicUI Flutter fork: $FLUTTER_VERSION"
+else
+    log_warning "Not using QuicUI fork. Version: $FLUTTER_VERSION"
+fi
 
 echo ""
 log_phase "5.5.1: Start Backend Server"

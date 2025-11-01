@@ -29,14 +29,8 @@ jobs:
     - name: Use Custom QuicUI Flutter SDK
       run: |
         # Clone the custom QuicUI Flutter SDK fork with PAT authentication
-        # Use --depth 1 with tag (version) instead of branch for efficiency
-        git clone --depth 1 --single-branch https://x-access-token:${{ secrets.FLUTTER_SDK_TOKEN }}@github.com/Ikolvi/QuicUIFlutterSDK.git ~/flutter-custom
-        
-        # Checkout the specific version tag
-        cd ~/flutter-custom
-        git fetch --depth 1 origin tag 3.35.7
-        git checkout 3.35.7
-        cd -
+        # Use the main branch which is pushed to the remote repository
+        git clone --depth 1 --branch main https://x-access-token:${{ secrets.FLUTTER_SDK_TOKEN }}@github.com/Ikolvi/QuicUIFlutterSDK.git ~/flutter-custom
         
         # Update PATH to use custom Flutter SDK
         echo "$HOME/flutter-custom/bin" >> $GITHUB_PATH

@@ -906,4 +906,4 @@ trace_id=req_abc123def456
 **Version**: 1.0.0  
 **Status**: Production Ready ✅
 
-Questions about security? Contact: security@quicui.dev
+Questions about security? Contact: security@quicui.com

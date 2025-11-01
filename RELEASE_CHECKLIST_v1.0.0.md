@@ -408,8 +408,8 @@
 **Questions or Issues?**
 - Documentation: https://github.com/Ikolvi/quicui2/wiki
 - Issues: https://github.com/Ikolvi/quicui2/issues
-- Security: security@quicui.dev
-- Status: https://status.quicui.dev
+- Security: security@quicui.com
+- Status: https://status.quicui.com
 
 ---
 

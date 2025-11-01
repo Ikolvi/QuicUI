@@ -284,8 +284,8 @@ CONTACT & SUPPORT
 
 Documentation: https://github.com/Ikolvi/quicui2/wiki
 Issues: https://github.com/Ikolvi/quicui2/issues
-Security: security@quicui.dev
-Status Page: https://status.quicui.dev
+Security: security@quicui.com
+Status Page: https://status.quicui.com
 
 ================================================================================
                     PHASE 5.3 OFFICIALLY COMPLETE ✅

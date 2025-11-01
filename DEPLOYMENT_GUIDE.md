@@ -788,7 +788,7 @@ docker-compose -f docker-compose.blue.yml down
 - **Security Audit**: See [SECURITY_AUDIT_REPORT.md](./SECURITY_AUDIT_REPORT.md)
 - **Release Notes**: See [RELEASE_NOTES_v1.0.0.md](./RELEASE_NOTES_v1.0.0.md)
 - **Issues**: https://github.com/Ikolvi/quicui2/issues
-- **Security**: security@quicui.dev
+- **Security**: security@quicui.com
 
 ---
 

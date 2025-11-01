@@ -436,8 +436,8 @@ dart run lib/quicui_backend.dart
 - **Documentation**: https://github.com/Ikolvi/quicui2/wiki
 - **Issue Tracker**: https://github.com/Ikolvi/quicui2/issues
 - **Discussions**: https://github.com/Ikolvi/quicui2/discussions
-- **Security Issues**: security@quicui.dev
-- **Status Page**: https://status.quicui.dev
+- **Security Issues**: security@quicui.com
+- **Status Page**: https://status.quicui.com
 
 ---
 
@@ -536,6 +536,6 @@ MIT License - See LICENSE file for details
 **Version**: 1.0.0  
 **Status**: ✅ Production Ready  
 
-**Questions or Issues?** Open an issue on GitHub or contact security@quicui.dev
+**Questions or Issues?** Open an issue on GitHub or contact security@quicui.com
 
 Thank you for using QuicUI! 🚀

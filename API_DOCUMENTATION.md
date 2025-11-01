@@ -793,8 +793,8 @@ grep "trace_id:req_abc123def456" /var/log/quicui/app.log
 
 - **Documentation**: https://github.com/Ikolvi/quicui2/wiki
 - **Issue Tracking**: https://github.com/Ikolvi/quicui2/issues
-- **Security Issues**: security@quicui.dev (PGP key available)
-- **Status Page**: https://status.quicui.dev
+- **Security Issues**: security@quicui.com (PGP key available)
+- **Status Page**: https://status.quicui.com
 
 ---
 

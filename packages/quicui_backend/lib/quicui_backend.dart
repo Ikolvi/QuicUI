@@ -8,6 +8,7 @@ import 'src/security_config.dart';
 import 'src/cache_service.dart';
 import 'src/cached_database.dart';
 import 'src/database_pool.dart';
+import 'src/response_optimization.dart';
 
 // Export security configuration for external use
 export 'src/security_config.dart' show SecurityConfig, SecurityConfigException;
@@ -138,6 +139,9 @@ class CodePushBackend {
       // Create handler with security middleware
       var handler = shelf.Pipeline()
           .addMiddleware(_loggingMiddleware)
+          .addMiddleware(compressionMiddleware())
+          .addMiddleware(cacheControlMiddleware())
+          .addMiddleware(responseOptimizationMiddleware())
           .addMiddleware(securityConfig.createSecurityMiddleware())
           .addMiddleware(_errorHandlingMiddleware)
           .addHandler(router);

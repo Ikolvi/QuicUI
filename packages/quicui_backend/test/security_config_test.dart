@@ -21,7 +21,7 @@ void main() {
     test('allows disabling HTTPS for development', () {
       final config = SecurityConfig(
         enforceHttps: false,
-        allowedOrigins: ['http://localhost:3000'],
+        allowedOrigins: ['http://localhost:8080'],
       );
       expect(config.enforceHttps, false);
     });

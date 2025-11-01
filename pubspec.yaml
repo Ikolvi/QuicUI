@@ -1,6 +1,6 @@
 name: quicui
 description: QuicUI - Open-source Flutter code push service
-version: 0.1.0-dev
+version: 1.0.0
 homepage: https://github.com/Ikolvi/QuicUICodepush
 repository: https://github.com/Ikolvi/QuicUICodepush
 issue_tracker: https://github.com/Ikolvi/QuicUICodepush/issues

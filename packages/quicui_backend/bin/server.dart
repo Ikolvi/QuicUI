@@ -12,6 +12,7 @@
 /// - GET /api/v1/analytics - Get analytics
 
 import 'package:shelf/shelf.dart';
+import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
 
 Router createRouter() {
@@ -66,6 +67,6 @@ void main(List<String> args) async {
   final router = createRouter();
   final handler = Pipeline().addMiddleware(logRequests()).addHandler(router);
 
-  final server = await serve(handler, 'localhost', 8080);
+  final server = await io.serve(handler, 'localhost', 8080);
   print('Server listening on http://${server.address.host}:${server.port}');
 }

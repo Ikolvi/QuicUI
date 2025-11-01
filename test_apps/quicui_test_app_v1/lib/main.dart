@@ -136,7 +136,7 @@ class _HomePageState extends State<HomePage> {
               children: <Widget>[
                 // Welcome text
                 const Text(
-                  'Welcome to QuicUI Code Push',
+                  'Welcome to QuicUI Code Push v1.0.1 🚀',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -159,6 +159,8 @@ class _HomePageState extends State<HomePage> {
                         _InfoRow('Patch Status:', patchStatus),
                         _InfoRow('Available Patch:', availablePatchVersion),
                         _InfoRow('Patch Applied:', isPatchApplied ? 'Yes ✅' : 'No'),
+                        _InfoRow('Patch Version:', 'v1.0.1'),
+                        _InfoRow('Features:', 'OTA Updates ✨'),
                       ],
                     ),
                   ),

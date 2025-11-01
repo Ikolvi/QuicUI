@@ -24,6 +24,9 @@ import 'dart:io';
 import 'package:shelf/shelf.dart';
 import 'src/security_config.dart';
 
+// Export security configuration for external use
+export 'src/security_config.dart' show SecurityConfig, SecurityConfigException;
+
 /// Main backend application
 class CodePushBackend {
   final String host;

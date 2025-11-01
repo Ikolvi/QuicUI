@@ -37,7 +37,8 @@ echo -e "${BLUE}>>> Getting dependencies...${NC}"
 flutter pub get
 
 # Build APK - automatically uses QuicUI fork
-echo -e "${BLUE}>>> Building release APK...${NC}"
+# Use --release mode for AOT compilation (Shorebird-style patching)
+echo -e "${BLUE}>>> Building release APK (AOT for production patching)...${NC}"
 flutter build apk --release
 
 echo ""

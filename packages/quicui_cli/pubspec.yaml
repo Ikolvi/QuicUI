@@ -1,0 +1,26 @@
+name: quicui_cli
+description: QuicUI command-line interface for managing code push patches
+version: 0.1.0-dev
+homepage: https://github.com/Ikolvi/QuicUICodepush
+repository: https://github.com/Ikolvi/QuicUICodepush
+issue_tracker: https://github.com/Ikolvi/QuicUICodepush/issues
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  args: ^2.4.0
+  cli_util: ^0.4.0
+  meta: ^1.9.0
+  http: ^1.1.0
+  path: ^1.8.0
+  yaml: ^3.1.0
+  crypto: ^3.0.2
+  dart_style: ^2.3.0
+
+dev_dependencies:
+  test: ^1.24.0
+  lints: ^3.0.0
+
+executables:
+  quicui: bin/quicui.dart

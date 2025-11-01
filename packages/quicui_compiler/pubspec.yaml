@@ -1,0 +1,21 @@
+name: quicui_compiler
+description: QuicUI patch compiler for analyzing and building code patches
+version: 0.1.0-dev
+homepage: https://github.com/Ikolvi/QuicUICodepush
+repository: https://github.com/Ikolvi/QuicUICodepush
+issue_tracker: https://github.com/Ikolvi/QuicUICodepush/issues
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  analyzer: ^6.0.0
+  front_end: ^0.1.0
+  kernel: ^0.1.0
+  crypto: ^3.0.2
+  path: ^1.8.0
+  bsdiff: ^0.1.0
+
+dev_dependencies:
+  test: ^1.24.0
+  lints: ^3.0.0

@@ -1,0 +1,24 @@
+name: quicui_backend
+description: QuicUI REST API backend for managing patches and deployments
+version: 0.1.0-dev
+homepage: https://github.com/Ikolvi/QuicUICodepush
+repository: https://github.com/Ikolvi/QuicUICodepush
+issue_tracker: https://github.com/Ikolvi/QuicUICodepush/issues
+
+environment:
+  sdk: ^3.0.0
+
+dependencies:
+  shelf: ^1.4.0
+  shelf_router: ^1.1.0
+  postgres: ^2.4.0
+  crypto: ^3.0.2
+  uuid: ^4.0.0
+  json_serializable: ^6.7.0
+  http: ^1.1.0
+  dotenv: ^4.0.0
+
+dev_dependencies:
+  test: ^1.24.0
+  lints: ^3.0.0
+  build_runner: ^2.4.0

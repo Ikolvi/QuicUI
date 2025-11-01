@@ -11,6 +11,15 @@ class SDKInfoService {
   /// Returns the Flutter version string (e.g., "3.38.0-1.0.pre-350")
   static Future<String> getFlutterSDKVersion() async {
     try {
+      // Check build-time constant first (most reliable for packaged apps)
+      final buildVersion = const String.fromEnvironment(
+        'QUICUI_FLUTTER_VERSION',
+        defaultValue: '',
+      );
+      if (buildVersion.isNotEmpty && buildVersion != 'unknown') {
+        return buildVersion;
+      }
+      
       if (Platform.isAndroid || Platform.isIOS) {
         // On mobile platforms, return version from pubspec or constants
         return _getFlutterVersionFromPubspec();
@@ -56,6 +65,15 @@ class SDKInfoService {
   /// Returns the channel name (e.g., "stable", "[user-branch]", "dev")
   static Future<String> getFlutterSDKChannel() async {
     try {
+      // Check build-time constant first (most reliable for packaged apps)
+      final buildChannel = const String.fromEnvironment(
+        'QUICUI_SDK_CHANNEL',
+        defaultValue: '',
+      );
+      if (buildChannel.isNotEmpty && buildChannel != 'unknown') {
+        return buildChannel;
+      }
+      
       if (Platform.isAndroid || Platform.isIOS) {
         return 'mobile';
       }
@@ -78,6 +96,11 @@ class SDKInfoService {
   /// Returns true if the Flutter SDK is the custom QuicUI fork
   static Future<bool> isQuicUISDK() async {
     try {
+      // First check build-time constant (most reliable)
+      if (const bool.fromEnvironment('QUICUI_IS_FORK', defaultValue: false)) {
+        return true;
+      }
+      
       final channel = await getFlutterSDKChannel();
       
       // Check for QuicUI indicators

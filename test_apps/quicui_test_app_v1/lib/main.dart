@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:quicui_code_push_client/quicui_code_push_client.dart';
+import 'package:quicui_code_push_client/src/constants/build_sdk_info.dart';
 
 void main() {
   runApp(const QuicUITestApp());
@@ -74,12 +75,36 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _detectSDKInfo() async {
     try {
-      // In a real integration, this would be called through QuicUICodePush
-      // For now, we simulate the SDK detection
-      setState(() {
-        sdkInfo = 'Flutter 3.38.0 (user-branch)';
-        sdkStatus = 'QuicUI SDK Detected ✅';
-      });
+      // First try to get build-time SDK info (most reliable for mobile)
+      final buildSDKInfo = BuildSDKInfo.toMap();
+      final isQuicUIBuild = buildSDKInfo['isQuicUI'] as bool;
+      
+      // If build-time info is available and valid, use it
+      if (isQuicUIBuild || buildSDKInfo['flutterVersion'] != 'unknown') {
+        final statusIcon = isQuicUIBuild ? '✅' : '❌';
+        final sdkType = isQuicUIBuild ? 'QuicUI (Custom Fork)' : 'Flutter (Standard)';
+        final flutterVer = buildSDKInfo['flutterVersion'];
+        final channelInfo = buildSDKInfo['channel'];
+        
+        setState(() {
+          sdkInfo = '$flutterVer ($channelInfo)';
+          sdkStatus = '$sdkType $statusIcon';
+        });
+      } else {
+        // Fallback: try runtime detection using SDKInfoService
+        final flutterVersion = await SDKInfoService.getFlutterSDKVersion();
+        final channel = await SDKInfoService.getFlutterSDKChannel();
+        final isQuicUI = await SDKInfoService.isQuicUISDK();
+        
+        final statusIcon = isQuicUI ? '✅' : '❌';
+        final sdkType = isQuicUI ? 'QuicUI (Custom Fork)' : 'Flutter (Standard)';
+        final shortInfo = '$flutterVersion ($channel)';
+        
+        setState(() {
+          sdkInfo = shortInfo;
+          sdkStatus = '$sdkType $statusIcon';
+        });
+      }
     } catch (e) {
       setState(() {
         sdkInfo = 'Unknown';
@@ -240,15 +265,25 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          Flexible(
+            flex: 1,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontFamily: 'Courier',
-              fontSize: 12,
+          const SizedBox(width: 8),
+          Flexible(
+            flex: 1,
+            child: Text(
+              value,
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2,
+              textAlign: TextAlign.end,
+              style: const TextStyle(
+                fontFamily: 'Courier',
+                fontSize: 12,
+              ),
             ),
           ),
         ],

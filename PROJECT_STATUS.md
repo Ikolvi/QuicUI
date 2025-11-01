@@ -16,6 +16,7 @@ QuicUI Code Push is a **production-grade over-the-air (OTA) patch management sys
 | **Compiler & CLI** | Dart | ✅ Complete | 1,480 |
 | **Backend API** | Dart/Shelf | 🚀 In Progress | 1,700 |
 | **Testing** | GTest/Flutter Test | ✅ Complete | 1,569 |
+| **Flutter SDK** | Modified Engine + Patches | ✅ Complete | 3 commits |
 | **Infrastructure** | GitHub Actions/Docker | ✅ Complete | 790 |
 
 ---
@@ -75,6 +76,15 @@ QuicUI Code Push is a **production-grade over-the-air (OTA) patch management sys
   - CRUD operations
   - Transaction support
 - **Lines**: 1,700 | **Duration**: 1 week
+
+### Flutter SDK Engine Patches ✅
+- **Repository**: https://github.com/Ikolvi/QuicUIFlutterSDK
+- **Base**: Official Flutter SDK (3.16.x)
+- **Patches Applied**: 3 commits
+  - CodePush loader C++ implementation
+  - Flutter engine integration
+  - Dart VM patch loading support
+- **Status**: ✅ Pushed to main branch
 
 ---
 

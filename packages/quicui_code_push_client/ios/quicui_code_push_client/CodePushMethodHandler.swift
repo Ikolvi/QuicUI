@@ -32,6 +32,10 @@ class CodePushMethodHandler: NSObject, FlutterMethodCallDelegate {
             handleDisableCodePush(call, result: result)
         case "getLoadedPatchVersion":
             handleGetLoadedPatchVersion(call, result: result)
+        case "getSDKInfo":
+            handleGetSDKInfo(call, result: result)
+        case "isQuicUISDK":
+            handleIsQuicUISDK(call, result: result)
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -92,10 +96,13 @@ class CodePushMethodHandler: NSObject, FlutterMethodCallDelegate {
             
             // Check if patch is cached
             if self.fileManager.fileExists(atPath: patchFile.path) {
+                // Set as pending patch (will be applied on next restart)
+                QuicUICodePushLoader.shared.setPendingPatch(version: version)
+                
                 DispatchQueue.main.async {
                     result([
                         "success": true,
-                        "message": "Patch loaded from cache",
+                        "message": "Patch loaded from cache (restart required)",
                         "patchVersion": version
                     ])
                 }
@@ -106,10 +113,15 @@ class CodePushMethodHandler: NSObject, FlutterMethodCallDelegate {
             let patchUrl = "\(self.serviceUrl)/api/v1/patches/\(version)"
             let success = self.downloadPatch(patchUrl, to: patchFile)
             
+            if success {
+                // Set as pending patch (will be applied on next restart)
+                QuicUICodePushLoader.shared.setPendingPatch(version: version)
+            }
+            
             DispatchQueue.main.async {
                 result([
                     "success": success,
-                    "message": success ? "Patch loaded successfully" : "Failed to download patch",
+                    "message": success ? "Patch downloaded (restart required)" : "Failed to download patch",
                     "patchVersion": success ? version : nil
                 ])
             }
@@ -127,8 +139,8 @@ class CodePushMethodHandler: NSObject, FlutterMethodCallDelegate {
     
     /// Get the currently loaded patch version
     private func handleGetLoadedPatchVersion(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        // TODO: Implement based on your patch loading mechanism
-        result("")
+        let version = QuicUICodePushLoader.shared.loadedPatchVersion ?? ""
+        result(version)
     }
     
     /// Fetch patch metadata from the service

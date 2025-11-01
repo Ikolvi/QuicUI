@@ -14,7 +14,6 @@ dependencies:
   kernel: ^0.1.0
   crypto: ^3.0.2
   path: ^1.8.0
-  bsdiff: ^0.1.0
 
 dev_dependencies:
   test: ^1.24.0

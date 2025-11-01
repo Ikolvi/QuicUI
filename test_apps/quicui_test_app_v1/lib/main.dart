@@ -46,10 +46,9 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _initializeCodePush() async {
     try {
-      // Initialize code push using plugin defaults
-      // Backend endpoint is managed by quicui_code_push_client plugin internally
-      // App should not know about backend URL
-      // Plugin defaults to http://localhost:8080 (configurable via environment)
+      // Initialize code push - backend endpoint is fully managed by plugin
+      // App only provides: appId, clientSecret, version
+      // Plugin handles all backend communication internally
       codePushConfig = Config(
         appId: 'com.quicui.testapp',
         clientSecret: 'test-secret-key-12345',

@@ -63,25 +63,26 @@ End-user apps should **never** be aware of backend URLs or implementation detail
 
 ```dart
 class Config {
-  final String apiUrl;  // Now optional with default
-  // ...
-  
-  static const String defaultBackendUrl = 'http://localhost:8080';
+  // NOTE: apiUrl is NOT exposed here - it's internal to the plugin
+  final String appId;
+  final String clientSecret;
+  final String appVersion;
+  // ... other fields
   
   Config({
-    String? apiUrl,  // Changed from required to optional
     required this.appId,
     required this.clientSecret,
     required this.appVersion,
-    // ...
-  }) : apiUrl = apiUrl ?? defaultBackendUrl;
+    // ... no apiUrl parameter
+  });
 }
 ```
 
 **Key Features**:
-- ✅ `apiUrl` is now optional (defaults to `http://localhost:8080`)
-- ✅ Can be overridden if passed explicitly
-- ✅ Configurable via environment variable (future enhancement)
+- ✅ `apiUrl` is completely hidden from Config
+- ✅ Backend URL managed internally by plugin only
+- ✅ Configurable via environment variable or internal constants
+- ✅ App has zero knowledge of backend endpoint
 
 ### 2. Test App (Updated)
 **File**: `test_apps/quicui_test_app_v1/lib/main.dart`
@@ -94,14 +95,33 @@ codePushConfig = Config(
   // ...
 );
 
-// AFTER: Plugin manages endpoint
+### 2. Test App (Updated)
+**File**: `test_apps/quicui_test_app_v1/lib/main.dart`
+
+```dart
+// BEFORE: App exposed backend endpoint
 codePushConfig = Config(
-  appId: 'com.quicui.testapp',  // ✅ Only app ID needed
+  apiUrl: 'http://192.168.20.100:8080',  // ❌ App knows backend URL
+  appId: 'com.quicui.testapp',
+  // ...
+);
+
+// AFTER: App only knows app identity
+codePushConfig = Config(
+  appId: 'com.quicui.testapp',  // ✅ Only app ID
   clientSecret: 'test-secret-key-12345',
   appVersion: appVersion,
   enableDebugLogging: true,
   includeSDKInfo: true,
 );
+// Backend URL is now completely internal to plugin
+```
+
+**App Changes**:
+- ✅ apiUrl completely removed from Config
+- ✅ Removed backend URL from UI display
+- ✅ Only shows patch status and SDK info
+- ✅ Cleaner, simpler implementation
 ```
 
 **App Changes**:

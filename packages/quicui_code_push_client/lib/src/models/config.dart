@@ -2,11 +2,8 @@ import 'patch_info.dart';
 import 'sdk_info.dart';
 
 /// Configuration for QuicUI code push client
+/// NOTE: Backend endpoint is managed internally by the plugin, not exposed here
 class Config {
-  /// API server URL (e.g., https://api.quicui.com)
-  /// Defaults to environment variable QUICUI_BACKEND_URL or http://localhost:8080
-  final String apiUrl;
-
   /// Application ID (e.g., com.example.app)
   final String appId;
 
@@ -52,11 +49,7 @@ class Config {
   /// Cached SDK information
   final SDKInfo? sdkInfo;
 
-  /// Static default backend URL (can be overridden by environment variable)
-  static const String defaultBackendUrl = 'http://localhost:8080';
-
   Config({
-    String? apiUrl,
     required this.appId,
     required this.clientSecret,
     required this.appVersion,
@@ -72,9 +65,9 @@ class Config {
     this.onDownloadProgress,
     this.onPatchApplied,
     this.onError,
-  }) : apiUrl = apiUrl ?? defaultBackendUrl;
+  });
 
   @override
-  String toString() => 'Config(appId: $appId, apiUrl: $apiUrl, appVersion: $appVersion, '
+  String toString() => 'Config(appId: $appId, appVersion: $appVersion, '
       'sdk: ${sdkInfo?.sdkStatus ?? "Not loaded"})';
 }

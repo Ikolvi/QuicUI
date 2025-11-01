@@ -7,6 +7,7 @@ import 'package:shelf_router/shelf_router.dart';
 import 'src/security_config.dart';
 import 'src/cache_service.dart';
 import 'src/cached_database.dart';
+import 'src/database_pool.dart';
 
 // Export security configuration for external use
 export 'src/security_config.dart' show SecurityConfig, SecurityConfigException;
@@ -20,6 +21,8 @@ class CodePushBackend {
   
   late CacheService cacheService;
   late CachedDatabase cachedDb;
+  late DatabasePool databasePool;
+  late QueryOptimizer queryOptimizer;
   
   CodePushBackend({
     this.host = 'localhost',
@@ -38,6 +41,17 @@ class CodePushBackend {
       // Initialize cache service
       cacheService = CacheService();
       await cacheService.initialize();
+
+      // Initialize database pool
+      databasePool = DatabasePool(
+        minConnections: 5,
+        maxConnections: 20,
+        idleTimeout: const Duration(minutes: 5),
+      );
+      await databasePool.initialize();
+
+      // Initialize query optimizer
+      queryOptimizer = QueryOptimizer();
 
       // Initialize cached database
       cachedDb = CachedDatabase(cache: cacheService);
@@ -74,6 +88,24 @@ class CodePushBackend {
       // Cache stats endpoint
       router.get('/metrics/cache', (shelf.Request request) async {
         final stats = await cacheService.getStats();
+        return shelf.Response.ok(
+          jsonEncode(stats),
+          headers: {'Content-Type': 'application/json'},
+        );
+      });
+
+      // Database pool stats endpoint
+      router.get('/metrics/database', (shelf.Request request) {
+        final stats = databasePool.getStats();
+        return shelf.Response.ok(
+          jsonEncode(stats),
+          headers: {'Content-Type': 'application/json'},
+        );
+      });
+
+      // Database query stats endpoint
+      router.get('/metrics/queries', (shelf.Request request) {
+        final stats = queryOptimizer.getQueryStats();
         return shelf.Response.ok(
           jsonEncode(stats),
           headers: {'Content-Type': 'application/json'},

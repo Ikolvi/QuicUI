@@ -22,6 +22,19 @@ class CodePushMethodHandler(
         private const val PATCH_CACHE_DIR = "quicui_patches"
         private const val TIMEOUT_SECONDS = 30
         private val executor = Executors.newSingleThreadExecutor()
+        
+        /**
+         * Create and attach the method channel handler
+         */
+        fun createAndAttach(
+            context: Context,
+            messenger: io.flutter.plugin.common.BinaryMessenger
+        ): CodePushMethodHandler {
+            val channel = MethodChannel(messenger, "dev.quicui.code_push")
+            val handler = CodePushMethodHandler(context, channel)
+            channel.setMethodCallHandler(handler)
+            return handler
+        }
     }
 
     private var isInitialized = false

@@ -10,11 +10,19 @@ import 'src/cached_database.dart';
 import 'src/database_pool.dart';
 import 'src/response_optimization.dart';
 import 'src/metrics_service.dart';
+import 'src/request_validator.dart';
+import 'src/rate_limiter.dart';
+import 'src/security_headers.dart';
+import 'src/error_handler.dart';
 
 // Export security configuration for external use
 export 'src/security_config.dart' show SecurityConfig, SecurityConfigException;
 export 'src/cache_service.dart' show CacheService;
 export 'src/cached_database.dart' show CachedDatabase;
+export 'src/request_validator.dart' show RequestValidator, ParameterRule, BodySchema;
+export 'src/rate_limiter.dart' show RateLimiter, RateLimitTier, RateLimitStatus;
+export 'src/security_headers.dart' show SecurityHeaders, CorsConfig, SecurityHeadersConfig;
+export 'src/error_handler.dart' show ErrorHandler, ErrorResponse, ErrorResponses;
 
 /// Simple QuicUI Backend for local development
 class CodePushBackend {
@@ -26,6 +34,11 @@ class CodePushBackend {
   late DatabasePool databasePool;
   late QueryOptimizer queryOptimizer;
   late MetricsService metricsService;
+  late RequestValidator requestValidator;
+  late RateLimiter rateLimiter;
+  late SecurityHeaders securityHeaders;
+  late ErrorHandler errorHandler;
+  late RateLimitMiddlewareHelper rateLimitHelper;
   
   CodePushBackend({
     this.host = 'localhost',
@@ -61,6 +74,25 @@ class CodePushBackend {
 
       // Initialize cached database
       cachedDb = CachedDatabase(cache: cacheService);
+
+      // Initialize security services (Phase 5.3)
+      requestValidator = RequestValidator();
+      rateLimiter = RateLimiter();
+      rateLimitHelper = RateLimitMiddlewareHelper(rateLimiter: rateLimiter);
+      _rateLimitHelperInstance = rateLimitHelper;
+      securityHeaders = SecurityHeaders(
+        securityConfig: SecurityHeadersConfig(),
+        corsConfig: CorsConfig(
+          allowedOrigins: ['http://localhost:3000', 'http://localhost:3001'],
+        ),
+      );
+      errorHandler = ErrorHandler(hideStackTraces: true, logErrors: true);
+
+      print('✅ Security services initialized (Phase 5.3)');
+      print('   - Input validation & sanitization');
+      print('   - Rate limiting (100-1000 req/min per tier)');
+      print('   - Security headers & CORS');
+      print('   - Standardized error handling');
 
       // Load security configuration
       late SecurityConfig securityConfig;
@@ -167,11 +199,13 @@ class CodePushBackend {
       // Create handler with security middleware
       var handler = shelf.Pipeline()
           .addMiddleware(_loggingMiddleware)
+          .addMiddleware(errorHandler.createMiddleware())
+          .addMiddleware(_rateLimitMiddleware)
+          .addMiddleware(securityHeaders.createMiddleware())
           .addMiddleware(compressionMiddleware())
           .addMiddleware(cacheControlMiddleware())
           .addMiddleware(responseOptimizationMiddleware())
           .addMiddleware(securityConfig.createSecurityMiddleware())
-          .addMiddleware(_errorHandlingMiddleware)
           .addHandler(router);
 
       // Start server
@@ -200,18 +234,29 @@ shelf.Middleware _loggingMiddleware = (innerHandler) {
   };
 };
 
-// Error handling middleware
-shelf.Middleware _errorHandlingMiddleware = (innerHandler) {
+// Rate limiting middleware
+late RateLimitMiddlewareHelper _rateLimitHelperInstance;
+shelf.Middleware get _rateLimitMiddleware => (innerHandler) {
   return (shelf.Request request) async {
-    try {
-      return await innerHandler(request);
-    } catch (e) {
-      print('❌ Error: $e');
-      return shelf.Response.internalServerError(
-        body: '{"error":"Internal server error"}',
-        headers: {'Content-Type': 'application/json'},
+    final clientIp = _rateLimitHelperInstance.extractClientIp(
+      request.headers,
+      request.context['remote_address'].toString(),
+    );
+    final tier = _rateLimitHelperInstance.determineTier(request.url.path);
+    
+    final (allowed, headers) = _rateLimitHelperInstance.checkAndGetHeaders(clientIp, tier);
+    
+    if (!allowed) {
+      final error = ErrorResponses.rateLimitExceeded(
+        tier,
+        headers['Retry-After'] != null ? int.parse(headers['Retry-After']!) : 60,
+        ErrorHandler.generateTraceId(),
       );
+      return error.toResponse().change(headers: headers);
     }
+    
+    var response = await innerHandler(request);
+    return response.change(headers: {...response.headers, ...headers});
   };
 };
 

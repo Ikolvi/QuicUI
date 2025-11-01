@@ -83,7 +83,7 @@ class RequestContext {
 
   @override
   String toString() =>
-      'RequestContext(id=$requestId, $method $path, duration=${duration?.inMs}ms)';
+      'RequestContext(id=$requestId, $method $path, duration=${duration?.inMilliseconds}ms)';
 }
 
 /// Authentication middleware factory

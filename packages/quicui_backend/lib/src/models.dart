@@ -2,8 +2,6 @@
 /// 
 /// Represents core entities in the patch management system
 
-import 'package:crypto/crypto.dart';
-
 // ==================== User Models ====================
 
 /// Represents a user account

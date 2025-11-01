@@ -65,12 +65,15 @@ class PatchService {
         id: patchId,
         appId: appId,
         version: version,
+        baseVersion: '0.0.0',
+        targetVersion: version,
         fileSize: patchData.length,
         fileHash: fileHash,
         signature: metadata['signature'] ?? '',
-        createdAt: DateTime.now(),
-        isCritical: metadata['isCritical'] as bool? ?? false,
+        critical: metadata['isCritical'] as bool? ?? false,
         compressionRatio: metadata['compressionRatio'] as double? ?? 0.85,
+        operationCount: 1,
+        createdAt: DateTime.now(),
       );
 
       // Store metadata
@@ -209,7 +212,7 @@ class PatchService {
               releaseDate: p.createdAt,
               fileSize: p.fileSize,
               fileHash: p.fileHash,
-              isCritical: p.isCritical,
+              isCritical: p.critical,
               compressionRatio: p.compressionRatio,
               downloadUrl: '/api/v1/apps/$appId/patches/${p.version}/download',
             ),
@@ -474,7 +477,7 @@ class PatchService {
         successfulApplications: 0,
         failedApplications: 0,
         successRate: 0.0,
-        averageDownloadTime: 0,
+        averageDownloadTime: 0.0,
       );
     }
   }
@@ -636,7 +639,7 @@ class PatchMetadata {
   int downloadCount;
   int successCount;
   int failureCount;
-  int averageDownloadTime;
+  double averageDownloadTime;
   final String checksum;
 
   PatchMetadata({
@@ -648,7 +651,7 @@ class PatchMetadata {
     this.downloadCount = 0,
     this.successCount = 0,
     this.failureCount = 0,
-    this.averageDownloadTime = 0,
+    this.averageDownloadTime = 0.0,
     required this.checksum,
   });
 }
@@ -659,7 +662,7 @@ class RolloutStatistics {
   final int successfulApplications;
   final int failedApplications;
   final double successRate;
-  final int averageDownloadTime;
+  final double averageDownloadTime;
 
   RolloutStatistics({
     required this.totalDownloads,

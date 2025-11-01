@@ -5,7 +5,9 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:shelf/shelf.dart';
+import 'package:shelf/shelf_io.dart' as io;
 import 'package:quicui_backend/src/patch_service.dart';
 
 /// Enhanced backend with patch management
@@ -51,15 +53,12 @@ class EnhancedCodePushBackend {
           .addMiddleware(errorHandlingMiddleware)
           .addHandler(_enhancedRouter);
 
-      // Bind server
-      _server = await HttpServer.bind(host, port);
+      // Bind server using shelf
+      _server = await io.serve(handler, host, port);
       print('✅ Server listening on http://$host:$port');
 
       // Setup graceful shutdown
       _setupShutdownHandling();
-
-      // Serve requests
-      await _server.forEach(handler.asHttpHandler());
     } catch (e) {
       print('❌ Error starting server: $e');
       rethrow;
@@ -264,7 +263,7 @@ class EnhancedCodePushBackend {
       }
 
       // Simulate patch data (in production, multipart form data)
-      final patchData = _generateMockPatchData();
+      final patchData = Uint8List.fromList(_generateMockPatchData());
 
       // Upload patch
       final result = await _patchService.uploadPatch(
@@ -599,8 +598,8 @@ Middleware loggingMiddleware = (Handler innerHandler) {
 
 /// CORS middleware
 Middleware corsMiddleware = (Handler innerHandler) {
-  return (Request request) {
-    final response = innerHandler(request);
+  return (Request request) async {
+    final response = await innerHandler(request);
     return response.change(headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH',

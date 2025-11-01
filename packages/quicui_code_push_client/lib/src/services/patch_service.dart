@@ -1,5 +1,5 @@
-import 'package:quicui_code_push_client/src/models/config.dart';
-import 'package:quicui_code_push_client/src/models/patch_info.dart';
+import '../models/config.dart';
+import '../models/patch_info.dart';
 import 'signature_verifier.dart';
 import 'storage_service.dart';
 

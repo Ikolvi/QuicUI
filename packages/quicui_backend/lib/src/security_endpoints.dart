@@ -14,12 +14,15 @@ class AuthenticationController {
   // final RateLimitService rateLimitService;
   // final SecurityAuditLogger auditLogger;
 
+  /// Initialize controller
   AuthenticationController({
     // required this.jwtService,
     // required this.passwordService,
     // required this.rateLimitService,
     // required this.auditLogger,
-  });
+  }) {
+    // Initialization code here
+  }
 
   /// POST /auth/login
   /// 

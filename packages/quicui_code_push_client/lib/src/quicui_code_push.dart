@@ -1,9 +1,9 @@
 import 'package:http/http.dart' as http;
-import 'src/models/config.dart';
-import 'src/models/patch_info.dart';
-import 'src/services/patch_service.dart';
-import 'src/services/signature_verifier.dart';
-import 'src/services/storage_service.dart';
+import 'models/config.dart';
+import 'models/patch_info.dart';
+import 'services/patch_service.dart';
+import 'services/signature_verifier.dart';
+import 'services/storage_service.dart';
 
 /// Main QuicUI code push client
 class QuicUICodePush {

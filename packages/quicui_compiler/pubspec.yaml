@@ -10,8 +10,6 @@ environment:
 
 dependencies:
   analyzer: ^6.0.0
-  front_end: ^0.1.0
-  kernel: ^0.1.0
   crypto: ^3.0.2
   path: ^1.8.0
 

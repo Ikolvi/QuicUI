@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:crypto/crypto.dart';
 import 'models/config.dart';
@@ -12,12 +13,11 @@ import 'constants/build_sdk_info.dart';
 
 /// Main QuicUI code push client
 /// 
-/// Backend endpoint is completely managed internally by this plugin.
-/// The endpoint defaults to http://localhost:8080 for development,
-/// but can be overridden via the QUICUI_BACKEND_URL environment variable.
+/// Backend endpoint is managed internally and can only be configured via
+/// QUICUI_SERVER_URL environment variable for testing purposes.
+/// Defaults to http://localhost:8080
 class QuicUICodePush {
-  // Backend endpoint managed internally (not exposed)
-  static const String _defaultBackendUrl = 'http://localhost:8080';
+  // Backend endpoint managed internally (not exposed in public API)
   late String _backendUrl;
   
   late Config config;
@@ -27,8 +27,8 @@ class QuicUICodePush {
 
   /// Initialize QuicUI with configuration
   /// 
-  /// Note: Backend endpoint is NOT a configuration parameter.
-  /// It is managed internally by the plugin.
+  /// Server URL is NOT a parameter - it's managed internally.
+  /// For testing, set QUICUI_SERVER_URL environment variable.
   QuicUICodePush({
     required String appId,
     required String clientSecret,
@@ -38,7 +38,7 @@ class QuicUICodePush {
     bool autoCheckOnStart = true,
     int checkIntervalSeconds = 3600,
   }) {
-    // Backend URL managed internally only
+    // Backend URL is internal only, from environment or default
     _backendUrl = _getBackendUrl();
     
     config = Config(
@@ -53,11 +53,33 @@ class QuicUICodePush {
   }
   
   /// Get backend URL from environment or use default
-  /// Backend endpoint is INTERNAL to this plugin only
+  /// INTERNAL USE ONLY - not exposed in public API
   static String _getBackendUrl() {
-    // Could read from environment in future if needed for testing
-    // But URL is NEVER exposed publicly through Config
-    return _defaultBackendUrl;
+    // HARDCODED for testing - TODO: make this configurable properly
+    const hardcodedUrl = 'http://192.168.20.100:8080';
+    print('[QuicUI] Using hardcoded server URL: $hardcodedUrl');
+    return hardcodedUrl;
+    
+    // Check compile-time environment variable (set via --dart-define during build)
+    // const envUrl = String.fromEnvironment('QUICUI_SERVER_URL');
+    // print('[QuicUI] Compile-time QUICUI_SERVER_URL: "$envUrl" (isEmpty: ${envUrl.isEmpty})');
+    // 
+    // if (envUrl.isNotEmpty) {
+    //   print('[QuicUI] Using server URL from build environment: $envUrl');
+    //   return envUrl;
+    // }
+    // 
+    // // Fallback to runtime environment variable (for debugging)
+    // final runtimeUrl = Platform.environment['QUICUI_SERVER_URL'];
+    // print('[QuicUI] Runtime QUICUI_SERVER_URL: "$runtimeUrl"');
+    // 
+    // if (runtimeUrl != null && runtimeUrl.isNotEmpty) {
+    //   print('[QuicUI] Using server URL from runtime environment: $runtimeUrl');
+    //   return runtimeUrl;
+    // }
+    // 
+    // print('[QuicUI] Using default server URL: $_defaultBackendUrl');
+    // return _defaultBackendUrl;
   }
 
   /// Initialize the code push client
@@ -119,9 +141,8 @@ class QuicUICodePush {
   /// Check for available patches
   Future<PatchInfo?> checkForUpdates() async {
     try {
-      if (config.enableDebugLogging) {
-        print('[QuicUI] Checking for updates...');
-      }
+      print('[QuicUI] Checking for updates...');
+      print('[QuicUI] Backend URL: $_backendUrl');
 
       final client = http.Client();
       final headers = {
@@ -129,34 +150,64 @@ class QuicUICodePush {
         'Content-Type': 'application/json',
       };
 
-      final body = {
+      final bodyMap = {
         'appId': config.appId,
-        'version': config.appVersion,
-        'platform': 'flutter',
+        'currentVersion': config.appVersion,
+        'acceptCompression': ['xz', 'gz', 'bz2'],
       };
+
+      final requestUrl = '$_backendUrl/api/v1/patches/check';
+      print('[QuicUI] POST $requestUrl');
+      print('[QuicUI] Request body: $bodyMap');
 
       // Use internal backend URL (not exposed through Config)
       final response = await client.post(
-        Uri.parse('$_backendUrl/api/v1/patches/check'),
+        Uri.parse(requestUrl),
         headers: headers,
-        body: body,
+        body: jsonEncode(bodyMap),
       );
 
-      if (response.statusCode == 200) {
-        // Parse response and return patch info
-        config.onPatchAvailable?.call(PatchInfo(
-          patchId: '0',
-          version: '0.0.1',
-          createdAt: DateTime.now(),
-          size: 0,
-          downloadUrl: '',
-          signature: '',
-        ));
-      }
+      print('[QuicUI] Response status: ${response.statusCode}');
+      print('[QuicUI] Response body: ${response.body}');
 
-      client.close();
-      return null;
-    } catch (e) {
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+        final patchAvailable = jsonResponse['patchAvailable'] as bool? ?? false;
+        
+        print('[QuicUI] Patch available: $patchAvailable');
+        
+        if (patchAvailable) {
+          final patchInfo = PatchInfo(
+            patchId: jsonResponse['patchId'] as String,
+            version: jsonResponse['version'] as String,
+            createdAt: DateTime.now(),
+            size: jsonResponse['downloadSize'] as int,
+            downloadUrl: '$_backendUrl${jsonResponse['downloadUrl'] as String}',
+            signature: jsonResponse['hash'] as String,
+          );
+          
+          final compression = jsonResponse['compression'] as String?;
+          final uncompressedSize = jsonResponse['uncompressedSize'] as int?;
+          
+          print('[QuicUI] ✅ Patch found: ${patchInfo.version} (${patchInfo.size} bytes, compression: $compression, uncompressed: $uncompressedSize bytes)');
+          
+          config.onPatchAvailable?.call(patchInfo);
+          client.close();
+          return patchInfo;
+        } else {
+          print('[QuicUI] No patch available');
+          client.close();
+          return null;
+        }
+      } else {
+        print('[QuicUI] ❌ Server returned error: ${response.statusCode}');
+        print('[QuicUI] Error body: ${response.body}');
+        client.close();
+        return null;
+      }
+    } catch (e, stackTrace) {
+      print('[QuicUI] ❌ Exception during checkForUpdates: $e');
+      print('[QuicUI] Stack trace: $stackTrace');
       config.onError?.call('Error checking for updates: $e');
       return null;
     }
@@ -196,18 +247,24 @@ class QuicUICodePush {
 
       // 2. Download patch to temporary directory
       final tempDir = Directory.systemTemp;
+      final compressedFile = File('${tempDir.path}/quicui_patch_${patch.version}.compressed');
       final patchFile = File('${tempDir.path}/quicui_patch_${patch.version}.so');
 
       if (config.enableDebugLogging) {
-        print('[QuicUI] Downloading patch to: ${patchFile.path}');
+        print('[QuicUI] Downloading patch to: ${compressedFile.path}');
       }
 
       final client = http.Client();
+      String? compressionFormat;
       try {
+        // Android doesn't have xz/gzip/bzip2 commands, so request uncompressed
+        // TODO: Implement Dart-based decompression or bundle busybox
         final response = await client.get(
           Uri.parse(patch.downloadUrl),
           headers: {
             'Authorization': 'Bearer ${config.clientSecret}',
+            // Don't request compression for now since Android lacks decompression tools
+            // 'Accept-Encoding': 'xz, gz, bz2',
           },
         );
 
@@ -216,10 +273,81 @@ class QuicUICodePush {
           return false;
         }
 
-        await patchFile.writeAsBytes(response.bodyBytes);
+        // Check if patch is compressed
+        compressionFormat = response.headers['content-encoding'] ?? 
+                           response.headers['x-compression-format'];
+        
+        print('[QuicUI] Patch downloaded: ${response.bodyBytes.length} bytes');
+        print('[QuicUI] Compression format: ${compressionFormat ?? "none"}');
 
-        if (config.enableDebugLogging) {
-          print('[QuicUI] Patch downloaded: ${patchFile.lengthSync()} bytes');
+        // Write compressed data first
+        await compressedFile.writeAsBytes(response.bodyBytes);
+
+        // Decompress if needed
+        if (compressionFormat != null && compressionFormat.isNotEmpty) {
+          print('[QuicUI] Decompressing patch from $compressionFormat...');
+          print('[QuicUI] Compressed file size: ${compressedFile.lengthSync()} bytes');
+
+          try {
+            // Use system commands to decompress
+            Process? process;
+            List<String> command;
+            
+            if (compressionFormat == 'xz') {
+              command = ['xz', '-d', '-c', compressedFile.path];
+              print('[QuicUI] Running command: ${command.join(" ")}');
+              process = await Process.start('xz', ['-d', '-c', compressedFile.path]);
+            } else if (compressionFormat == 'gz' || compressionFormat == 'gzip') {
+              command = ['gzip', '-d', '-c', compressedFile.path];
+              print('[QuicUI] Running command: ${command.join(" ")}');
+              process = await Process.start('gzip', ['-d', '-c', compressedFile.path]);
+            } else if (compressionFormat == 'bz2' || compressionFormat == 'bzip2') {
+              command = ['bzip2', '-d', '-c', compressedFile.path];
+              print('[QuicUI] Running command: ${command.join(" ")}');
+              process = await Process.start('bzip2', ['-d', '-c', compressedFile.path]);
+            }
+
+            if (process != null) {
+              print('[QuicUI] Process started, reading output...');
+              final decompressedBytes = await process.stdout.toList();
+              final bytes = decompressedBytes.expand((x) => x).toList();
+              print('[QuicUI] Decompressed ${bytes.length} bytes in memory');
+              
+              await patchFile.writeAsBytes(bytes);
+              print('[QuicUI] Written to: ${patchFile.path}');
+
+              final exitCode = await process.exitCode;
+              print('[QuicUI] Decompression exit code: $exitCode');
+              
+              if (exitCode != 0) {
+                final error = await process.stderr.transform(utf8.decoder).join();
+                print('[QuicUI] ❌ Decompression failed with exit code $exitCode');
+                print('[QuicUI] Error: $error');
+                config.onError?.call('Decompression failed: $error');
+                await compressedFile.delete();
+                return false;
+              }
+
+              await compressedFile.delete(); // Clean up compressed file
+              print('[QuicUI] ✅ Decompression successful');
+              print('[QuicUI] Decompressed file size: ${patchFile.lengthSync()} bytes');
+            } else {
+              print('[QuicUI] ⚠️  Unknown compression format, using file as-is');
+              await compressedFile.rename(patchFile.path);
+            }
+          } catch (e, stackTrace) {
+            print('[QuicUI] ❌ Decompression exception: $e');
+            print('[QuicUI] Stack trace: $stackTrace');
+            config.onError?.call('Decompression error: $e');
+            
+            // Try to use compressed file as-is
+            print('[QuicUI] Attempting to use compressed file directly...');
+            await compressedFile.rename(patchFile.path);
+          }
+        } else {
+          print('[QuicUI] No compression, using file directly');
+          await compressedFile.rename(patchFile.path);
+          print('[QuicUI] Patch file size: ${patchFile.lengthSync()} bytes');
         }
       } finally {
         client.close();

@@ -9,6 +9,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import java.net.URL
 import java.util.concurrent.Executors
+import java.util.zip.ZipFile
 
 /**
  * QuicUI Code Push Android implementation
@@ -323,6 +324,20 @@ class CodePushMethodHandler(
                 // Get device architecture if not provided
                 val arch = architecture ?: io.flutter.embedding.engine.loader.QuicUICodePushLoader.getDeviceArchitecture()
 
+                android.util.Log.i("QuicUI", "Installing patch for architecture: $arch")
+                android.util.Log.i("QuicUI", "Patch file: ${patchFile.absolutePath} (${patchFile.length()} bytes)")
+
+                // Extract original libapp.so from APK
+                val originalLibapp = extractLibappFromApk(arch)
+                if (originalLibapp == null) {
+                    Handler(Looper.getMainLooper()).post {
+                        result.error("EXTRACT_FAILED", "Failed to extract libapp.so from APK", null)
+                    }
+                    return@execute
+                }
+                
+                android.util.Log.i("QuicUI", "Original libapp.so extracted: ${originalLibapp.absolutePath} (${originalLibapp.length()} bytes)")
+
                 // Get code cache directory
                 val codeCacheDir = context.codeCacheDir.absolutePath
                 val patchesDir = File(codeCacheDir, "quicui_patches")
@@ -331,8 +346,23 @@ class CodePushMethodHandler(
                 // Target path: libapp_patched_<arch>.so
                 val targetFile = File(patchesDir, "libapp_patched_${arch}.so")
 
-                // Copy patch file to code cache
-                patchFile.copyTo(targetFile, overwrite = true)
+                // Apply BsDiff patch
+                android.util.Log.i("QuicUI", "Applying BsDiff patch...")
+                val patchSuccess = BsDiffPatcher.applyPatch(originalLibapp, patchFile, targetFile)
+                
+                if (!patchSuccess) {
+                    // Clean up temporary file
+                    originalLibapp.delete()
+                    Handler(Looper.getMainLooper()).post {
+                        result.error("PATCH_FAILED", "Failed to apply BsDiff patch", null)
+                    }
+                    return@execute
+                }
+                
+                android.util.Log.i("QuicUI", "BsDiff patch applied successfully!")
+
+                // Clean up temporary original file
+                originalLibapp.delete()
 
                 // Set executable permissions
                 targetFile.setExecutable(true, false)
@@ -354,8 +384,23 @@ class CodePushMethodHandler(
                 }
                 metadataFile.writeText(metadata)
 
-                android.util.Log.i("QuicUI", "Patch installed successfully to: ${targetFile.absolutePath}")
-                android.util.Log.i("QuicUI", "Patch size: ${targetFile.length()} bytes")
+                android.util.Log.i("QuicUI", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+                android.util.Log.i("QuicUI", "✅ Patch installed successfully!")
+                android.util.Log.i("QuicUI", "📁 Patches directory: ${patchesDir.absolutePath}")
+                android.util.Log.i("QuicUI", "📄 Patched file: ${targetFile.absolutePath}")
+                android.util.Log.i("QuicUI", "✅ File exists: ${targetFile.exists()}")
+                android.util.Log.i("QuicUI", "✅ File readable: ${targetFile.canRead()}")
+                android.util.Log.i("QuicUI", "📦 Patched libapp.so size: ${targetFile.length()} bytes (${targetFile.length() / 1024.0 / 1024.0} MB)")
+                android.util.Log.i("QuicUI", "📄 Metadata file: ${metadataFile.absolutePath}")
+                android.util.Log.i("QuicUI", "✅ Metadata exists: ${metadataFile.exists()}")
+                android.util.Log.i("QuicUI", "")
+                android.util.Log.i("QuicUI", "📂 Files in patches directory:")
+                patchesDir.listFiles()?.forEach { file ->
+                    android.util.Log.i("QuicUI", "   - ${file.name} (${file.length() / 1024.0 / 1024.0} MB)")
+                }
+                android.util.Log.i("QuicUI", "")
+                android.util.Log.i("QuicUI", "⚠️  RESTART APP TO LOAD PATCHED CODE ⚠️")
+                android.util.Log.i("QuicUI", "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
 
                 Handler(Looper.getMainLooper()).post {
                     result.success(true)
@@ -366,6 +411,43 @@ class CodePushMethodHandler(
                     result.error("INSTALL_FAILED", e.message, null)
                 }
             }
+        }
+    }
+    
+    /**
+     * Extract original libapp.so from the APK for the given architecture
+     */
+    private fun extractLibappFromApk(architecture: String): File? {
+        return try {
+            val apkPath = context.packageCodePath
+            android.util.Log.d("QuicUI", "Extracting libapp.so from APK: $apkPath")
+            
+            val zipFile = ZipFile(apkPath)
+            val entryName = "lib/$architecture/libapp.so"
+            val entry = zipFile.getEntry(entryName)
+            
+            if (entry == null) {
+                android.util.Log.e("QuicUI", "libapp.so not found in APK for architecture: $architecture")
+                zipFile.close()
+                return null
+            }
+            
+            // Create temporary file to store original libapp.so
+            val tempFile = File.createTempFile("libapp_original_", ".so", context.cacheDir)
+            
+            zipFile.getInputStream(entry).use { input ->
+                tempFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+            
+            zipFile.close()
+            
+            android.util.Log.d("QuicUI", "Extracted libapp.so: ${tempFile.absolutePath} (${tempFile.length()} bytes)")
+            tempFile
+        } catch (e: Exception) {
+            android.util.Log.e("QuicUI", "Failed to extract libapp.so from APK", e)
+            null
         }
     }
 

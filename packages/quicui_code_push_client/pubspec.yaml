@@ -1,9 +1,10 @@
 name: quicui_code_push_client
-description: QuicUI code push client library for Flutter applications
-version: 0.1.0-dev
+description: Over-the-air (OTA) updates for Flutter apps. Download and install code updates without app store review. Requires custom Flutter engine for full functionality.
+version: 0.1.0
 homepage: https://github.com/Ikolvi/QuicUICodepush
 repository: https://github.com/Ikolvi/QuicUICodepush
 issue_tracker: https://github.com/Ikolvi/QuicUICodepush/issues
+documentation: https://github.com/Ikolvi/QuicUICodepush/tree/develop/docs
 
 environment:
   sdk: ^3.0.0

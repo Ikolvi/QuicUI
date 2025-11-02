@@ -12,6 +12,7 @@ dependencies:
   analyzer: ^6.0.0
   crypto: ^3.0.2
   path: ^1.8.0
+  archive: ^3.6.1
 
 dev_dependencies:
   test: ^1.24.0

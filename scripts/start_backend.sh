@@ -81,10 +81,16 @@ echo ""
 log_info "Starting server..."
 echo ""
 
+# Set required environment variables
 export SERVER_HOST="$BACKEND_HOST"
 export SERVER_PORT="$BACKEND_PORT"
+export QUICUI_ALLOWED_ORIGINS="${QUICUI_ALLOWED_ORIGINS:-*}"
 
-dart run lib/quicui_backend.dart
+log_info "Environment:"
+echo "  QUICUI_ALLOWED_ORIGINS: $QUICUI_ALLOWED_ORIGINS"
+echo ""
+
+dart run bin/server.dart
 
 # If we get here, server stopped
 log_warning "Server stopped"

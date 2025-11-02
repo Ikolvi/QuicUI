@@ -1,88 +1,124 @@
 # QuicUI Code Push - Complete Architecture
 
-**Last Updated:** November 1, 2025
+**Last Updated:** November 2, 2025
 
 ## Executive Summary
 
-QuicUI Code Push enables Flutter apps to download and apply code updates without going through app store review processes. This is achieved by:
+QuicUI Code Push enables Flutter apps to download and apply code updates without going through app store review processes. This document describes the complete end-to-end system architecture, from building apps to deploying patches.
 
-1. **Modifying the Flutter SDK** to support loading patched AOT snapshots
-2. **Creating a plugin** that communicates with the modified engine
-3. **Building a backend** to serve and manage code patches
-4. **Implementing SDK detection** to ensure apps are built with the correct Flutter fork
+### What We Built
+
+1. **Modified Flutter SDK** - Loads patched AOT snapshots at app startup
+2. **Code Push Plugin** - Downloads, validates, and installs patches
+3. **Backend Server** - Serves patches with version management
+4. **Patch Compiler** - Generates binary diffs with auto-registration
+5. **End-to-End Testing** - Automated workflow for testing complete flow
 
 ---
 
 ## Table of Contents
 
 1. [System Overview](#system-overview)
-2. [Flutter SDK Modifications](#flutter-sdk-modifications)
-3. [Plugin Architecture](#plugin-architecture)
-4. [SDK Detection Mechanism](#sdk-detection-mechanism)
-5. [Runtime Flow](#runtime-flow)
-6. [File Structure](#file-structure)
-7. [Build & Distribution](#build--distribution)
-8. [Migration Guide](#migration-guide)
+2. [Component Deep Dive](#component-deep-dive)
+3. [Complete End-to-End Flow](#complete-end-to-end-flow)
+4. [What We're Testing](#what-were-testing)
+5. [File Structure](#file-structure)
+6. [Troubleshooting](#troubleshooting)
 
 ---
 
 ## System Overview
 
-### High-Level Architecture
+### Architecture Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Flutter Application                       │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │              Dart Code (User Application)                   │ │
-│  │  - Uses QuicUICodePush.downloadAndInstall()                │ │
-│  │  - Checks BuildSDKInfo.isQuicUI at startup                 │ │
-│  └────────────────┬───────────────────────────────────────────┘ │
-│                   │ Platform Channel: dev.quicui.code_push      │
-│  ┌────────────────▼───────────────────────────────────────────┐ │
-│  │          Plugin Layer (Kotlin/Swift)                        │ │
-│  │  - CodePushMethodHandler.kt                                │ │
-│  │  - QuicUICodePushLoader.java                               │ │
-│  │  - File system operations in code_cache/                   │ │
-│  └────────────────┬───────────────────────────────────────────┘ │
-└───────────────────┼─────────────────────────────────────────────┘
-                    │ JNI / Native Interface
-┌───────────────────▼─────────────────────────────────────────────┐
-│              Flutter Engine (Modified)                           │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │  FlutterLoader.java (Modified)                             │ │
-│  │  - checkForQuicUIPatch() called at startup                 │ │
-│  │  - Checks for patched snapshot in code_cache/              │ │
-│  │  - Sets --aot-shared-library-name if patch exists          │ │
-│  └────────────────────────────────────────────────────────────┘ │
-│  ┌────────────────────────────────────────────────────────────┐ │
-│  │  codepush_loader.h/cc (New C++ Code)                       │ │
-│  │  - Validates patch integrity                                │ │
-│  │  - Loads AOT snapshot from custom path                     │ │
-│  └────────────────────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────────────────┘
-                    │ Network / File System
-┌───────────────────▼─────────────────────────────────────────────┐
-│                    Backend Server (Dart)                         │
-│  - Serves patches via REST API                                  │
-│  - Validates app version compatibility                          │
-│  - Manages patch rollout & rollback                             │
-└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           DEVELOPER WORKFLOW                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+                                      
+    1. Build v1.0.0              2. Build v1.0.1           3. Generate Patch
+    (Baseline)                   (With Changes)            & Auto-Register
+         │                              │                          │
+         ▼                              ▼                          ▼
+┌─────────────────┐           ┌─────────────────┐        ┌──────────────────┐
+│ QuicUI Flutter  │           │ QuicUI Flutter  │        │ quicui-compiler  │
+│      SDK        │───────────│      SDK        │────────│                  │
+│  (Modified)     │           │  (Modified)     │        │ • diff command   │
+│                 │           │                 │        │ • BsDiff algo    │
+│ • v3.38.0       │           │ • v3.38.0       │        │ • Auto-register  │
+│ • quicui marker │           │ • quicui marker │        │   to backend     │
+└─────────┬───────┘           └─────────┬───────┘        └────────┬─────────┘
+          │                             │                          │
+          ▼                             ▼                          ▼
+    libapp.so                     libapp.so                 patch.quicui
+    (4.3 MB)                      (4.3 MB)                  (4.3 MB uncompressed)
+    
+    Saved to:                     Saved to:                 HTTP POST to:
+    snapshots/v1.0.0/             snapshots/v1.0.1/         http://192.168.20.102:8080
+                                                            /api/v1/patches/register
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                            BACKEND SERVER                                    │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+                         ┌──────────────────────────────────┐
+                         │   Dart/Shelf Backend Server      │
+                         │   Running on port 8080           │
+                         ├──────────────────────────────────┤
+                         │ Endpoints:                       │
+                         │ • /health                        │
+                         │ • /api/v1/patches/register       │
+                         │ • /api/v1/patches/check          │
+                         │ • /api/v1/patches/download/:id   │
+                         ├──────────────────────────────────┤
+                         │ Storage:                         │
+                         │ • Absolute paths to patches      │
+                         │ • Metadata (version, hash, size) │
+                         │ • Compression support            │
+                         └──────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          MOBILE APP RUNTIME                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+    App Launch                  Check Update              Download & Apply
+         │                            │                          │
+         ▼                            ▼                          ▼
+┌──────────────────┐         ┌──────────────────┐       ┌──────────────────┐
+│ FlutterLoader    │         │ QuicUI Code Push │       │ Platform Channel │
+│  .checkForPatch()│         │    Client        │       │   (Kotlin)       │
+│                  │         │                  │       │                  │
+│ Checks:          │         │ POST /check      │       │ • Download patch │
+│ code_cache/      │         │ {                │       │ • Validate hash  │
+│ quicui_patches/  │         │   appId,         │       │ • Install to     │
+│ libapp_*.so      │         │   currentVersion │       │   code_cache/    │
+│                  │         │ }                │       │                  │
+└────────┬─────────┘         └────────┬─────────┘       └────────┬─────────┘
+         │                            │                          │
+         ▼                            ▼                          ▼
+    No patch                     patchAvailable:            SUCCESS
+    Use APK                      true                       Restart app
+    snapshot                     downloadUrl: ...           to apply
+    
+         │                            │                          │
+         ▼                            ▼                          ▼
+    Version 1.0.0               User taps                  Version 1.0.1
+    (No counter)                "Download"                 (With counter)
 ```
 
-### Component Responsibilities
+### Key Components
 
-| Component | Responsibility | Language |
-|-----------|---------------|----------|
-| **Flutter SDK Fork** | Load patched AOT snapshots at app startup | C++, Java |
-| **Code Push Plugin** | Download patches, validate, install to code_cache | Dart, Kotlin |
-| **SDK Detection** | Identify QuicUI fork at runtime | Dart |
-| **Backend Server** | Serve patches, manage versions, analytics | Dart (Shelf) |
-| **User App** | Request updates, restart with patch | Dart (Flutter) |
+| Component | Location | Language | Purpose |
+|-----------|----------|----------|---------|
+| **QuicUI Flutter SDK** | `forks/flutter-official/` | C++, Java, Dart | Modified SDK that loads patches at startup |
+| **Code Push Plugin** | `packages/quicui_code_push_client/` | Dart, Kotlin, Swift | Downloads and installs patches |
+| **Backend Server** | `packages/quicui_backend/` | Dart (Shelf) | Serves patches, manages versions |
+| **Patch Compiler** | `packages/quicui_compiler/` | Dart | Generates binary diffs, auto-registers |
+| **Test App** | `test_apps/test_app_fresh/` | Dart | Test application with counter feature |
 
 ---
 
-## Flutter SDK Modifications
+## Component Deep Dive
 
 ### Overview
 

@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'dart:convert';
 
 import 'package:quicui_compiler/src/cli_commands.dart';
 import 'package:quicui_compiler/src/bsdiff.dart';
+import 'package:crypto/crypto.dart';
 
 /// QuicUI Code Push Compiler - Main CLI Entry Point
 /// 
@@ -57,6 +59,10 @@ void main(List<String> args) async {
 
       case 'verify':
         await _handleVerify(cmdArgs);
+        break;
+
+      case 'register':
+        await _handleRegister(cmdArgs);
         break;
 
       case '--help':
@@ -127,6 +133,7 @@ Future<void> _handleDiff(List<String> args) async {
     print('Usage: quicui-compiler diff <old-file> <new-file> [options]');
     print('');
     print('Generate a binary patch from old file to new file using BsDiff algorithm.');
+    print('Automatically registers patch with backend server after creation.');
     print('');
     print('Arguments:');
     print('  <old-file>                 Path to old snapshot file');
@@ -135,9 +142,19 @@ Future<void> _handleDiff(List<String> args) async {
     print('Options:');
     print('  --output=FILE              Output patch file path');
     print('                             (default: patch.quicui)');
+    print('  --compress=ALGORITHM       Compress patch: gzip, bz2, xz, or none');
+    print('                             (default: none)');
+    print('  --app-id=ID                Application ID (required for auto-register)');
+    print('  --version=VERSION          Patch version (required for auto-register)');
+    print('  --server-url=URL           Backend server URL (default: http://192.168.20.100:8080)');
+    print('  --no-register              Skip automatic registration');
     print('');
     print('Example:');
-    print('  quicui-compiler diff app_v1.0.0.so app_v1.0.1.so --output=patch_1.0.1.quicui');
+    print('  quicui-compiler diff app_v1.0.0.so app_v1.0.1.so \\');
+    print('    --output=v1.0.0_to_v1.0.1.quicui \\');
+    print('    --app-id=com.quicui.test_app_fresh \\');
+    print('    --version=1.0.1 \\');
+    print('    --compress=none');
     return;
   }
 
@@ -146,13 +163,24 @@ Future<void> _handleDiff(List<String> args) async {
   final options = _parseOptions(args.sublist(2));
 
   final outputFile = options['output'] as String? ?? 'patch.quicui';
+  final compression = options['compress'] as String? ?? 'none';
+  final appId = options['app-id'] as String?;
+  final version = options['version'] as String?;
+  final serverUrl = options['server-url'] as String? ?? 'http://192.168.20.100:8080';
+  final noRegister = options.containsKey('no-register');
 
   print('');
   print('🔧 QuicUI Binary Diff');
   print('═' * 60);
-  print('Old file: $oldFile');
-  print('New file: $newFile');
-  print('Output:   $outputFile');
+  print('Old file:     $oldFile');
+  print('New file:     $newFile');
+  print('Output:       $outputFile');
+  print('Compression:  $compression');
+  if (!noRegister && appId != null && version != null) {
+    print('Server URL:   $serverUrl');
+    print('App ID:       $appId');
+    print('Version:      $version');
+  }
   print('═' * 60);
   print('');
 
@@ -163,6 +191,17 @@ Future<void> _handleDiff(List<String> args) async {
       outputPath: outputFile,
     );
 
+    // Apply compression if requested
+    int compressedSize = patch.patchSize;
+    bool compressionSuccess = false;
+    if (compression != 'none') {
+      compressionSuccess = await _compressPatch(outputFile, compression);
+      if (compressionSuccess) {
+        final compressedFile = File('$outputFile.$compression');
+        compressedSize = await compressedFile.length();
+      }
+    }
+
     print('');
     print('✅ Patch generated successfully!');
     print('');
@@ -170,12 +209,40 @@ Future<void> _handleDiff(List<String> args) async {
     print('  Old size:        ${_formatBytes(patch.oldSize)}');
     print('  New size:        ${_formatBytes(patch.newSize)}');
     print('  Patch size:      ${_formatBytes(patch.patchSize)}');
-    print('  Compression:     ${patch.compressionRatio.toStringAsFixed(2)}%');
+    if (compression != 'none' && compressionSuccess) {
+      print('  Compressed:      ${_formatBytes(compressedSize)} (${compression})');
+      final totalCompression = (1 - compressedSize / patch.newSize) * 100;
+      print('  Total reduction: ${totalCompression.toStringAsFixed(2)}%');
+    }
     print('  Operations:      ${patch.operations.length}');
     print('');
     print('Old hash: ${patch.oldHash}');
     print('New hash: ${patch.newHash}');
     print('');
+
+    // Auto-register with backend if credentials provided
+    if (!noRegister && appId != null && version != null) {
+      print('');
+      print('📤 Auto-registering patch with backend...');
+      print('');
+      
+      // Call register command
+      await _handleRegister([
+        outputFile,
+        '--server-url=$serverUrl',
+        '--app-id=$appId',
+        '--version=$version',
+      ]);
+    } else if (!noRegister) {
+      print('⚠️  Skipping auto-registration (--app-id and --version required)');
+      print('');
+      print('To register manually:');
+      print('  quicui-compiler register $outputFile \\');
+      print('    --app-id=<your-app-id> \\');
+      print('    --version=<patch-version> \\');
+      print('    --server-url=$serverUrl');
+      print('');
+    }
   } catch (e) {
     print('');
     print('❌ Error generating patch: $e');
@@ -189,14 +256,15 @@ Future<void> _handlePatch(List<String> args) async {
     print('Usage: quicui-compiler patch <old-file> <patch-file> <new-file>');
     print('');
     print('Apply a binary patch to an old file to produce a new file.');
+    print('Automatically detects and decompresses compressed patches (.gz, .bz2, .xz).');
     print('');
     print('Arguments:');
     print('  <old-file>                 Path to old snapshot file');
-    print('  <patch-file>               Path to patch file (.quicui)');
+    print('  <patch-file>               Path to patch file (.quicui, .quicui.xz, etc)');
     print('  <new-file>                 Path to output new snapshot file');
     print('');
     print('Example:');
-    print('  quicui-compiler patch app_v1.0.0.so patch_1.0.1.quicui app_v1.0.1.so');
+    print('  quicui-compiler patch app_v1.0.0.so patch_1.0.1.quicui.xz app_v1.0.1.so');
     return;
   }
 
@@ -214,11 +282,19 @@ Future<void> _handlePatch(List<String> args) async {
   print('');
 
   try {
-    await BsDiff.applyPatch(oldFile, patchFile, newFile);
+    // Decompress patch if needed
+    final actualPatchFile = await _decompressPatch(patchFile);
+
+    await BsDiff.applyPatch(oldFile, actualPatchFile, newFile);
 
     print('');
     print('✅ Patch applied successfully!');
     print('');
+
+    // Clean up temporary decompressed file if it was created
+    if (actualPatchFile != patchFile) {
+      await File(actualPatchFile).delete();
+    }
   } catch (e) {
     print('');
     print('❌ Error applying patch: $e');
@@ -389,6 +465,167 @@ Future<void> _handleVerify(List<String> args) async {
   }
 }
 
+/// Handle 'register' command - Register patch with backend server
+Future<void> _handleRegister(List<String> args) async {
+  if (args.isEmpty) {
+    print('Usage: quicui-compiler register <patch-file> [options]');
+    print('');
+    print('Register a patch with the backend server after generating it.');
+    print('Automatically detects compressed versions and registers them.');
+    print('');
+    print('Arguments:');
+    print('  <patch-file>               Path to patch file (.quicui)');
+    print('');
+    print('Options:');
+    print('  --server-url=URL           Backend server URL (default: http://localhost:8080)');
+    print('  --app-id=ID                Application ID (required)');
+    print('  --version=VERSION          Patch version (required)');
+    print('  --patch-id=ID              Custom patch ID (default: auto-generated)');
+    print('');
+    print('Example:');
+    print('  quicui-compiler register v1.0.0_to_v1.0.1.quicui \\');
+    print('    --app-id=com.example.app \\');
+    print('    --version=1.0.1 \\');
+    print('    --server-url=http://localhost:8080');
+    return;
+  }
+
+  final patchFile = args[0];
+  final options = _parseOptions(args.sublist(1));
+
+  final serverUrl = options['server-url'] as String? ?? 'http://localhost:8080';
+  final appId = options['app-id'] as String?;
+  final version = options['version'] as String?;
+  final patchId = options['patch-id'] as String?;
+
+  if (appId == null || version == null) {
+    print('❌ Error: --app-id and --version are required');
+    print('');
+    print('Example:');
+    print('  quicui-compiler register $patchFile --app-id=com.example.app --version=1.0.1');
+    exit(1);
+  }
+
+  print('');
+  print('📤 Registering Patch with Backend');
+  print('═' * 60);
+  print('Patch file:  $patchFile');
+  print('Server URL:  $serverUrl');
+  print('App ID:      $appId');
+  print('Version:     $version');
+  print('═' * 60);
+  print('');
+
+  try {
+    // Check if patch file exists
+    final patchFileObj = File(patchFile);
+    if (!await patchFileObj.exists()) {
+      print('❌ Patch file not found: $patchFile');
+      exit(1);
+    }
+
+    // Get absolute path
+    final absolutePath = patchFileObj.absolute.path;
+
+    // Detect compressed versions
+    final compressedPaths = <String, String>{};
+    final compressedSizes = <String, int>{};
+
+    for (final ext in ['xz', 'gz', 'bz2']) {
+      final compressedFile = File('$absolutePath.$ext');
+      if (await compressedFile.exists()) {
+        compressedPaths[ext] = compressedFile.absolute.path;
+        compressedSizes[ext] = await compressedFile.length();
+        print('✓ Found compressed version: $ext (${_formatBytes(compressedSizes[ext]!)})');
+      }
+    }
+
+    if (compressedPaths.isEmpty) {
+      print('⚠️  No compressed versions found. Consider using --compress=xz when generating patches.');
+    }
+
+    // Get file sizes
+    final uncompressedSize = await patchFileObj.length();
+
+    // Calculate hash
+    final bytes = await patchFileObj.readAsBytes();
+    final digest = sha256.convert(bytes);
+    final hash = digest.toString();
+
+    print('');
+    print('📊 Patch Information:');
+    print('   Uncompressed: ${_formatBytes(uncompressedSize)}');
+    if (compressedPaths.containsKey('xz')) {
+      final reduction = (1 - compressedSizes['xz']! / uncompressedSize) * 100;
+      print('   Compressed:   ${_formatBytes(compressedSizes['xz']!)} (xz, ${reduction.toStringAsFixed(1)}% reduction)');
+    }
+    print('   SHA256:       $hash');
+    print('');
+
+    // Generate patch ID if not provided
+    final finalPatchId = patchId ?? '${appId}_v$version';
+
+    // Create registration payload
+    final payload = {
+      'patchId': finalPatchId,
+      'version': version,
+      'appId': appId,
+      'uncompressedPath': absolutePath,
+      'compressedPaths': compressedPaths,
+      'uncompressedSize': uncompressedSize,
+      'compressedSizes': compressedSizes,
+      'hash': hash,
+    };
+
+    // Send registration request
+    print('📤 Sending registration request to $serverUrl/api/v1/patches/register...');
+
+    final client = HttpClient();
+    try {
+      final request = await client.postUrl(Uri.parse('$serverUrl/api/v1/patches/register'));
+      request.headers.set('Content-Type', 'application/json');
+      request.write(json.encode(payload));
+
+      final response = await request.close();
+      final responseBody = await response.transform(utf8.decoder).join();
+
+      if (response.statusCode == 200) {
+        final result = json.decode(responseBody);
+        print('');
+        print('✅ Patch registered successfully!');
+        print('');
+        print('Patch Details:');
+        print('   Patch ID: ${result['patchId']}');
+        print('   Message:  ${result['message']}');
+        print('');
+        print('Next Steps:');
+        print('1. Test patch check:');
+        print('   curl -X POST $serverUrl/api/v1/patches/check \\');
+        print('     -H "Content-Type: application/json" \\');
+        print('     -d \'{"appId": "$appId", "currentVersion": "1.0.0", "acceptCompression": ["xz"]}\'');
+        print('');
+        print('2. Download patch:');
+        print('   curl -H "Accept-Encoding: xz" \\');
+        print('     $serverUrl/api/v1/patches/download/$finalPatchId \\');
+        print('     -o downloaded_patch.quicui.xz');
+        print('');
+      } else {
+        print('');
+        print('❌ Registration failed!');
+        print('   Status: ${response.statusCode}');
+        print('   Response: $responseBody');
+        exit(1);
+      }
+    } finally {
+      client.close();
+    }
+  } catch (e) {
+    print('');
+    print('❌ Error registering patch: $e');
+    exit(1);
+  }
+}
+
 /// Parse command-line options
 Map<String, dynamic> _parseOptions(List<String> args) {
   final options = <String, dynamic>{};
@@ -423,13 +660,20 @@ COMMANDS:
   version     Manage patch versions
   keygen      Generate signing key pair
   verify      Verify patch signature
+  register    Register patch with backend server
 
 EXAMPLES:
-  # Generate binary diff patch
-  quicui-compiler diff old.so new.so --output=patch.quicui
+  # Generate compressed binary patch
+  quicui-compiler diff old.so new.so --output=patch.quicui --compress=xz
 
-  # Apply binary patch
-  quicui-compiler patch old.so patch.quicui new.so
+  # Apply compressed patch
+  quicui-compiler patch old.so patch.quicui.xz new.so
+
+  # Register patch with backend
+  quicui-compiler register patch.quicui \\
+    --app-id=com.example.app \\
+    --version=1.0.1 \\
+    --server-url=http://localhost:8080
 
   # Build a patch
   quicui-compiler build old.kernel new.kernel \\
@@ -489,4 +733,140 @@ String _formatBytes(int bytes) {
     return '${(bytes / (1024 * 1024)).toStringAsFixed(2)} MB';
   }
   return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(2)} GB';
+}
+
+/// Compress patch file using specified algorithm
+/// Returns true if compression successful
+Future<bool> _compressPatch(String patchPath, String algorithm) async {
+  try {
+    final patchFile = File(patchPath);
+    if (!await patchFile.exists()) {
+      print('❌ Patch file not found: $patchPath');
+      return false;
+    }
+
+    print('🗜️  Compressing patch with $algorithm...');
+
+    // Use system compression tools for better performance and compression
+    String command;
+    String extension;
+
+    switch (algorithm.toLowerCase()) {
+      case 'gzip':
+      case 'gz':
+        command = 'gzip';
+        extension = 'gz';
+        break;
+
+      case 'bzip2':
+      case 'bz2':
+        command = 'bzip2';
+        extension = 'bz2';
+        break;
+
+      case 'xz':
+        command = 'xz';
+        extension = 'xz';
+        break;
+
+      default:
+        print('❌ Unknown compression algorithm: $algorithm');
+        return false;
+    }
+
+    final originalSize = await patchFile.length();
+
+    // Run compression command
+    final result = await Process.run(
+      command,
+      ['-9', '-k', '-f', patchPath],  // -9: max compression, -k: keep original, -f: force
+      workingDirectory: patchFile.parent.path,
+    );
+
+    if (result.exitCode != 0) {
+      print('❌ Compression failed: ${result.stderr}');
+      return false;
+    }
+
+    // Check compressed file
+    final compressedFile = File('$patchPath.$extension');
+    if (!await compressedFile.exists()) {
+      print('❌ Compressed file not found');
+      return false;
+    }
+
+    final compressedSize = await compressedFile.length();
+    final reduction = (1 - compressedSize / originalSize) * 100;
+
+    print('✅ Compressed: ${_formatBytes(originalSize)} → ${_formatBytes(compressedSize)} (${reduction.toStringAsFixed(2)}% reduction)');
+    print('   Output: ${compressedFile.path}');
+
+    return true;
+  } catch (e) {
+    print('❌ Compression error: $e');
+    return false;
+  }
+}
+
+/// Decompress patch file if compressed
+/// Returns the path to the decompressed file (or original if not compressed)
+Future<String> _decompressPatch(String patchPath) async {
+  final patchFile = File(patchPath);
+  if (!await patchFile.exists()) {
+    throw Exception('Patch file not found: $patchPath');
+  }
+
+  final extension = patchPath.split('.').last.toLowerCase();
+  
+  // Check if file is compressed
+  if (!['gz', 'bz2', 'xz'].contains(extension)) {
+    // Not compressed, return original path
+    return patchPath;
+  }
+
+  print('🗜️  Decompressing patch...');
+
+  // Determine decompression command
+  String command;
+  switch (extension) {
+    case 'gz':
+      command = 'gunzip';
+      break;
+    case 'bz2':
+      command = 'bunzip2';
+      break;
+    case 'xz':
+      command = 'unxz';
+      break;
+    default:
+      throw Exception('Unknown compression format: $extension');
+  }
+
+  final compressedSize = await patchFile.length();
+  
+  // Decompress (keep original with -k flag)
+  final result = await Process.run(
+    command,
+    ['-k', '-f', patchPath],  // -k: keep original, -f: force
+    workingDirectory: patchFile.parent.path,
+  );
+
+  if (result.exitCode != 0) {
+    throw Exception('Decompression failed: ${result.stderr}');
+  }
+
+  // Get decompressed file path (remove compression extension)
+  final decompressedPath = patchPath.substring(0, patchPath.lastIndexOf('.'));
+  final decompressedFile = File(decompressedPath);
+  
+  if (!await decompressedFile.exists()) {
+    throw Exception('Decompressed file not found: $decompressedPath');
+  }
+
+  final decompressedSize = await decompressedFile.length();
+
+  print('✅ Decompressed: ${_formatBytes(compressedSize)} → ${_formatBytes(decompressedSize)}');
+  print('   Output: $decompressedPath');
+
+  return decompressedPath;
 }

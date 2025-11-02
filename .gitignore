@@ -54,6 +54,8 @@ coverage/
 *.tmp
 *.bak
 tmp/
+engine_build/
+temp_build/
 
 # CI/CD
 .github/workflows/*.log
@@ -63,3 +65,13 @@ forks/flutter-official/.dart_tool/
 forks/flutter-official/build/
 forks/flutter-official/.packages
 forks/flutter-official/bin/cache/
+
+# Engine source (managed separately)
+engine_src/
+engine_full/
+shorebird_engine/
+shorebird_analysis/engine/
+shorebird_research/
+
+# Updater (managed separately)  
+updater/

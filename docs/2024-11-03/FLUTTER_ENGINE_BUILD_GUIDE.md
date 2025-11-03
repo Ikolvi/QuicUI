@@ -890,8 +890,11 @@ export PATH="/Volumes/DoWonder2/quicui_engine_build/depot_tools:$PATH"
 ### Build Host Tools
 
 ```bash
-# Important: Use direct path to ninja to avoid wrapper issues
-/Volumes/DoWonder2/quicui_engine_build/depot_tools/ninja -C out/host_release -j4 2>&1 | tee /tmp/host_build_retry.log
+# CORRECT COMMAND: Set PATH, navigate to src, and use direct ninja path
+cd /Volumes/DoWonder2/quicui_engine_build/official_engine/src && \
+export PATH="/Volumes/DoWonder2/quicui_engine_build/depot_tools:$PATH" && \
+echo "Resuming host tools build..." && \
+/Volumes/DoWonder2/quicui_engine_build/depot_tools/ninja -C out/host_release -j4 2>&1 | tee -a /tmp/host_build_retry.log
 
 # Monitor progress (without interrupting)
 # Do NOT use tail with live output - just check the log file occasionally

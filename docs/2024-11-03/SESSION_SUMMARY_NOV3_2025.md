@@ -160,8 +160,17 @@ Flutter Engine (official_engine/)
 ### Phase 5: Host Tools Build (In Progress 🔄)
 1. Configured GN for host release: 1,582 targets from 406 files
 2. Started ninja build with -j4 parallelism
-3. Currently compiling Skia components (799/10,066)
-4. Estimated completion: 30-45 minutes
+3. Build interrupted multiple times (lesson: avoid Ctrl+C during monitoring)
+4. **Correct Command** (now running):
+   ```bash
+   cd /Volumes/DoWonder2/quicui_engine_build/official_engine/src && \
+   export PATH="/Volumes/DoWonder2/quicui_engine_build/depot_tools:$PATH" && \
+   echo "Resuming host tools build..." && \
+   /Volumes/DoWonder2/quicui_engine_build/depot_tools/ninja -C out/host_release -j4 2>&1 | tee -a /tmp/host_build_retry.log
+   ```
+5. Build resumed successfully - currently at [1081/8310] targets (~13%)
+6. Compiling: FreeType, GLFW, Dart runtime components
+7. Estimated completion: 20-30 minutes remaining
 
 ---
 

@@ -7,8 +7,10 @@ set -e
 
 echo "Building test_app_fresh with --local-engine..."
 
-# Set Flutter SDK path
-export PATH="/Users/admin/Documents/quicui2/forks/flutter-quicui/bin:$PATH"
+# Use Flutter MASTER channel (matches the engine we built)
+export PATH="/Users/admin/fvm/versions/master/bin:$PATH"
+echo "Using Flutter: $(which flutter)"
+flutter --version | head -1
 
 # Clean previous build
 echo "Cleaning previous build..."

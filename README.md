@@ -21,9 +21,10 @@ This directory contains **QuicUI**, an open-source Flutter code push implementat
 ### 📖 Key Documentation
 
 **For Latest Progress:**
-- **`STATUS_NOV_3_2024.md`** - Complete Nov 3, 2024 status report (comprehensive)
-- **`docs/2024-11-03/`** - Latest technical documentation
+- **`docs/2024-11-03/BUILD_SCRIPTS_README.md`** - Build scripts documentation
+- **`docs/2024-11-03/`** - Latest technical documentation (Nov 3, 2024)
 - **`docs/2024-11-02/`** - Previous session documentation
+- **`scripts/build_all.sh`** - Master build orchestration script
 
 **For Understanding the Project:**
 - **`PROJECT_SUMMARY.md`** - Executive overview

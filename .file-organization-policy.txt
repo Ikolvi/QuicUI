@@ -1,0 +1,10 @@
+FILE ORGANIZATION POLICY
+========================
+
+Daily Documentation → docs/YYYY-MM-DD/
+Scripts → scripts/
+Session Logs → sessions/YYYY-MM-DD/ (if needed)
+
+Root directory: Only core project files (README, LICENSE, etc.)
+
+See: docs/2024-11-03/FILE_ORGANIZATION.md for details

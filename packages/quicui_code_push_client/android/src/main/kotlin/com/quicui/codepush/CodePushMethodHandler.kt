@@ -346,20 +346,35 @@ class CodePushMethodHandler(
                 // Target path: libapp_patched_<arch>.so
                 val targetFile = File(patchesDir, "libapp_patched_${arch}.so")
 
-                // Apply BsDiff patch
-                android.util.Log.i("QuicUI", "Applying BsDiff patch...")
-                val patchSuccess = BsDiffPatcher.applyPatch(originalLibapp, patchFile, targetFile)
+                // Check if this is a full replacement or a diff patch
+                // If patch file size is close to libapp.so size, it's a full replacement
+                val isFullReplacement = patchFile.length() >= originalLibapp.length() * 0.8
                 
-                if (!patchSuccess) {
-                    // Clean up temporary file
-                    originalLibapp.delete()
-                    Handler(Looper.getMainLooper()).post {
-                        result.error("PATCH_FAILED", "Failed to apply BsDiff patch", null)
+                if (isFullReplacement) {
+                    // Full replacement - just copy the file
+                    android.util.Log.i("QuicUI", "Detected full replacement (${patchFile.length()} bytes vs ${originalLibapp.length()} bytes)")
+                    android.util.Log.i("QuicUI", "Copying full libapp.so as patch...")
+                    
+                    patchFile.copyTo(targetFile, overwrite = true)
+                    android.util.Log.i("QuicUI", "Full replacement installed successfully!")
+                } else {
+                    // Diff patch - apply BsDiff
+                    android.util.Log.i("QuicUI", "Detected BsDiff patch (${patchFile.length()} bytes vs ${originalLibapp.length()} bytes)")
+                    android.util.Log.i("QuicUI", "Applying BsDiff patch...")
+                    
+                    val patchSuccess = BsDiffPatcher.applyPatch(originalLibapp, patchFile, targetFile)
+                    
+                    if (!patchSuccess) {
+                        // Clean up temporary file
+                        originalLibapp.delete()
+                        Handler(Looper.getMainLooper()).post {
+                            result.error("PATCH_FAILED", "Failed to apply BsDiff patch", null)
+                        }
+                        return@execute
                     }
-                    return@execute
+                    
+                    android.util.Log.i("QuicUI", "BsDiff patch applied successfully!")
                 }
-                
-                android.util.Log.i("QuicUI", "BsDiff patch applied successfully!")
 
                 // Clean up temporary original file
                 originalLibapp.delete()

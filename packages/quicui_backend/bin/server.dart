@@ -18,7 +18,19 @@ import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
 
 // Storage for patches (in-memory for demo)
-final Map<String, PatchInfo> _patches = {};
+final Map<String, PatchInfo> _patches = {
+  'patch-v9.0.0': PatchInfo(
+    patchId: 'patch-v9.0.0',
+    version: '9.0.0',
+    appId: 'com.example.quicui_production_test',
+    uncompressedPath: '/Users/admin/Documents/quicui2/test_apps/quicui_production_test/patch_v9.0.0.quicui',
+    compressedPaths: {},
+    uncompressedSize: 1024,
+    compressedSizes: {},
+    hash: 'test-hash-123',
+    createdAt: DateTime.now(),
+  ),
+};
 
 class PatchInfo {
   final String patchId;
@@ -80,12 +92,12 @@ Router createRouter() {
         );
       }
 
-      // Find available patch
-      final availablePatch = _patches.values.where((p) => 
+      // Find available patches for this app
+      final availablePatches = _patches.values.where((p) => 
         p.appId == appId && p.version != currentVersion
       ).toList();
 
-      if (availablePatch.isEmpty) {
+      if (availablePatches.isEmpty) {
         return Response.ok(
           json.encode({
             'patchAvailable': false,
@@ -95,7 +107,21 @@ Router createRouter() {
         );
       }
 
-      final patch = availablePatch.first;
+      // Sort patches by version and get the latest (highest version number)
+      availablePatches.sort((a, b) {
+        // Simple version comparison for x.y.z format
+        final aParts = a.version.split('.').map(int.parse).toList();
+        final bParts = b.version.split('.').map(int.parse).toList();
+        
+        for (int i = 0; i < 3; i++) {
+          final aVal = i < aParts.length ? aParts[i] : 0;
+          final bVal = i < bParts.length ? bParts[i] : 0;
+          if (aVal != bVal) return bVal.compareTo(aVal); // Descending order (latest first)
+        }
+        return 0;
+      });
+
+      final patch = availablePatches.first; // Latest version
       
       // Determine best compression format
       String? compressionFormat;

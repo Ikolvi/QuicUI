@@ -233,30 +233,26 @@ class QuicUICodePush {
   /// 5. App restart required to load patched code
   Future<bool> downloadAndInstall(PatchInfo patch) async {
     try {
-      if (config.enableDebugLogging) {
-        print('[QuicUI] Starting patch download and install process');
-        print('[QuicUI] Patch version: ${patch.version}');
-        print('[QuicUI] Patch size: ${patch.size} bytes');
-      }
+      print('[QuicUI] Starting patch download and install process');
+      print('[QuicUI] Patch version: ${patch.version}');
+      print('[QuicUI] Patch size: ${patch.size} bytes');
+      print('[QuicUI] Download URL: ${patch.downloadUrl}');
 
       // 1. Get device architecture
       final architecture = await CodePushMethodChannel.getDeviceArchitecture();
-      if (config.enableDebugLogging) {
-        print('[QuicUI] Device architecture: $architecture');
-      }
+      print('[QuicUI] Device architecture: $architecture');
 
       // 2. Download patch to temporary directory
       final tempDir = Directory.systemTemp;
       final compressedFile = File('${tempDir.path}/quicui_patch_${patch.version}.compressed');
       final patchFile = File('${tempDir.path}/quicui_patch_${patch.version}.so');
 
-      if (config.enableDebugLogging) {
-        print('[QuicUI] Downloading patch to: ${compressedFile.path}');
-      }
+      print('[QuicUI] Downloading patch to: ${compressedFile.path}');
 
       final client = http.Client();
       String? compressionFormat;
       try {
+        print('[QuicUI] Making GET request to: ${patch.downloadUrl}');
         // Android doesn't have xz/gzip/bzip2 commands, so request uncompressed
         // TODO: Implement Dart-based decompression or bundle busybox
         final response = await client.get(
@@ -268,7 +264,10 @@ class QuicUICodePush {
           },
         );
 
+        print('[QuicUI] Response status: ${response.statusCode}');
+
         if (response.statusCode != 200) {
+          print('[QuicUI] ❌ Failed to download patch: ${response.statusCode}');
           config.onError?.call('Failed to download patch: ${response.statusCode}');
           return false;
         }

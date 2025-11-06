@@ -95,6 +95,17 @@ public class QuicUICodePushLoader {
   }
   
   /**
+   * Get path to patched libapp.so for current device architecture.
+   * Convenience method that auto-detects architecture.
+   * 
+   * @return Absolute path to patched library or null if not available
+   */
+  @Nullable
+  public String getPatchedAOTPath() {
+    return getPatchedAOTPath(getDeviceArchitecture());
+  }
+  
+  /**
    * Check if a patch is installed for the given architecture.
    * 
    * @param architecture CPU architecture to check

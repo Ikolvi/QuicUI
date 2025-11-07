@@ -1,0 +1,30 @@
+# Dart build artifacts
+.dart_tool/
+build/
+pubspec.lock
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Environment files
+.env
+.env.*
+
+# Log files
+*.log
+
+# Test coverage
+coverage/
+
+# Local data
+data/
+patches/
+*.quicui
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride

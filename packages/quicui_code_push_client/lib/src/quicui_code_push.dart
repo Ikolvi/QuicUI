@@ -13,9 +13,8 @@ import 'constants/build_sdk_info.dart';
 
 /// Main QuicUI code push client
 /// 
-/// Backend endpoint is managed internally and can only be configured via
-/// QUICUI_SERVER_URL environment variable for testing purposes.
-/// Defaults to http://localhost:8080
+/// Backend endpoint is managed internally and points to production server.
+/// Defaults to https://quicui-backend.onrender.com
 class QuicUICodePush {
   // Backend endpoint managed internally (not exposed in public API)
   late String _backendUrl;
@@ -52,33 +51,29 @@ class QuicUICodePush {
     );
   }
   
-  /// Get backend URL from environment or use default
+  /// Get backend URL from environment or use production default
   /// INTERNAL USE ONLY - not exposed in public API
   static String _getBackendUrl() {
-    // HARDCODED for testing - TODO: make this configurable properly
-    const hardcodedUrl = 'http://192.168.20.100:8080';
-    print('[QuicUI] Using hardcoded server URL: $hardcodedUrl');
-    return hardcodedUrl;
-    
     // Check compile-time environment variable (set via --dart-define during build)
-    // const envUrl = String.fromEnvironment('QUICUI_SERVER_URL');
-    // print('[QuicUI] Compile-time QUICUI_SERVER_URL: "$envUrl" (isEmpty: ${envUrl.isEmpty})');
-    // 
-    // if (envUrl.isNotEmpty) {
-    //   print('[QuicUI] Using server URL from build environment: $envUrl');
-    //   return envUrl;
-    // }
-    // 
-    // // Fallback to runtime environment variable (for debugging)
-    // final runtimeUrl = Platform.environment['QUICUI_SERVER_URL'];
-    // print('[QuicUI] Runtime QUICUI_SERVER_URL: "$runtimeUrl"');
-    // 
-    // if (runtimeUrl != null && runtimeUrl.isNotEmpty) {
-    //   print('[QuicUI] Using server URL from runtime environment: $runtimeUrl');
-    //   return runtimeUrl;
-    // }
-    // 
-    // print('[QuicUI] Using default server URL: $_defaultBackendUrl');
+    const envUrl = String.fromEnvironment('QUICUI_SERVER_URL');
+    
+    if (envUrl.isNotEmpty) {
+      print('[QuicUI] Using server URL from build environment: $envUrl');
+      return envUrl;
+    }
+    
+    // Fallback to runtime environment variable (for debugging)
+    final runtimeUrl = Platform.environment['QUICUI_SERVER_URL'];
+    
+    if (runtimeUrl != null && runtimeUrl.isNotEmpty) {
+      print('[QuicUI] Using server URL from runtime environment: $runtimeUrl');
+      return runtimeUrl;
+    }
+    
+    // Production default
+    const productionUrl = 'https://quicui-backend.onrender.com';
+    print('[QuicUI] Using production server URL: $productionUrl');
+    return productionUrl;
     // return _defaultBackendUrl;
   }
 

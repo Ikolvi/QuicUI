@@ -17,20 +17,9 @@ import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
 
-// Storage for patches (in-memory for demo)
-final Map<String, PatchInfo> _patches = {
-  'patch-v9.0.0': PatchInfo(
-    patchId: 'patch-v9.0.0',
-    version: '9.0.0',
-    appId: 'com.example.quicui_production_test',
-    uncompressedPath: '/Users/admin/Documents/quicui2/test_apps/quicui_production_test/patch_v9.0.0.quicui',
-    compressedPaths: {},
-    uncompressedSize: 1024,
-    compressedSizes: {},
-    hash: 'test-hash-123',
-    createdAt: DateTime.now(),
-  ),
-};
+// Storage for patches (in-memory storage)
+// In production, replace with database (PostgreSQL, MongoDB, etc.)
+final Map<String, PatchInfo> _patches = {};
 
 class PatchInfo {
   final String patchId;

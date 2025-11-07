@@ -1,0 +1,18 @@
+# QuicUI Backend - Render.com Deployment
+
+services:
+  - type: web
+    name: quicui-backend
+    runtime: docker
+    repo: https://github.com/Ikolvi/quicui-backend
+    branch: main
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: LOG_LEVEL
+        value: info
+    healthCheckPath: /api/v1/patches
+    autoDeploy: true

@@ -1,0 +1,25 @@
+# Ignore Dart build artifacts
+.dart_tool/
+build/
+pubspec.lock
+
+# Ignore IDE files
+.idea/
+.vscode/
+*.iml
+.DS_Store
+
+# Ignore environment files
+.env
+.env.*
+
+# Ignore log files
+*.log
+
+# Ignore test coverage
+coverage/
+
+# Ignore local data
+data/
+patches/
+*.quicui

@@ -11,11 +11,13 @@
 
 1. [System Overview](#system-overview)
 2. [Architecture](#architecture)
-3. [Complete File Structure](#complete-file-structure)
-4. [All Source Code](#all-source-code)
-5. [Build Instructions](#build-instructions)
-6. [Testing & Deployment](#testing--deployment)
-7. [Troubleshooting](#troubleshooting)
+3. [QUICUI01 Patch Format](#quicui01-patch-format)
+4. [Patch Generation](#patch-generation)
+5. [Complete File Structure](#complete-file-structure)
+6. [All Source Code](#all-source-code)
+7. [Build Instructions](#build-instructions)
+8. [Testing & Deployment](#testing--deployment)
+9. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -138,6 +140,580 @@ QuicUI Code Push is a Flutter code push system that allows hot-updating Flutter 
    │ └─────────────────────────────────────────────┘   │
    └──────────────────────────────────────────────────────┘
 ```
+
+---
+
+## QUICUI01 Patch Format
+
+### Binary Format Specification
+
+QuicUI uses a custom binary patch format called **QUICUI01** that is optimized for Flutter AOT snapshots.
+
+#### Format Structure
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    QUICUI01 Patch File                      │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  HEADER (156 bytes total)                                   │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │ Magic:        "QUICUI01"         (8 bytes)           │  │
+│  │ Old Size:     int64 (LE)         (8 bytes)           │  │
+│  │ New Size:     int64 (LE)         (8 bytes)           │  │
+│  │ Op Count:     int32 (LE)         (4 bytes)           │  │
+│  │ Old Hash:     SHA-256 hex ASCII  (64 bytes)          │  │
+│  │ New Hash:     SHA-256 hex ASCII  (64 bytes)          │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                             │
+│  OPERATIONS (variable length)                               │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │ Operation 1:                                         │  │
+│  │   Type:       byte (0=COPY, 1=ADD)  (1 byte)        │  │
+│  │   Old Offset: int64 (LE)            (8 bytes)       │  │
+│  │   Length:     int32 (LE)            (4 bytes)       │  │
+│  │   Data:       byte[] (if ADD)       (variable)      │  │
+│  ├──────────────────────────────────────────────────────┤  │
+│  │ Operation 2:                                         │  │
+│  │   ...                                                │  │
+│  ├──────────────────────────────────────────────────────┤  │
+│  │ Operation N:                                         │  │
+│  │   ...                                                │  │
+│  └──────────────────────────────────────────────────────┘  │
+└─────────────────────────────────────────────────────────────┘
+```
+
+#### Field Specifications
+
+| Field | Type | Size | Encoding | Description |
+|-------|------|------|----------|-------------|
+| **Magic** | ASCII | 8 bytes | UTF-8 | Must be exactly "QUICUI01" |
+| **Old Size** | int64 | 8 bytes | Little-Endian | Size of original libapp.so in bytes |
+| **New Size** | int64 | 8 bytes | Little-Endian | Size of patched libapp.so in bytes |
+| **Op Count** | int32 | 4 bytes | Little-Endian | Number of COPY/ADD operations |
+| **Old Hash** | string | 64 bytes | ASCII hex | SHA-256 hash of original file (lowercase hex) |
+| **New Hash** | string | 64 bytes | ASCII hex | SHA-256 hash of patched file (lowercase hex) |
+
+#### Operation Types
+
+**COPY Operation (Type = 0):**
+```
+┌──────────────────────────────────┐
+│ Type:       0x00 (1 byte)        │
+│ Old Offset: int64 (8 bytes, LE)  │  ← Position in original file
+│ Length:     int32 (4 bytes, LE)  │  ← Number of bytes to copy
+│ Data:       (none)               │
+└──────────────────────────────────┘
+
+Effect: Copy `Length` bytes from `Old Offset` in original file
+```
+
+**ADD Operation (Type = 1):**
+```
+┌──────────────────────────────────┐
+│ Type:       0x01 (1 byte)        │
+│ Old Offset: 0 (8 bytes, ignored) │
+│ Length:     int32 (4 bytes, LE)  │  ← Number of new bytes
+│ Data:       byte[] (Length)      │  ← New bytes to insert
+└──────────────────────────────────┘
+
+Effect: Insert `Length` new bytes from Data field
+```
+
+#### Example Patch Structure
+
+```
+Offset  | Hex                              | Description
+--------|----------------------------------|---------------------------
+0x0000  | 51 55 49 43 55 49 30 31          | Magic: "QUICUI01"
+0x0008  | 30 0B 38 00 00 00 00 00          | Old Size: 3,670,960 bytes (LE)
+0x0010  | 30 0B 38 00 00 00 00 00          | New Size: 3,670,960 bytes (LE)
+0x0018  | 42 00 00 00                      | Op Count: 66 operations (LE)
+0x001C  | 39 35 63 31 38 36 35 39 ...      | Old Hash: "95c1865922cb61..."
+0x005C  | 61 66 65 31 65 61 64 31 ...      | New Hash: "afe1ead1cb8548..."
+0x009C  | 00                               | OP 1: Type = COPY
+0x009D  | 00 00 00 00 00 00 00 00          | OP 1: Old Offset = 0
+0x00A5  | 40 00 00 00                      | OP 1: Length = 64 bytes
+0x00A9  | 01                               | OP 2: Type = ADD
+0x00AA  | 00 00 00 00 00 00 00 00          | OP 2: Old Offset (ignored)
+0x00B2  | 10 00 00 00                      | OP 2: Length = 16 bytes
+0x00B6  | 48 65 6C 6C 6F 20 51 75 ...      | OP 2: Data = "Hello Qu..."
+...
+```
+
+#### Hash Validation
+
+The patch format includes SHA-256 hashes for integrity verification:
+
+1. **Old Hash**: Computed from the original `libapp.so`
+   - Must match before applying patch
+   - Prevents patching wrong base version
+   
+2. **New Hash**: Expected hash of patched file
+   - Computed after patch application
+   - Validates patch was applied correctly
+
+```kotlin
+// BsDiffPatcher.kt validation
+fun validatePatch(oldFile: File, newFile: File, patchInfo: PatchInfo): Boolean {
+    val oldHash = sha256(oldFile)
+    if (oldHash != patchInfo.oldHash) {
+        Log.e(TAG, "Old file hash mismatch!")
+        return false
+    }
+    
+    val newHash = sha256(newFile)
+    if (newHash != patchInfo.newHash) {
+        Log.e(TAG, "New file hash mismatch!")
+        return false
+    }
+    
+    return true
+}
+```
+
+#### File Size Comparison
+
+For a typical Flutter app code change:
+
+| File | Size | Format |
+|------|------|--------|
+| **Original libapp.so** | 3,670,960 bytes | AOT snapshot |
+| **Patched libapp.so** | 3,670,960 bytes | AOT snapshot |
+| **QUICUI01 patch** | ~30,000-100,000 bytes | Binary diff |
+| **Compression (XZ)** | ~1,000,000 bytes | ❌ Not usable on Android |
+| **Uncompressed upload** | 3,670,960 bytes | ✅ Working solution |
+
+**Note:** XZ compression doesn't work on Android because the `xz` binary is not available. Current implementation uploads full uncompressed `libapp.so` as patch.
+
+---
+
+## Patch Generation
+
+### Overview
+
+The patch generation process creates optimized binary diffs between two versions of `libapp.so` using a custom algorithm.
+
+### Current Implementation
+
+**File:** `test_apps/quicui_v1_test/temp_v1/generate_quicui_patch.py`
+
+#### Algorithm (Unoptimized - O(n²))
+
+```python
+def find_differences(old_bytes, new_bytes, min_copy_length=32):
+    """
+    Find COPY and ADD operations to transform old_bytes into new_bytes.
+    
+    Current implementation: Simple byte-by-byte matching
+    Time complexity: O(n²) - needs optimization for production use
+    """
+    operations = []
+    new_pos = 0
+    
+    while new_pos < len(new_bytes):
+        # Search for matching sequence in old file
+        best_match = None
+        best_length = 0
+        
+        # O(n) - scan through old file
+        for old_pos in range(len(old_bytes)):
+            # Check how many bytes match
+            match_length = 0
+            while (new_pos + match_length < len(new_bytes) and
+                   old_pos + match_length < len(old_bytes) and
+                   old_bytes[old_pos + match_length] == 
+                   new_bytes[new_pos + match_length]):
+                match_length += 1
+            
+            # Keep track of longest match
+            if match_length > best_length:
+                best_length = match_length
+                best_match = old_pos
+        
+        # If match is long enough, emit COPY operation
+        if best_length >= min_copy_length:
+            operations.append({
+                'type': 'COPY',
+                'old_offset': best_match,
+                'length': best_length,
+                'data': None
+            })
+            new_pos += best_length
+        else:
+            # Accumulate non-matching bytes for ADD operation
+            add_data = bytearray()
+            while (new_pos < len(new_bytes) and 
+                   not has_match_at_position(new_pos)):
+                add_data.append(new_bytes[new_pos])
+                new_pos += 1
+            
+            operations.append({
+                'type': 'ADD',
+                'old_offset': 0,
+                'length': len(add_data),
+                'data': bytes(add_data)
+            })
+    
+    return operations
+```
+
+#### Patch File Generation
+
+```python
+def generate_quicui_patch(old_file, new_file, output_patch):
+    """Generate QUICUI01 format binary patch"""
+    
+    # Read input files
+    with open(old_file, 'rb') as f:
+        old_bytes = f.read()
+    with open(new_file, 'rb') as f:
+        new_bytes = f.read()
+    
+    # Calculate hashes
+    old_hash = hashlib.sha256(old_bytes).hexdigest()
+    new_hash = hashlib.sha256(new_bytes).hexdigest()
+    
+    # Find differences
+    operations = find_differences(old_bytes, new_bytes)
+    
+    # Write patch file
+    with open(output_patch, 'wb') as f:
+        # Write header
+        f.write(b'QUICUI01')                           # Magic
+        f.write(struct.pack('<Q', len(old_bytes)))     # Old size (LE)
+        f.write(struct.pack('<Q', len(new_bytes)))     # New size (LE)
+        f.write(struct.pack('<I', len(operations)))    # Op count (LE)
+        f.write(old_hash.encode('ascii'))              # Old hash (64 bytes)
+        f.write(new_hash.encode('ascii'))              # New hash (64 bytes)
+        
+        # Write operations
+        for op in operations:
+            if op['type'] == 'COPY':
+                f.write(struct.pack('<B', 0))          # Type = 0
+                f.write(struct.pack('<Q', op['old_offset']))  # Offset (LE)
+                f.write(struct.pack('<I', op['length']))      # Length (LE)
+            else:  # ADD
+                f.write(struct.pack('<B', 1))          # Type = 1
+                f.write(struct.pack('<Q', 0))          # Offset (ignored)
+                f.write(struct.pack('<I', op['length']))      # Length (LE)
+                f.write(op['data'])                    # Data bytes
+```
+
+### Performance Analysis
+
+#### Current Performance
+
+| File Size | Algorithm | Time | Status |
+|-----------|-----------|------|--------|
+| 3.5 MB | Simple matching (O(n²)) | **2-5 minutes** | ❌ Too slow |
+
+#### Problem
+
+The current implementation uses a simple nested loop:
+- **Outer loop**: Scans through new file (3.5M bytes)
+- **Inner loop**: For each position, scans entire old file (3.5M bytes)
+- **Total operations**: ~12 trillion comparisons
+
+This is acceptable for small files but unusable for production Flutter apps.
+
+### Recommended Optimization
+
+#### Rabin-Karp Rolling Hash Algorithm
+
+**Time Complexity:** O(n + m) average case (vs current O(n²))
+
+```python
+def rabin_karp_diff(old_bytes, new_bytes, window_size=64):
+    """
+    Optimized patch generation using Rabin-Karp rolling hash.
+    
+    Expected speedup: 100-1000x faster
+    Time complexity: O(n + m) average case
+    """
+    
+    # Build hash table of old file
+    # Key: hash of window_size bytes
+    # Value: list of positions where this hash occurs
+    old_hashes = {}
+    
+    # Rolling hash parameters
+    BASE = 256
+    MOD = 2**32 - 1
+    
+    # Compute hash for first window
+    current_hash = 0
+    for i in range(min(window_size, len(old_bytes))):
+        current_hash = (current_hash * BASE + old_bytes[i]) % MOD
+    
+    old_hashes[current_hash] = [0]
+    
+    # Rolling hash through old file - O(n)
+    for i in range(1, len(old_bytes) - window_size + 1):
+        # Remove leftmost byte
+        current_hash = (current_hash - 
+                       old_bytes[i-1] * pow(BASE, window_size-1, MOD)) % MOD
+        # Add rightmost byte
+        current_hash = (current_hash * BASE + 
+                       old_bytes[i + window_size - 1]) % MOD
+        
+        if current_hash not in old_hashes:
+            old_hashes[current_hash] = []
+        old_hashes[current_hash].append(i)
+    
+    # Process new file with rolling hash - O(m)
+    operations = []
+    new_pos = 0
+    
+    while new_pos < len(new_bytes):
+        # Compute hash of current window
+        window_hash = 0
+        for i in range(min(window_size, len(new_bytes) - new_pos)):
+            window_hash = (window_hash * BASE + new_bytes[new_pos + i]) % MOD
+        
+        # Check if this hash exists in old file
+        if window_hash in old_hashes:
+            # Verify actual match (hash collision check)
+            for old_pos in old_hashes[window_hash]:
+                match_length = verify_match(old_bytes, new_bytes, 
+                                            old_pos, new_pos)
+                
+                if match_length >= 32:  # Min copy length
+                    operations.append({
+                        'type': 'COPY',
+                        'old_offset': old_pos,
+                        'length': match_length
+                    })
+                    new_pos += match_length
+                    break
+        else:
+            # No match - accumulate ADD operation
+            # ... (same as before)
+    
+    return operations
+```
+
+**Expected Performance:**
+
+| File Size | Algorithm | Time | Speedup |
+|-----------|-----------|------|---------|
+| 3.5 MB | Simple (O(n²)) | 2-5 min | 1x |
+| 3.5 MB | Rabin-Karp (O(n+m)) | **1-3 seconds** | **100-300x** |
+
+#### Alternative: Suffix Arrays
+
+For even better performance with large files:
+
+```python
+def suffix_array_diff(old_bytes, new_bytes):
+    """
+    Uses suffix arrays for optimal matching.
+    
+    Time complexity: O(n log n) build + O(m log n) search
+    Best for: Very large files (>10MB)
+    """
+    # Build suffix array of old file - O(n log n)
+    suffix_array = build_suffix_array(old_bytes)
+    
+    # For each position in new file, binary search - O(m log n)
+    # ...
+```
+
+### Patch Upload Script
+
+**File:** `test_apps/quicui_v1_test/temp_v1/upload_to_render.py`
+
+```python
+#!/usr/bin/env python3
+"""
+Upload QUICUI01 patch to backend server.
+
+Handles large file uploads via base64 encoding in JSON payload.
+"""
+
+import sys
+import json
+import base64
+import hashlib
+import urllib.request
+import urllib.error
+import ssl
+
+def upload_patch(patch_file, backend_url):
+    """
+    Upload patch file to QuicUI backend.
+    
+    Args:
+        patch_file: Path to QUICUI01 patch file
+        backend_url: Backend server URL
+    
+    Process:
+        1. Read patch file (up to ~5MB)
+        2. Calculate SHA-256 hash
+        3. Base64 encode file data
+        4. POST JSON to /api/v1/patches/upload
+    """
+    
+    # Read patch file
+    print(f"Reading patch file: {patch_file}")
+    with open(patch_file, 'rb') as f:
+        patch_data = f.read()
+    
+    file_size = len(patch_data)
+    print(f"File size: {file_size:,} bytes ({file_size / 1024 / 1024:.2f} MB)")
+    
+    # Calculate hash
+    file_hash = hashlib.sha256(patch_data).hexdigest()
+    print(f"SHA-256: {file_hash}")
+    
+    # Base64 encode
+    print("Encoding to base64...")
+    encoded_data = base64.b64encode(patch_data).decode('ascii')
+    encoded_size = len(encoded_data)
+    print(f"Encoded size: {encoded_size:,} bytes ({encoded_size / 1024 / 1024:.2f} MB)")
+    
+    # Prepare JSON payload
+    payload = {
+        "patchId": "patch-v2.0.0",
+        "version": "2.0.0",
+        "appId": "com.quicui.quicui_v1_test",
+        "platform": "android",
+        "architecture": "arm64-v8a",
+        "hash": file_hash,
+        "size": file_size,
+        "data": encoded_data
+    }
+    
+    json_data = json.dumps(payload).encode('utf-8')
+    
+    # Upload to backend
+    print(f"\nUploading to {backend_url}/api/v1/patches/upload...")
+    print(f"Sending {len(json_data) / 1024 / 1024:.2f} MB...")
+    
+    # Disable SSL verification for testing (enable in production!)
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+    
+    request = urllib.request.Request(
+        f"{backend_url}/api/v1/patches/upload",
+        data=json_data,
+        headers={
+            'Content-Type': 'application/json',
+            'Content-Length': str(len(json_data))
+        },
+        method='POST'
+    )
+    
+    try:
+        with urllib.request.urlopen(request, context=ctx) as response:
+            status = response.status
+            result = json.loads(response.read().decode('utf-8'))
+            
+            print(f"\nStatus: {status}")
+            print(f"Response: {json.dumps(result, indent=2)}")
+            
+            if result.get('success'):
+                print("\n✅ Upload successful!")
+            else:
+                print("\n❌ Upload failed!")
+                
+    except urllib.error.HTTPError as e:
+        print(f"\n❌ HTTP Error {e.code}: {e.reason}")
+        print(e.read().decode('utf-8'))
+        sys.exit(1)
+    except Exception as e:
+        print(f"\n❌ Error: {e}")
+        sys.exit(1)
+
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        print("Usage: python upload_to_render.py <patch_file>")
+        sys.exit(1)
+    
+    patch_file = sys.argv[1]
+    backend_url = "https://quicui-backend.onrender.com"
+    
+    upload_patch(patch_file, backend_url)
+```
+
+**Usage:**
+
+```bash
+# Upload uncompressed libapp.so (3.5 MB → 4.67 MB base64)
+python upload_to_render.py v2_extracted/lib/arm64-v8a/libapp.so
+
+# Output:
+# Reading patch file: v2_extracted/lib/arm64-v8a/libapp.so
+# File size: 3,670,960 bytes (3.50 MB)
+# SHA-256: afe1ead1cb8548a63177f90804cc05ea149c919e688319768bedf928a6d1b4bd
+# Encoding to base64...
+# Encoded size: 4,894,616 bytes (4.67 MB)
+# 
+# Uploading to https://quicui-backend.onrender.com/api/v1/patches/upload...
+# Sending 4.67 MB...
+# 
+# Status: 200
+# Response: {
+#   "success": true,
+#   "patchId": "patch-v2.0.0",
+#   "message": "Patch uploaded successfully"
+# }
+# 
+# ✅ Upload successful!
+```
+
+### Known Issues
+
+#### 1. XZ Compression Not Working
+
+**Problem:** Android devices don't have `xz` binary for decompression
+
+```bash
+# Attempted compression
+xz -z -9 patch_v2.0.0.quicui  # Creates 1MB .xz file
+
+# Download on Android succeeds
+# Decompression fails:
+# ProcessException: No such file or directory
+#   Command: xz -d -c /path/to/patch.xz
+```
+
+**Error logs:**
+```
+QuicUI: Downloaded 1,029,492 bytes
+QuicUI: Attempting decompression...
+QuicUI: Running command: xz -d -c /data/.../patch.xz
+QuicUI: Decompression exception: ProcessException: No such file or directory
+QuicUI: Fallback: Using compressed file directly
+QuicUI: Invalid patch file: bad magic '�7zXZ'
+```
+
+**Solution:** Upload uncompressed patches (3.5 MB vs 1 MB compressed)
+
+#### 2. BSDIFF40 Format Not Compatible
+
+**Problem:** Standard `bsdiff` creates BSDIFF40 format, but native code expects QUICUI01
+
+```bash
+# Standard bsdiff
+bsdiff old.so new.so patch.bsdiff  # Creates 30KB BSDIFF40 file
+
+# Native code rejects it:
+# Invalid patch file: bad magic 'BSDIFF40'
+```
+
+**Solution:** Generate patches in QUICUI01 format using custom script
+
+### File Hashes Reference
+
+For the test app versions:
+
+| File | SHA-256 Hash | Size |
+|------|--------------|------|
+| **v1 libapp.so** | `95c1865922cb61702e4e692c7f07da9b518ad1c5ac6d1955b10e5698dbb82511` | 3,670,960 bytes |
+| **v2 libapp.so** | `afe1ead1cb8548a63177f90804cc05ea149c919e688319768bedf928a6d1b4bd` | 3,670,960 bytes |
+| **XZ compressed** | `14f4dc687dcc40dbacd2c4e9512c9f50bd1338043e0e53cbb06c2dc6d1dba39e` | 1,029,492 bytes |
 
 ---
 

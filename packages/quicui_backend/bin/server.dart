@@ -337,10 +337,61 @@ Router createRouter() {
 
 void main(List<String> args) async {
   final router = createRouter();
-  final handler = Pipeline().addMiddleware(logRequests()).addHandler(router);
+  
+  // Add CORS and security headers for cloud deployment
+  final handler = Pipeline()
+      .addMiddleware(logRequests())
+      .addMiddleware(_corsHeaders())
+      .addHandler(router);
 
-  // Listen on all network interfaces (0.0.0.0) to accept connections from devices
-  final server = await io.serve(handler, io_file.InternetAddress.anyIPv4, 8080);
-  print('Server listening on http://0.0.0.0:${server.port}');
-  print('Accessible at http://192.168.20.100:${server.port} from devices');
+  // Use PORT env var for cloud deployment (Render.com, Railway, Fly.io, etc.)
+  // Render.com automatically provides PORT environment variable
+  final port = int.parse(io_file.Platform.environment['PORT'] ?? '8080');
+  
+  // Bind to 0.0.0.0 (all interfaces) - required for cloud deployment
+  // This allows external connections from the internet
+  final server = await io.serve(
+    handler,
+    io_file.InternetAddress.anyIPv4, // 0.0.0.0
+    port,
+  );
+  
+  final isRender = io_file.Platform.environment['RENDER'] != null;
+  final renderUrl = io_file.Platform.environment['RENDER_EXTERNAL_URL'] ?? 'Not set';
+  
+  print('🚀 QuicUI Backend Server Started');
+  print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  print('Environment: ${isRender ? 'Render.com (Production)' : 'Local Development'}');
+  print('Listening on: 0.0.0.0:${server.port}');
+  if (isRender) {
+    print('Public URL: $renderUrl');
+    print('Health Check: $renderUrl/api/v1/patches');
+  } else {
+    print('Local URL: http://localhost:${server.port}');
+    print('Network URL: http://192.168.20.100:${server.port}');
+  }
+  print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+}
+
+// CORS middleware for cloud deployment
+Middleware _corsHeaders() {
+  return (innerHandler) {
+    return (request) async {
+      if (request.method == 'OPTIONS') {
+        return Response.ok('', headers: _getCorsHeaders());
+      }
+      
+      final response = await innerHandler(request);
+      return response.change(headers: _getCorsHeaders());
+    };
+  };
+}
+
+Map<String, String> _getCorsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization',
+    'Access-Control-Max-Age': '86400',
+  };
 }

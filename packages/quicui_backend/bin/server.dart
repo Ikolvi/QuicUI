@@ -20,6 +20,7 @@ import 'package:shelf_router/shelf_router.dart';
 // Storage for patches (in-memory storage)
 // In production, replace with database (PostgreSQL, MongoDB, etc.)
 final Map<String, PatchInfo> _patches = {};
+final Map<String, List<int>> _patchFiles = {}; // Store patch file data in memory
 
 class PatchInfo {
   final String patchId;
@@ -31,6 +32,7 @@ class PatchInfo {
   final Map<String, int> compressedSizes;
   final String hash;
   final DateTime createdAt;
+  final String? compression; // xz, gz, bz2, or null for uncompressed
 
   PatchInfo({
     required this.patchId,
@@ -42,6 +44,7 @@ class PatchInfo {
     required this.compressedSizes,
     required this.hash,
     required this.createdAt,
+    this.compression,
   });
 
   Map<String, dynamic> toJson() => {
@@ -160,6 +163,32 @@ Router createRouter() {
         );
       }
 
+      // Check if file data is in memory
+      final fileBytes = _patchFiles[patchId];
+      if (fileBytes != null) {
+        // Serve from memory
+        final headers = {
+          'content-type': 'application/octet-stream',
+          'content-length': '${fileBytes.length}',
+          'x-patch-version': patch.version,
+          'x-patch-hash': patch.hash,
+          'x-uncompressed-size': '${patch.uncompressedSize}',
+        };
+
+        if (patch.compression != null) {
+          headers['content-encoding'] = patch.compression!;
+          headers['x-compression-format'] = patch.compression!;
+        }
+
+        print('📥 Serving patch from memory: ${patch.patchId}');
+        print('   Version: ${patch.version}');
+        print('   Size: ${fileBytes.length} bytes');
+        print('   Compression: ${patch.compression ?? "none"}');
+
+        return Response.ok(fileBytes, headers: headers);
+      }
+
+      // Fallback to file system (legacy)
       // Check Accept-Encoding header for compression preference
       final acceptEncoding = request.headers['accept-encoding'] ?? '';
       String? compressionFormat;
@@ -222,6 +251,65 @@ Router createRouter() {
       }),
       headers: {'content-type': 'application/json'},
     );
+  });
+
+  // Upload patch with file data (base64 encoded)
+  router.post('/api/v1/patches/upload', (Request request) async {
+    try {
+      final body = await request.readAsString();
+      final data = json.decode(body);
+
+      final patchId = data['patchId'] as String;
+      final version = data['version'] as String;
+      final appId = data['appId'] as String;
+      final compression = data['compression'] as String?;
+      final size = data['size'] as int;
+      final hash = data['hash'] as String;
+      final fileDataBase64 = data['fileData'] as String;
+
+      // Decode base64 file data
+      final fileBytes = base64.decode(fileDataBase64);
+      
+      // Store file data in memory
+      _patchFiles[patchId] = fileBytes;
+
+      // Create patch info
+      final patch = PatchInfo(
+        patchId: patchId,
+        version: version,
+        appId: appId,
+        uncompressedPath: '', // Not used for uploaded files
+        compressedPaths: compression != null ? {compression: ''} : {},
+        uncompressedSize: size,
+        compressedSizes: compression != null ? {compression: size} : {},
+        hash: hash,
+        createdAt: DateTime.now(),
+        compression: compression,
+      );
+
+      _patches[patchId] = patch;
+
+      print('✅ Patch uploaded: $patchId');
+      print('   Version: $version');
+      print('   App: $appId');
+      print('   Size: $size bytes');
+      print('   Compression: ${compression ?? "none"}');
+      print('   File data stored in memory');
+
+      return Response.ok(
+        json.encode({
+          'success': true,
+          'patchId': patchId,
+          'message': 'Patch uploaded successfully',
+        }),
+        headers: {'content-type': 'application/json'},
+      );
+    } catch (e) {
+      return Response.badRequest(
+        body: json.encode({'error': 'Upload error: $e'}),
+        headers: {'content-type': 'application/json'},
+      );
+    }
   });
 
   // Register patch - for testing/demo

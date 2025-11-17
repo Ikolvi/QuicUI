@@ -1,11 +1,11 @@
-/// QuicUI Code Push Client
+/// QuicUI - Code Push for Flutter
 /// 
 /// A Flutter package that provides code push functionality for QuicUI-enabled applications.
 /// 
 /// ## Usage
 /// 
 /// ```dart
-/// import 'package:quicui_code_push_client/quicui_code_push_client.dart';
+/// import 'package:quicui/quicui.dart';
 /// 
 /// void main() {
 ///   runApp(const MyApp());
@@ -48,7 +48,7 @@
 /// }
 /// ```
 
-library quicui_code_push_client;
+library quicui;
 
 export 'src/quicui_code_push.dart';
 export 'src/models/patch_info.dart';

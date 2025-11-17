@@ -1,4 +1,4 @@
-# QuicUI Code Push Client
+# QuicUI - Code Push for Flutter
 
 A Flutter plugin for Over-The-Air (OTA) updates using QuicUI Code Push system. This package allows Flutter applications to receive and install code updates without going through the app store review process.
 
@@ -21,7 +21,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  quicui_code_push_client: ^0.1.0
+  quicui: ^2.0.0
 ```
 
 Then run:
@@ -46,16 +46,19 @@ To enable code push:
 ### Basic Setup
 
 ```dart
-import 'package:quicui_code_push_client/quicui_code_push_client.dart';
+import 'package:quicui/quicui.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
   // Initialize QuicUI Code Push
-  await QuicUICodePush.initialize(
-    apiUrl: 'https://your-backend.com',
+  final quicui = QuicUICodePush(
     appId: 'com.yourcompany.app',
+    clientSecret: 'your-client-secret',
+    appVersion: '1.0.0',
   );
+  
+  await quicui.initialize();
   
   runApp(MyApp());
 }
@@ -64,29 +67,33 @@ void main() async {
 ### Check for Updates
 
 ```dart
-// Check if an update is available
-final updateAvailable = await QuicUICodePush.checkForUpdate();
+// Create QuicUI instance
+final quicui = QuicUICodePush(
+  appId: 'com.yourcompany.app',
+  clientSecret: 'your-client-secret',
+  appVersion: '1.0.0',
+);
 
-if (updateAvailable) {
-  print('Update available!');
+await quicui.initialize();
+
+// Check if an update is available
+final updateAvailable = await quicui.checkForUpdates();
+
+if (updateAvailable != null) {
+  print('Update available: ${updateAvailable.version}');
 }
 ```
 
 ### Download and Install Update
 
 ```dart
-// Download the update
-await QuicUICodePush.downloadUpdate(
-  onProgress: (progress) {
-    print('Download progress: ${progress * 100}%');
-  },
-);
+// Download and install the update
+final success = await quicui.downloadAndInstall(updateInfo);
 
-// Install the update (will take effect on next app restart)
-await QuicUICodePush.installUpdate();
-
-// Restart the app to apply the update
-QuicUICodePush.restartApp();
+if (success) {
+  print('Update installed! Restart app to apply.');
+  // Show restart prompt to user
+}
 ```
 
 ### Full Update Flow
@@ -94,26 +101,27 @@ QuicUICodePush.restartApp();
 ```dart
 Future<void> checkAndApplyUpdates() async {
   try {
-    // Check for updates
-    final updateInfo = await QuicUICodePush.checkForUpdate();
+    final quicui = QuicUICodePush(
+      appId: 'com.yourcompany.app',
+      clientSecret: 'your-client-secret',
+      appVersion: '1.0.0',
+    );
     
-    if (updateInfo.isAvailable) {
-      print('Update ${updateInfo.version} available');
+    await quicui.initialize();
+    
+    // Check for updates
+    final patchInfo = await quicui.checkForUpdates();
+    
+    if (patchInfo != null) {
+      print('Update ${patchInfo.version} available');
       
-      // Download with progress tracking
-      await QuicUICodePush.downloadUpdate(
-        onProgress: (progress) {
-          setState(() {
-            downloadProgress = progress;
-          });
-        },
-      );
+      // Download and install
+      final success = await quicui.downloadAndInstall(patchInfo);
       
-      // Install the update
-      await QuicUICodePush.installUpdate();
-      
-      // Show dialog to restart
-      showRestartDialog();
+      if (success) {
+        // Show dialog to restart
+        showRestartDialog();
+      }
     }
   } catch (e) {
     print('Update failed: $e');
@@ -124,19 +132,30 @@ Future<void> checkAndApplyUpdates() async {
 ### Configuration Options
 
 ```dart
-await QuicUICodePush.initialize(
-  apiUrl: 'https://your-backend.com',
+final quicui = QuicUICodePush(
   appId: 'com.yourcompany.app',
-  
-  // Optional: Check for updates automatically
-  autoCheckOnLaunch: true,
+  clientSecret: 'your-client-secret',
+  appVersion: '1.0.0',
   
   // Optional: Verify patch signatures
   publicKey: 'your-rsa-public-key',
   
-  // Optional: Custom update check interval
-  checkInterval: Duration(hours: 6),
+  // Optional: Auto-check on app start
+  autoCheckOnStart: true,
+  
+  // Optional: Custom update check interval (in seconds)
+  checkIntervalSeconds: 3600, // 1 hour
+  
+  // Optional: Maximum patch size
+  maxPatchSize: 10 * 1024 * 1024, // 10 MB
 );
+
+await quicui.initialize();
+
+// To use a custom backend server (for testing):
+// Set environment variable: QUICUI_SERVER_URL=https://your-backend.com
+// Or use --dart-define during build:
+// flutter build apk --dart-define=QUICUI_SERVER_URL=https://your-backend.com
 ```
 
 ## Backend Setup
@@ -150,30 +169,6 @@ This client requires a QuicUI Code Push backend server. You can:
    ```
 
 2. Or deploy your own backend following the [Backend Setup Guide](https://github.com/Ikolvi/QuicUICodepush/blob/develop/docs/BACKEND_SETUP.md)
-
-## Compliance & Store Policies
-
-**⚠️ Important Legal Notice:**
-
-This package enables downloading and executing native code, which may violate:
-- **Google Play Store** policy on downloading executable code
-- **Apple App Store** guideline 2.5.2 on downloading code
-
-### Recommended Use Cases:
-
-✅ **Enterprise/Internal Apps**: Not distributed through public app stores  
-✅ **Beta Testing**: Closed testing groups  
-✅ **Development/Staging**: Internal testing environments  
-❌ **Consumer Apps**: Public app store distribution (high risk of rejection)
-
-### Compliance Alternative:
-
-For consumer apps requiring app store compliance, consider:
-- Use this package for **beta testing only**
-- Submit full app updates through app stores for production
-- Or use server-driven UI approach (separate package coming soon)
-
-See [Compliance Documentation](https://github.com/Ikolvi/QuicUICodepush/blob/develop/docs/COMPLIANCE.md) for detailed policy analysis.
 
 ## How It Works
 
@@ -234,10 +229,8 @@ This project is licensed under the BSD 3-Clause License - see the [LICENSE](../.
 
 | Feature | QuicUI | Shorebird | CodePush |
 |---------|--------|-----------|----------|
-| Open Source | ✅ Yes | ❌ No | ✅ Yes |
 | Self-hosted | ✅ Yes | ❌ No | ✅ Yes |
 | Flutter Support | ✅ Native | ✅ Native | ❌ React Native |
-| Store Compliance | ⚠️ Enterprise | ⚠️ Enterprise | ⚠️ Enterprise |
 | Custom Backend | ✅ Yes | ❌ No | ✅ Yes |
 | Cost | Free | Paid | Free |
 

@@ -1,6 +1,6 @@
 name: quicui
 description: Over-the-air (OTA) updates for Flutter apps. Download and install code updates instantly with QuicUI Code Push system.
-version: 2.0.2
+version: 2.0.3
 homepage: https://github.com/Ikolvi/QuicUICodepush
 repository: https://github.com/Ikolvi/QuicUICodepush
 issue_tracker: https://github.com/Ikolvi/QuicUICodepush/issues

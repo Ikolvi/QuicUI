@@ -172,14 +172,15 @@ This project is licensed under the BSD 3-Clause License - see the [LICENSE](../.
 
 ## Resources
 
-- [Documentation](https://github.com/Ikolvi/QuicUICodepush/tree/develop/docs)
+- [Documentation](https://quicui.com/docs)
 - [API Reference](https://pub.dev/documentation/quicui/latest/)
 - [Issue Tracker](https://github.com/Ikolvi/QuicUICodepush/issues)
 
 ## Support
 
-- 📧 Email: support@quicui.dev
+- 📧 Email: support@quicui.com
 - 💬 Discord: [Join our community](https://discord.gg/quicui)
+- 🌐 Website: [https://quicui.com](https://quicui.com)
 - 🐛 Bug reports: [GitHub Issues](https://github.com/Ikolvi/QuicUICodepush/issues)
 
 ---

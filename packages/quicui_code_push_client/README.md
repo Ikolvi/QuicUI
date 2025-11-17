@@ -138,15 +138,6 @@ final quicui = QuicUICodePush(
 await quicui.initialize();
 ```
 
-## How It Works
-
-1. **Client checks** for updates from backend server
-2. **Backend compares** client version with latest available
-3. **BsDiff patch** is generated (binary difference between versions)
-4. **Client downloads** the small patch file
-5. **Patch is applied** to create new `libapp.so` (AOT compiled Dart code)
-6. **On next restart**, Flutter engine loads the patched version
-
 ## Platform Support
 
 | Platform | Support | Status |

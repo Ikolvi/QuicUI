@@ -152,8 +152,8 @@ class InitCommand extends Command<void> {
 # Backend server configuration
 server:
   url: "$serverUrl"
-  # API key can be set via QUICUI_API_KEY environment variable
-  # api_key: "your-api-key-here"
+  # API key is auto-generated. Override with QUICUI_API_KEY env variable if needed.
+  api_key: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjYXh2YW5qaHRmYWVpbWZsZ2ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzNzE3MzIsImV4cCI6MjA3ODk0NzczMn0.XqPTK5bw2IukeGs-XBv0pfLHKAqkGKRmQUEvE1L14lU"
 
 # Application configuration
 app:

@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:http/http.dart' as http;
 import 'package:archive/archive_io.dart';
 import '../config/cli_config.dart';
+import '../config/constants.dart';
 import '../services/flutter_service.dart';
 import '../services/compiler_service.dart';
 
@@ -221,7 +222,7 @@ class PatchCommand extends Command {
     String architecture,
   ) async {
     final response = await http.get(
-      Uri.parse('https://pcaxvanjhtfaeimflgfk.supabase.co/rest/v1/baselines?app_id=eq.${config.appId}&platform=eq.$platform&architecture=eq.$architecture&order=created_at.desc&limit=1'),
+      Uri.parse('$kSupabaseRestUrl/baselines?app_id=eq.${config.appId}&platform=eq.$platform&architecture=eq.$architecture&order=created_at.desc&limit=1'),
       headers: {
         'Authorization': 'Bearer ${config.apiKey}',
         'apikey': config.apiKey,
@@ -306,7 +307,7 @@ class PatchCommand extends Command {
   }) async {
     // Get baseline info from database
     final response = await http.get(
-      Uri.parse('https://pcaxvanjhtfaeimflgfk.supabase.co/rest/v1/baselines?app_id=eq.${config.appId}&version=eq.$version&platform=eq.$platform&architecture=eq.$architecture&limit=1'),
+      Uri.parse('$kSupabaseRestUrl/baselines?app_id=eq.${config.appId}&version=eq.$version&platform=eq.$platform&architecture=eq.$architecture&limit=1'),
       headers: {
         'Authorization': 'Bearer ${config.apiKey}',
         'apikey': config.apiKey,
@@ -326,7 +327,7 @@ class PatchCommand extends Command {
 
     // Download from storage
     final downloadResponse = await http.get(
-      Uri.parse('https://pcaxvanjhtfaeimflgfk.supabase.co/storage/v1/object/public/baselines/$storagePath'),
+      Uri.parse('$kSupabaseStorageUrl/object/public/baselines/$storagePath'),
       headers: {
         'Authorization': 'Bearer ${config.apiKey}',
       },
@@ -395,7 +396,7 @@ class PatchCommand extends Command {
     final patchBytes = await File(patchPath).readAsBytes();
     
     final uploadResponse = await http.post(
-      Uri.parse('https://pcaxvanjhtfaeimflgfk.supabase.co/storage/v1/object/patches/$storagePath'),
+      Uri.parse('$kSupabaseStorageUrl/object/patches/$storagePath'),
       headers: {
         'Authorization': 'Bearer ${config.apiKey}',
         'Content-Type': 'application/octet-stream',
@@ -410,7 +411,7 @@ class PatchCommand extends Command {
 
     // Register patch in database
     final registerResponse = await http.post(
-      Uri.parse('https://pcaxvanjhtfaeimflgfk.supabase.co/rest/v1/patches'),
+      Uri.parse('$kSupabaseRestUrl/patches'),
       headers: {
         'Authorization': 'Bearer ${config.apiKey}',
         'apikey': config.apiKey,

@@ -4,6 +4,7 @@ import 'package:args/command_runner.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
+import '../config/constants.dart';
 
 /// Command to initialize QuicUI in a Flutter project
 class InitCommand extends Command<void> {
@@ -31,7 +32,7 @@ class InitCommand extends Command<void> {
     argParser.addOption(
       'server-url',
       help: 'QuicUI server URL',
-      defaultsTo: 'https://pcaxvanjhtfaeimflgfk.supabase.co/functions/v1',
+      defaultsTo: kDefaultServerUrl,
     );
     argParser.addFlag(
       'force',
@@ -81,8 +82,7 @@ class InitCommand extends Command<void> {
       appName = pubspec['description'] as String? ?? pubspec['name'] as String? ?? 'My App';
     }
 
-    final serverUrl = argResults?['server-url'] as String? ?? 
-        'https://pcaxvanjhtfaeimflgfk.supabase.co/functions/v1';
+    final serverUrl = argResults?['server-url'] as String? ?? kDefaultServerUrl;
 
     // Auto-generate API key from server
     print('🔑 Generating API key...');
@@ -92,9 +92,8 @@ class InitCommand extends Command<void> {
       print('   ✅ API key generated successfully');
     } catch (e) {
       print('   ⚠️  Could not auto-generate API key: $e');
-      print('   Using default anon key (limited functionality)');
-      // Fallback to anon key
-      apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjYXh2YW5qaHRmYWVpbWZsZ2ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzNzE3MzIsImV4cCI6MjA3ODk0NzczMn0.XqPTK5bw2IukeGs-XBv0pfLHKAqkGKRmQUEvE1L14lU';
+      print('   ❌ Initialization failed. Check your network connection.');
+      exit(1);
     }
 
     // Generate quicui.yaml
@@ -165,7 +164,8 @@ class InitCommand extends Command<void> {
       uri,
       headers: {
         'Content-Type': 'application/json',
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjYXh2YW5qaHRmYWVpbWZsZ2ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzNzE3MzIsImV4cCI6MjA3ODk0NzczMn0.XqPTK5bw2IukeGs-XBv0pfLHKAqkGKRmQUEvE1L14lU',
+        // Supabase anon key - public, safe to use in client code
+        'apikey': kSupabaseAnonKey,
       },
       body: jsonEncode({
         'app_id': appId,

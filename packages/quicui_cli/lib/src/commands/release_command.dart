@@ -6,6 +6,7 @@ import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 import 'package:archive/archive_io.dart';
 import '../config/cli_config.dart';
+import '../config/constants.dart';
 import '../services/flutter_service.dart';
 
 /// Command to build and release a baseline version
@@ -247,7 +248,7 @@ class ReleaseCommand extends Command {
     final binaryBytes = await File(binaryPath).readAsBytes();
     
     final response = await http.post(
-      Uri.parse('https://pcaxvanjhtfaeimflgfk.supabase.co/storage/v1/object/baselines/$storagePath'),
+      Uri.parse('$kSupabaseStorageUrl/object/baselines/$storagePath'),
       headers: {
         'Authorization': 'Bearer ${config.apiKey}',
         'Content-Type': 'application/octet-stream',
@@ -275,7 +276,7 @@ class ReleaseCommand extends Command {
     final baselineId = '${config.appId}_${version}_${platform}_$architecture';
     
     final response = await http.post(
-      Uri.parse('https://pcaxvanjhtfaeimflgfk.supabase.co/rest/v1/baselines'),
+      Uri.parse('$kSupabaseRestUrl/baselines'),
       headers: {
         'Authorization': 'Bearer ${config.apiKey}',
         'apikey': config.apiKey,

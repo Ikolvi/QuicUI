@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:yaml/yaml.dart';
+import 'constants.dart';
 
 /// CLI Configuration
 class CliConfig {
@@ -25,31 +26,35 @@ class CliConfig {
   static Future<CliConfig> load(String projectPath) async {
     final configFile = File(p.join(projectPath, 'quicui.yaml'));
     
-    // Check for environment variable override for API key
-    final envApiKey = Platform.environment['QUICUI_API_KEY'];
-    final defaultApiKey = envApiKey ?? 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBjYXh2YW5qaHRmYWVpbWZsZ2ZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMzNzE3MzIsImV4cCI6MjA3ODk0NzczMn0.XqPTK5bw2IukeGs-XBv0pfLHKAqkGKRmQUEvE1L14lU';
-    
     // Use defaults if config file doesn't exist
     if (!await configFile.exists()) {
-      return CliConfig(
-        appId: 'unknown',
-        appName: 'Unknown App',
-        serverUrl: 'https://pcaxvanjhtfaeimflgfk.supabase.co/functions/v1',
-        apiKey: defaultApiKey,
-        compression: 'xz',
-        retryCount: 3,
-        timeout: 60,
+      throw Exception(
+        'quicui.yaml not found in $projectPath\n'
+        'Run "quicui init" to create configuration file.'
       );
     }
 
     final content = await configFile.readAsString();
     final yaml = loadYaml(content) as Map;
 
+    // Check for environment variable override for API key
+    final envApiKey = Platform.environment['QUICUI_API_KEY'];
+    final yamlApiKey = yaml['server']?['api_key'] as String?;
+    final apiKey = envApiKey ?? yamlApiKey;
+    
+    if (apiKey == null || apiKey.isEmpty) {
+      throw Exception(
+        'API key not found!\n'
+        'Either set QUICUI_API_KEY environment variable or add server.api_key to quicui.yaml\n'
+        'Run "quicui init" to auto-generate an API key.'
+      );
+    }
+
     return CliConfig(
       appId: yaml['app']?['id'] ?? 'unknown',
       appName: yaml['app']?['name'] ?? 'Unknown App',
-      serverUrl: yaml['server']?['url'] ?? 'https://pcaxvanjhtfaeimflgfk.supabase.co/functions/v1',
-      apiKey: defaultApiKey,
+      serverUrl: yaml['server']?['url'] ?? kDefaultServerUrl,
+      apiKey: apiKey,
       compression: yaml['patch']?['compression'] ?? 'xz',
       retryCount: yaml['upload']?['retryCount'] ?? 3,
       timeout: yaml['upload']?['timeout'] ?? 60,

@@ -4,6 +4,7 @@ version: 0.1.0-dev
 homepage: https://github.com/Ikolvi/QuicUICodepush
 repository: https://github.com/Ikolvi/QuicUICodepush
 issue_tracker: https://github.com/Ikolvi/QuicUICodepush/issues
+publish_to: none
 
 environment:
   sdk: ^3.0.0
@@ -17,10 +18,19 @@ dependencies:
   yaml: ^3.1.0
   crypto: ^3.0.2
   dart_style: ^2.3.0
+  archive: ^3.6.1
+  quicui_compiler:
+    git:
+      url: https://github.com/Ikolvi/quicui-compiler.git
+      ref: 1d89e0c51d834c7f5fb7bd70be1708dc53714244
+  quicui_linker:
+    git:
+      url: https://github.com/Ikolvi/quicui-linker.git
+      ref: b4095ca94118b0edbb1de0939abc4a372e4103f8
 
 dev_dependencies:
   test: ^1.24.0
   lints: ^3.0.0
 
 executables:
-  quicui: bin/quicui.dart
+  quicui: quicui

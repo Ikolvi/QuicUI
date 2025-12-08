@@ -192,6 +192,11 @@ class QuicUICodePushLoader {
     
     // MARK: - Patch Application
     
+    /// Apply BsDiff patch to create new snapshot (public API)
+    func applyPatchPublic(oldFile: String, patchFile: String, newFile: String) throws {
+        try applyPatch(oldFile: oldFile, patchFile: patchFile, newFile: newFile)
+    }
+    
     /// Apply BsDiff patch to create new snapshot
     private func applyPatch(oldFile: String, patchFile: String, newFile: String) throws {
         // Read patch file
@@ -250,6 +255,7 @@ class QuicUICodePushLoader {
     
     /// Parse .quicui patch file format
     private func parsePatch(data: Data) throws -> Patch {
+        var data = data
         var offset = 0
         
         // Read magic signature (8 bytes)

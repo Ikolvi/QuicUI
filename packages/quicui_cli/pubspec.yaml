@@ -1,10 +1,14 @@
 name: quicui_cli
-description: QuicUI command-line interface for managing code push patches
-version: 0.1.0-dev
-homepage: https://github.com/Ikolvi/QuicUICodepush
-repository: https://github.com/Ikolvi/QuicUICodepush
-issue_tracker: https://github.com/Ikolvi/QuicUICodepush/issues
-publish_to: none
+description: QuicUI command-line interface for managing code push patches. Build, release and patch Flutter apps with OTA updates.
+version: 1.0.0
+homepage: https://github.com/Ikolvi/quicui-cli
+repository: https://github.com/Ikolvi/quicui-cli
+issue_tracker: https://github.com/Ikolvi/quicui-cli/issues
+topics:
+  - cli
+  - code-push
+  - flutter
+  - ota-updates
 
 environment:
   sdk: ^3.0.0

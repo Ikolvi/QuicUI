@@ -28,35 +28,38 @@ class StorageService {
   /// Get cache directory
   Directory get cacheDirectory => _cacheDirectory;
 
-  /// Save a patch file
-  Future<File> savePatch(String patchId, List<int> bytes) async {
-    final file = File(path.join(_patchDirectory.path, '$patchId.patch'));
+  /// Save a patch file with platform-specific extension
+  Future<File> savePatch(String patchId, List<int> bytes, {String platform = 'android'}) async {
+    final extension = platform == 'ios' ? 'vmcode' : 'so';
+    final file = File(path.join(_patchDirectory.path, '$patchId.$extension'));
     return file.writeAsBytes(bytes);
   }
 
-  /// Load a patch file
-  Future<File?> loadPatch(String patchId) async {
-    final file = File(path.join(_patchDirectory.path, '$patchId.patch'));
+  /// Load a patch file with platform-specific extension
+  Future<File?> loadPatch(String patchId, {String platform = 'android'}) async {
+    final extension = platform == 'ios' ? 'vmcode' : 'so';
+    final file = File(path.join(_patchDirectory.path, '$patchId.$extension'));
     if (await file.exists()) {
       return file;
     }
     return null;
   }
 
-  /// Delete a patch file
-  Future<void> deletePatch(String patchId) async {
-    final file = File(path.join(_patchDirectory.path, '$patchId.patch'));
+  /// Delete a patch file with platform-specific extension
+  Future<void> deletePatch(String patchId, {String platform = 'android'}) async {
+    final extension = platform == 'ios' ? 'vmcode' : 'so';
+    final file = File(path.join(_patchDirectory.path, '$patchId.$extension'));
     if (await file.exists()) {
       await file.delete();
     }
   }
 
-  /// Get all stored patches
+  /// Get all stored patches (both .vmcode and .so files)
   Future<List<String>> getAllPatches() async {
     final files = _patchDirectory.listSync();
     return files
         .whereType<File>()
-        .where((f) => f.path.endsWith('.patch'))
+        .where((f) => f.path.endsWith('.vmcode') || f.path.endsWith('.so'))
         .map((f) => path.basenameWithoutExtension(f.path))
         .toList();
   }

@@ -1,0 +1,41 @@
+# Dart/Flutter
+.dart_tool/
+.packages
+build/
+*.iml
+.idea/
+.vscode/
+
+# Pub
+pubspec.lock
+.pub-cache/
+.pub/
+
+# Platform-specific generated files
+android/.gradle/
+android/local.properties
+android/.idea/
+android/*.iml
+ios/.symlinks/
+ios/Pods/
+ios/Flutter/Flutter.framework/
+ios/Flutter/Flutter.podspec
+*.xcworkspace
+*.xcuserdata
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+.test_coverage.dart
+
+# Flutter plugin specific
+.flutter-plugins
+.flutter-plugins-dependencies

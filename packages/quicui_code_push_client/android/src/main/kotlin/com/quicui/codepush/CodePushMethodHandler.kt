@@ -32,7 +32,7 @@ class CodePushMethodHandler(
             context: Context,
             messenger: io.flutter.plugin.common.BinaryMessenger
         ): CodePushMethodHandler {
-            val channel = MethodChannel(messenger, "dev.quicui.code_push")
+            val channel = MethodChannel(messenger, "com.quicui/codepush")
             val handler = CodePushMethodHandler(context, channel)
             channel.setMethodCallHandler(handler)
             return handler
@@ -322,7 +322,7 @@ class CodePushMethodHandler(
                 }
 
                 // Get device architecture if not provided
-                val arch = architecture ?: io.flutter.embedding.engine.loader.QuicUICodePushLoader.getDeviceArchitecture()
+                val arch = architecture ?: getDeviceArchitecture()
 
                 android.util.Log.i("QuicUI", "Installing patch for architecture: $arch")
                 android.util.Log.i("QuicUI", "Patch file: ${patchFile.absolutePath} (${patchFile.length()} bytes)")
@@ -346,19 +346,20 @@ class CodePushMethodHandler(
                 // Target path: libapp_patched_<arch>.so
                 val targetFile = File(patchesDir, "libapp_patched_${arch}.so")
 
-                // Check if this is a full replacement or a diff patch
-                // If patch file size is close to libapp.so size, it's a full replacement
-                val isFullReplacement = patchFile.length() >= originalLibapp.length() * 0.8
+                // Check if this is a BsDiff patch by looking for QUICUI01 magic header
+                val isBsDiffPatch = try {
+                    val header = patchFile.inputStream().use { input ->
+                        val bytes = ByteArray(8)
+                        input.read(bytes)
+                        String(bytes, Charsets.UTF_8)
+                    }
+                    header == "QUICUI01"
+                } catch (e: Exception) {
+                    false
+                }
                 
-                if (isFullReplacement) {
-                    // Full replacement - just copy the file
-                    android.util.Log.i("QuicUI", "Detected full replacement (${patchFile.length()} bytes vs ${originalLibapp.length()} bytes)")
-                    android.util.Log.i("QuicUI", "Copying full libapp.so as patch...")
-                    
-                    patchFile.copyTo(targetFile, overwrite = true)
-                    android.util.Log.i("QuicUI", "Full replacement installed successfully!")
-                } else {
-                    // Diff patch - apply BsDiff
+                if (isBsDiffPatch) {
+                    // BsDiff patch - apply using BsDiff algorithm
                     android.util.Log.i("QuicUI", "Detected BsDiff patch (${patchFile.length()} bytes vs ${originalLibapp.length()} bytes)")
                     android.util.Log.i("QuicUI", "Applying BsDiff patch...")
                     
@@ -374,6 +375,13 @@ class CodePushMethodHandler(
                     }
                     
                     android.util.Log.i("QuicUI", "BsDiff patch applied successfully!")
+                } else {
+                    // Full replacement - just copy the file
+                    android.util.Log.i("QuicUI", "Detected full replacement (${patchFile.length()} bytes vs ${originalLibapp.length()} bytes)")
+                    android.util.Log.i("QuicUI", "Copying full libapp.so as patch...")
+                    
+                    patchFile.copyTo(targetFile, overwrite = true)
+                    android.util.Log.i("QuicUI", "Full replacement installed successfully!")
                 }
 
                 // Clean up temporary original file
@@ -383,18 +391,13 @@ class CodePushMethodHandler(
                 targetFile.setExecutable(true, false)
                 targetFile.setReadable(true, false)
 
-                // Save metadata
-                val metadataFile = File(patchesDir, "patch_metadata.json")
+                // Save metadata (filename must be "metadata.json" for C++ loader)
+                val metadataFile = File(patchesDir, "metadata.json")
                 val metadata = buildString {
                     appendLine("{")
                     appendLine("  \"version\": \"$version\",")
-                    appendLine("  \"platform\": \"android\",")
-                    appendLine("  \"architecture\": \"$arch\",")
-                    appendLine("  \"patch_hash\": \"${hash ?: ""}\",")
-                    appendLine("  \"patch_size\": ${targetFile.length()},")
-                    appendLine("  \"signature\": \"${signature ?: ""}\",")
-                    appendLine("  \"install_date\": \"${java.time.Instant.now()}\",")
-                    appendLine("  \"requires_restart\": true")
+                    appendLine("  \"hash\": \"${hash ?: ""}\",")
+                    appendLine("  \"architecture\": \"$arch\"")
                     appendLine("}")
                 }
                 metadataFile.writeText(metadata)
@@ -408,6 +411,7 @@ class CodePushMethodHandler(
                 android.util.Log.i("QuicUI", "📦 Patched libapp.so size: ${targetFile.length()} bytes (${targetFile.length() / 1024.0 / 1024.0} MB)")
                 android.util.Log.i("QuicUI", "📄 Metadata file: ${metadataFile.absolutePath}")
                 android.util.Log.i("QuicUI", "✅ Metadata exists: ${metadataFile.exists()}")
+                android.util.Log.i("QuicUI", "📝 Metadata: version=$version, arch=$arch")
                 android.util.Log.i("QuicUI", "")
                 android.util.Log.i("QuicUI", "📂 Files in patches directory:")
                 patchesDir.listFiles()?.forEach { file ->
@@ -476,9 +480,11 @@ class CodePushMethodHandler(
         }
         
         try {
-            val codePushLoader = io.flutter.embedding.engine.loader.QuicUICodePushLoader(context)
-            val arch = io.flutter.embedding.engine.loader.QuicUICodePushLoader.getDeviceArchitecture()
-            val hasPatch = codePushLoader.hasPatch(arch)
+            val arch = getDeviceArchitecture()
+            val codeCacheDir = context.codeCacheDir.absolutePath
+            val patchesDir = File(codeCacheDir, "quicui_patches")
+            val patchFile = File(patchesDir, "libapp_patched_${arch}.so")
+            val hasPatch = patchFile.exists()
             result.success(hasPatch)
         } catch (e: Exception) {
             result.error("ERROR", e.message, null)
@@ -491,7 +497,7 @@ class CodePushMethodHandler(
     private fun handleGetInstalledPatchVersion(call: MethodCall, result: MethodChannel.Result) {
         try {
             val codeCacheDir = context.codeCacheDir.absolutePath
-            val metadataFile = File(codeCacheDir, "quicui_patches/patch_metadata.json")
+            val metadataFile = File(codeCacheDir, "quicui_patches/metadata.json")
             
             if (metadataFile.exists()) {
                 val metadata = metadataFile.readText()
@@ -542,10 +548,22 @@ class CodePushMethodHandler(
         }
         
         try {
-            val arch = io.flutter.embedding.engine.loader.QuicUICodePushLoader.getDeviceArchitecture()
+            val arch = getDeviceArchitecture()
             result.success(arch)
         } catch (e: Exception) {
             result.error("ERROR", e.message, null)
+        }
+    }
+
+    /**
+     * Get device architecture
+     */
+    private fun getDeviceArchitecture(): String {
+        val abis = android.os.Build.SUPPORTED_64_BIT_ABIS
+        return if (abis.isNotEmpty()) {
+            abis[0]
+        } else {
+            android.os.Build.SUPPORTED_ABIS[0]
         }
     }
 
@@ -582,7 +600,7 @@ class CodePushMethodHandler(
 fun registerCodePushHandler(flutterEngine: FlutterEngine, context: Context) {
     val channel = MethodChannel(
         flutterEngine.dartExecutor.binaryMessenger,
-        "dev.quicui.code_push"  // Updated to match Dart side
+        "com.quicui/codepush"
     )
     val handler = CodePushMethodHandler(context, channel)
     channel.setMethodCallHandler(handler)

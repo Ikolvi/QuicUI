@@ -34,8 +34,8 @@ dart pub global activate quicui_cli
 
 ### From source
 ```bash
-git clone https://github.com/Ikolvi/QuicUI.git
-cd QuicUI/packages/quicui_cli
+git clone https://github.com/Ikolvi/quicui-cli.git
+cd quicui-cli
 dart pub get
 dart pub global activate --source path .
 ```
@@ -511,7 +511,7 @@ quicui engine download
 
 | Project | Description | Repository |
 |---------|-------------|------------|
-| **QuicUI** | Main project | [github.com/Ikolvi/QuicUI](https://github.com/Ikolvi/QuicUI) |
+| **QuicUI CLI** | This CLI tool | [github.com/Ikolvi/quicui-cli](https://github.com/Ikolvi/quicui-cli) |
 | **QuicUI Server** | Supabase backend | [github.com/Ikolvi/QuicUiServer](https://github.com/Ikolvi/QuicUiServer) |
 | **Code Push Client** | Flutter client SDK | [github.com/Ikolvi/QuicUICodepush](https://github.com/Ikolvi/QuicUICodepush) |
 
@@ -549,9 +549,9 @@ Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTIN
 
 ## Support
 
-- 📖 [Documentation](https://github.com/Ikolvi/QuicUI/wiki)
-- 🐛 [Issue Tracker](https://github.com/Ikolvi/QuicUI/issues)
-- 💬 [Discussions](https://github.com/Ikolvi/QuicUI/discussions)
+- 📖 [Documentation](https://github.com/Ikolvi/quicui-cli#readme)
+- 🐛 [Issue Tracker](https://github.com/Ikolvi/quicui-cli/issues)
+- 💬 [Discussions](https://github.com/Ikolvi/quicui-cli/discussions)
 
 ---
 

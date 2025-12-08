@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 /// Platform channel for communicating with native code push engine
 class CodePushMethodChannel {
   static const MethodChannel _channel =
-      MethodChannel('dev.quicui.code_push');
+      MethodChannel('com.quicui/codepush');
 
   /// Install a downloaded patch file to the engine code cache
   /// 
@@ -14,26 +14,32 @@ class CodePushMethodChannel {
   /// Returns true if installation succeeded, false otherwise.
   static Future<bool> installPatch({
     required String patchPath,
+    required String patchId,
     required String version,
     required String hash,
     required String architecture,
     String? signature,
   }) async {
+    print('[QuicUI] 🔧 CodePushMethodChannel.installPatch() called');
+    print('[QuicUI] 📁 Path: $patchPath');
+    print('[QuicUI] 📌 PatchId: $patchId');
+    print('[QuicUI] 📌 Version: $version');
+    
     try {
+      print('[QuicUI] 📞 Calling native installPatch method...');
       final result = await _channel.invokeMethod<bool>('installPatch', {
         'patchPath': patchPath,
+        'patchId': patchId,
         'version': version,
         'hash': hash,
         'architecture': architecture,
         'signature': signature ?? '',
       });
 
+      print('[QuicUI] 📱 Native method returned: $result');
       return result ?? false;
-    } on PlatformException catch (e) {
-      print('[QuicUI] Platform channel error: ${e.message}');
-      return false;
     } catch (e) {
-      print('[QuicUI] Unexpected error calling installPatch: $e');
+      print('[QuicUI] ❌ Error calling installPatch: $e');
       return false;
     }
   }
@@ -119,12 +125,6 @@ class CodePushMethodChannel {
     try {
       // Try to call a QuicUI-specific method
       await _channel.invokeMethod<bool>('hasPatch');
-      return true;
-    } on PlatformException catch (e) {
-      if (e.code == 'SDK_NOT_SUPPORTED') {
-        return false;
-      }
-      // Other errors don't indicate SDK incompatibility
       return true;
     } catch (e) {
       // Unknown error, assume SDK is present

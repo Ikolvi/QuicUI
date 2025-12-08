@@ -21,6 +21,9 @@ class PatchInfo {
   /// Ed25519 signature for verification
   final String signature;
 
+  /// Target platform (android or ios)
+  final String platform;
+
   /// Changelog/description of the patch
   final String? changelog;
 
@@ -52,6 +55,7 @@ class PatchInfo {
     required this.size,
     required this.downloadUrl,
     required this.signature,
+    this.platform = 'android',
     this.changelog,
     this.mandatory = false,
     this.rolloutPercentage = 100,
@@ -95,6 +99,7 @@ class PatchInfo {
       size: json['size'] as int,
       downloadUrl: json['downloadUrl'] as String,
       signature: json['signature'] as String,
+      platform: json['platform'] as String? ?? 'android',
       changelog: json['changelog'] as String?,
       mandatory: json['mandatory'] as bool? ?? false,
       rolloutPercentage: json['rolloutPercentage'] as int? ?? 100,
@@ -111,6 +116,7 @@ class PatchInfo {
     'size': size,
     'downloadUrl': downloadUrl,
     'signature': signature,
+    'platform': platform,
     'changelog': changelog,
     'mandatory': mandatory,
     'rolloutPercentage': rolloutPercentage,

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.5] - 2025-12-08
+
+### Changed
+- Updated CLI installation instructions to use pub.dev
+- Fixed git repository URLs to use correct separate repos
+- Documentation now points to main branch
+
+## [2.0.4] - 2025-12-08
+
+### Changed
+- Comprehensive README with complete setup guide
+- Added all repository links (CLI, Server, Client)
+- Enhanced usage examples and API reference
+- Added troubleshooting section
+- Improved architecture documentation
+
 ## [2.0.3] - 2025-11-17
 
 ### Changed

@@ -1,6 +1,6 @@
-# QuicUI Code Push Client
+# QuicUI
 
-[![pub package](https://img.shields.io/pub/v/quicui_code_push_client.svg)](https://pub.dev/packages/quicui_code_push_client)
+[![pub package](https://img.shields.io/pub/v/quicui.svg)](https://pub.dev/packages/quicui)
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
 
 A Flutter plugin for instant Over-The-Air (OTA) code updates. Push Dart code changes to your users in seconds.
@@ -50,13 +50,13 @@ quicui engine download
 ```yaml
 # pubspec.yaml
 dependencies:
-  quicui_code_push_client: ^2.0.3
+  quicui: ^2.0.6
 ```
 
 ### 4. Initialize in your app
 
 ```dart
-import 'package:quicui_code_push_client/quicui_code_push_client.dart';
+import 'package:quicui/quicui.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -141,7 +141,7 @@ The SDK is downloaded to `~/.quicui/flutter/` — completely isolated from your 
 ```yaml
 # pubspec.yaml
 dependencies:
-  quicui_code_push_client: ^2.0.3
+  quicui: ^2.0.6
 ```
 
 ```bash
@@ -210,7 +210,7 @@ Users receive the update on next app launch!
 ### Basic Usage
 
 ```dart
-import 'package:quicui_code_push_client/quicui_code_push_client.dart';
+import 'package:quicui/quicui.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -225,7 +225,7 @@ void main() async {
 ### Manual Update Check
 
 ```dart
-import 'package:quicui_code_push_client/quicui_code_push_client.dart';
+import 'package:quicui/quicui.dart';
 
 Future<void> checkForUpdates() async {
   final quicui = QuicUICodePush.instance;
@@ -310,7 +310,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 ### Error Handling
 
 ```dart
-import 'package:quicui_code_push_client/quicui_code_push_client.dart';
+import 'package:quicui/quicui.dart';
 
 Future<void> initWithErrorHandling() async {
   try {
@@ -546,7 +546,7 @@ Check your server URL in `quicui.yaml` and ensure the device has internet access
 | **QuicUI CLI** | Command-line tool for building & deploying | [github.com/Ikolvi/quicui-cli](https://github.com/Ikolvi/quicui-cli) |
 | **QuicUI Server** | Supabase backend for patches | [github.com/Ikolvi/QuicUiServer](https://github.com/Ikolvi/QuicUiServer) |
 | **This Package** | Flutter client SDK | [github.com/Ikolvi/QuicUICodepush](https://github.com/Ikolvi/QuicUICodepush) |
-| **pub.dev** | Package on pub.dev | [pub.dev/packages/quicui_code_push_client](https://pub.dev/packages/quicui_code_push_client) |
+| **pub.dev** | Package on pub.dev | [pub.dev/packages/quicui](https://pub.dev/packages/quicui) |
 
 ---
 

@@ -522,13 +522,13 @@ Add the client library to your Flutter app:
 ```yaml
 # pubspec.yaml
 dependencies:
-  quicui_code_push_client: ^2.0.3
+  quicui: ^2.0.6
 ```
 
 Initialize in your app:
 
 ```dart
-import 'package:quicui_code_push_client/quicui_code_push_client.dart';
+import 'package:quicui/quicui.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

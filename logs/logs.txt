@@ -1,0 +1,520 @@
+default	17:30:17.936120+0530	SpringBoard	[Main (EmbeddedDisplay)] handle response:
+<SBSwitcherModifierEventResponse: 0x6b09adb30> {
+    <SBScrollToAppLayoutSwitcherEventResponse: 0x6b8237280; appLayout: "<SBAppLayout: 0x6aeb02d80; primary: com.example.quicuiProductionTest:default; environment: main>">;
+    <SBUpdateLayoutSwitcherEventResponse: 0x6b8234840; updateVisibleItems; mode: None>;
+}
+default	17:30:17.957571+0530	SpringBoard	<XBApplicationSnapshotManifestImpl: 0x6b0987b00> [com.example.quicuiProductionTest] Snapshot data for <XBApplicationSnapshot: 0x6b4d54540; …5878ED26C675> [com.example.quicuiProductionTest] written to file: /private/var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/SplashBoard/Snapshots/com.example.quicuiProductionTest - {DEFAULT GROUP}/downscaled/2AA611A7-BD5D-480B-BB07-5878ED26C675@3x.ktx
+default	17:30:18.700169+0530	SpringBoard	[Main (EmbeddedDisplay)] handle response:
+<SBSwitcherModifierEventResponse: 0x6b08d2c10> {
+    <SBSwitcherModifierEventResponse: 0x6b84b6700> {
+	    <SBScrollToAppLayoutSwitcherEventResponse: 0x6b099df80; appLayout: "<SBAppLayout: 0x6aeb02d80; primary: com.example.quicuiProductionTest:default; environment: main>">;
+	    <SBUpdateLayoutSwitcherEventResponse: 0x6b099d3c0; updateVisibleItems; mode: None>;
+	};
+    <SBPerformTransitionSwitcherEventResponse: 0x6b099ca40; gestureInitiated: NO; request: <SBMutableSwitcherTransitionRequest: 0x6bd004a00; environmentMode: app-switcher; appLayout: <SBAppLayout: 0x6b8430680; HomeScreenAppLayout; environment: main>; settlesMultiAppFullScreenSpacesImmediately: YES>>;
+}
+default	17:30:19.381793+0530	SpringBoard	[Main (EmbeddedDisplay)] dispatch event:
+<SBSwipeToKillSwitcherModifierEvent: 0x6ba00ff60; type: SwipeToKill; progress: 1.029430; translation: {0, 1052}; role: primary; appLayout: <SBAppLayout: 0x6aeb02d80; primary: com.example.quicuiProductionTest:default; environment: main>>
+default	17:30:19.383464+0530	SpringBoard	[Main (EmbeddedDisplay)] dispatch event:
+<SBRemovalSwitcherModifierEvent: 0x6b847ac00; type: Removal; phase: Prepare; role: primary; appLayout: <SBAppLayout: 0x6aeb02d80; primary: com.example.quicuiProductionTest:default; environment: main>; reason: UserSwipeUp>
+default	17:30:19.385724+0530	SpringBoard	[Main (EmbeddedDisplay)] dispatch event:
+<SBRemovalSwitcherModifierEvent: 0x6b847a900; type: Removal; phase: Update; role: primary; appLayout: <SBAppLayout: 0x6aeb02d80; primary: com.example.quicuiProductionTest:default; environment: main>; reason: UserSwipeUp>
+default	17:30:19.408381+0530	SpringBoard	SBWorkspaceDestroyApplicationEntity: <SBDeviceApplicationSceneEntity: 0x6bbfecc80; ID: sceneID:com.example.quicuiProductionTest-default; layoutRole: undefined> {
+    supportedRoles = primary;
+    layoutAttributes = none;
+}
+default	17:30:19.408581+0530	SpringBoard	SBWorkspaceNoteApplicationEntityWasRemovedFromAppSwitcher: <SBDeviceApplicationSceneEntity: 0x6bbfecc80; ID: sceneID:com.example.quicuiProductionTest-default; layoutRole: undefined> {
+    supportedRoles = primary;
+    layoutAttributes = none;
+}
+default	17:30:20.227314+0530	SpringBoard	[Main (EmbeddedDisplay)] dispatch event:
+<SBRemovalSwitcherModifierEvent: 0x6b4d2d000; type: Removal; phase: End; role: primary; appLayout: <SBAppLayout: 0x6aeb02d80; primary: com.example.quicuiProductionTest:default; environment: main>; reason: UserSwipeUp>
+default	17:30:20.476212+0530	SpringBoard	<SBIconView:0x6b62c2a00 [<SBLeafIcon:0x6bd8077a0 [com.example.quicuiProductionTest]>]> Touches began with event: <UITouchesEvent: 0x6b8727100> timestamp: 340190 touches: {(
+    <UITouch: 0x6b5649c00> type: Direct; phase: Began; is pointer: NO; tap count: 1; force: 0.000; window: <SBHomeScreenWindow: 0x6b706d000; HomeScreen-0x6b706d000-10; baseClass = UIWindow; frame = (0 0; 390 844); clipsToBounds = YES; opaque = NO; gestureRecognizers = <NSArray: 0x6b19ef810>; layer = <UIWindowLayer: 0x6b7046bc0>>; responder: <SBIconView: 0x6b62c2a00; frame: {{208, 67}, {64, 78}}; icon: <SBApplicationIcon: 0x6bd8077a0; nodeID: com.example.quicuiProductionTest; bundleID: com.example.quicuiProductionTest>; location: SBIconLocationRoot; isTouchDownInIcon: YES>; location in window: {254.66666666666666, 110}; previous location in window: {254.66666666666666, 110}; location in view: {46.666666666666657, 43}; previous location in view: {46.666666666666657, 43}
+)}, tap gesture: <SBIconTapGestureRecognizer: 0x6b98588c0; id = 18061; baseClass = UITapGestu
+default	17:30:20.534226+0530	SpringBoard	<SBIconView:0x6b62c2a00 [<SBLeafIcon:0x6bd8077a0 [com.example.quicuiProductionTest]>]> Handle tap: modifiers: 0, delegate: 0x6ba129e00, window: 0x6b706d000
+default	17:30:20.561795+0530	SpringBoard	[SwitcherOrientation] outSwitcherOrientation: portrait (1), outElementsOrientations: {
+    "sceneID:com.example.quicuiProductionTest-default" = 1;
+}
+default	17:30:20.578496+0530	SpringBoard	[SwitcherOrientation] outSwitcherOrientation: portrait (1), outElementsOrientations: {
+    "sceneID:com.example.quicuiProductionTest-default" = 1;
+}
+default	17:30:20.580900+0530	SpringBoard	Generating initialization context on main thread for: com.example.quicuiProductionTest
+default	17:30:20.581068+0530	SpringBoard	Asked to bootstrap a new process with identity: app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>
+default	17:30:20.581094+0530	SpringBoard	Creating process (sync=true) with identity: app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>
+default	17:30:20.581142+0530	SpringBoard	Created <FBWorkspace: 0x6bc0490e0; <FBApplicationProcess: 0x6b559f180; app<com.example.quicuiProductionTest>:<invalid>>>
+default	17:30:20.581149+0530	SpringBoard	Bootstrapping app<com.example.quicuiProductionTest> with intent foreground-interactive
+default	17:30:20.581701+0530	SpringBoard	Prewarming for launch of com.example.quicuiProductionTest
+default	17:30:20.582067+0530	runningboardd	Acquiring assertion targeting app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)> from originator [osservice<com.apple.SpringBoard>:35] with description <RBSAssertionDescriptor| "FBApplicationProcess" ID:34-35-211931 target:app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)> attributes:[
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableLPRunReason-Resume" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"Visibility" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableRole-UIFocal" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableJetsamPriority-Foreground" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableBootstrapping" sourceEnvironment:"(null)">
+	]>
+default	17:30:20.582201+0530	runningboardd	Assertion 34-35-211931 (target:app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>) will be created as active
+default	17:30:20.583080+0530	runningboardd	Creating and launching job for: app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>
+default	17:30:20.583090+0530	runningboardd	_mutateContextIfNeeded called for com.example.quicuiProductionTest
+default	17:30:20.584470+0530	runningboardd	app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>: -[RBPersonaManager personaForIdentity:context:personaUID:personaUniqueString:] required 0.007033 ms (wallclock); resolved to {1000, 3CB0BD78-A5DB-4555-B92D-42AAD9ABF105}
+default	17:30:20.584544+0530	runningboardd	'app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>' Skipping container path lookup because containerization was prevented (<RBSLaunchContext: 0xd7e8b1400>)
+default	17:30:20.587445+0530	runningboardd	[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] Memory Limits: active 3376 inactive 3376
+ <private>
+default	17:30:20.587465+0530	runningboardd	[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] This process will be managed.
+default	17:30:20.587480+0530	runningboardd	Now tracking process: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.587862+0530	runningboardd	Calculated state for app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>: running-active (role: UserInteractiveFocal) (endowments: <private>)
+default	17:30:20.587940+0530	runningboardd	Using default underlying assertion for app: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.587954+0530	runningboardd	Acquiring assertion targeting [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] from originator [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] with description <RBSAssertionDescriptor| "RB Underlying Assertion" ID:34-34-211932 target:79220 attributes:[
+	<RBSDomainAttribute| domain:"com.apple.underlying" name:"defaultUnderlyingAppAssertion" sourceEnvironment:"(null)">,
+	<RBSAcquisitionCompletionAttribute| policy:AfterApplication>
+	]>
+default	17:30:20.590681+0530	runningboardd	Assertion 34-34-211932 (target:[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]) will be created as active
+default	17:30:20.590981+0530	runningboardd	[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] Set jetsam priority to 100 [0] flag[1]
+default	17:30:20.590987+0530	runningboardd	[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] Resuming task.
+default	17:30:20.591007+0530	runningboardd	[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] Set darwin role to: UserInteractiveFocal
+default	17:30:20.591051+0530	SpringBoard	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.591254+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Bootstrap success!
+default	17:30:20.591276+0530	runningboardd	[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] reported to RB as running
+default	17:30:20.591294+0530	SpringBoard	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.591420+0530	runningboardd	[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] set Memory Limits to Soft Active (3376)
+default	17:30:20.591427+0530	runningboardd	[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] Set Carplay mode to: 0
+default	17:30:20.591443+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Setting process task state to: Running
+default	17:30:20.591447+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Setting process visibility to: Foreground
+default	17:30:20.591474+0530	runningboardd	[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] visiblity is yes
+default	17:30:20.591500+0530	runningboardd	Calculated state for app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>: running-active (role: UserInteractiveFocal) (endowments: <private>)
+default	17:30:20.591626+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Registering event dispatcher after bootstrap
+default	17:30:20.591655+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Initial launch state: FV-Focal[100].
+default	17:30:20.591682+0530	CommCenter	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.591711+0530	CommCenter	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.591824+0530	powerd	Process runningboardd.34 Created SystemIsActive "app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>34-35-211931:FBApplicationProcess" age:00:00:00  id:51539643330 [System: PrevIdle SysAct]
+default	17:30:20.591851+0530	audiomxd	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.591856+0530	audiomxd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.591878+0530	SpringBoard	Adding: <FBApplicationProcess: 0x6b559f180; app<com.example.quicuiProductionTest>:79220(v37A39)>
+default	17:30:20.591888+0530	SpringBoard	<SBFullScreenSwitcherLiveContentOverlayCoordinator: 0x6b71ede00> Adding SwitcherScene overlay for: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main>, animated: NO
+default	17:30:20.591908+0530	runningboardd	Successfully acquired underlying assertion for [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.592008+0530	SpringBoard	_updatePreferences <Switcher>: {
+    activationPolicyForParticipantsBelow: AtMostBG;
+    homeAffordanceDrawingSuppression: Default;
+    associatedSceneIdentifiersToSuppressInSystemAperture: (
+        sceneID:com.example.quicuiProductionTest-default
+    );
+    associatedBundleIdentifiersToSuppressInSystemAperture: (
+        com.example.quicuiProductionTest
+    );
+    allowsDimmingWhenForegroundInactive: No;
+}
+default	17:30:20.592221+0530	SpringBoard	Resolved Stack (update(Switcher)) [
+    Highest: ⬇ ,
+    BannerItems: ⬇ ,
+    HUD: ⬇ ,
+    PictureInPicture: ⬇ ,
+    TransientOverlayPresentation: ⬇ ,
+    CoverSheet: ⬇ ,
+    Switcher: ownsHomeGesture; FGActive; homeAffordanceDrawingSuppressed: Y->N; suppressedBundles: (none)->com.example.quicuiProductionTest; suppressedScenes: 0->1,
+    HomeScreen: FGActive->BG
+]
+default	17:30:20.592405+0530	SpringBoard	modifying scene setting userInterfaceStyle to Dark displayIdentity: Main forSceneManagers: Main <SBDeviceApplicationSceneHandle: 0x6b564a840; sceneID: sceneID:com.example.quicuiProductionTest-default; scenePointer: 0x0>
+default	17:30:20.596467+0530	cameracaptured	<<<< FigCaptureDisplayLayoutMonitor >>>> -[FigCaptureDisplayLayoutMonitor _parseFBSDisplayLayout:]: <FigCaptureDisplayLayoutMonitor: 0xd64ccce40 Main Display> <FBSDisplayLayout: 0xd67222740; displayIdentity: Main> {    bounds = {{0, 0}, {390, 844}};    interfaceOrientation = "portrait (1)";    backlightLevel = 100;    backlightState = 2;    elements = {        <SBSDisplayLayoutElement: 0xd624fb640; sceneID:com.example.quicuiProductionTest-default; bundleID: com.example.quicuiProductionTest; frame: {{0, 0}, {390, 844}}; level: 1; role: primary>;    }    timestamp = 30 November 2025 at 5:30:20 PM IST;}
+default	17:30:20.596481+0530	cameracaptured	<<<< FigCaptureDisplayLayoutMonitor >>>> -[FigCaptureDisplayLayoutMonitor _updateObserversWithLayout:]: <FigCaptureDisplayLayoutMonitor: 0xd64ccce40 Main Display> <FigCaptureDisplayLayout: 0xd67222b00 11-30-2025 17:30:20, Main Display, foreground:[com.example.quicuiProductionTest]>
+default	17:30:20.597048+0530	SpringBoard	[Main (EmbeddedDisplay)] dispatch event:
+<SBTransitionSwitcherModifierEvent: 0x6b4d54fc0; type: MainTransition; transitionID: E0501E90-0A29-4B03-80FE-55309EE3CDB3; phase: Prepare; animated: YES; fromAppLayout: 0x0; toAppLayout: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main>; fromEnvironmentMode: home-screen; toEnvironmentMode: application; fromSpaceConfiguration: undefined; toSpaceConfiguration: full; pendingTermination: {(
+)}; activating: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main>; morphingPIPLayoutRole: undefined; previousDesktopItems: {(
+)}>
+default	17:30:20.598517+0530	wifid	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.598937+0530	wifid	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.599176+0530	dasd	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.599466+0530	dasd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.600646+0530	bluetoothd	SystemUI unknown identifier: 'sceneID:com.example.quicuiProductionTest-default' / 'com.example.quicuiProductionTest'
+default	17:30:20.605448+0530	watchdogd	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.615431+0530	backboardd	Connection added: IOHIDEventSystemConnection uuid:B1D4C8EE-B2B2-48AA-96AD-9DFA25597C6D pid:79220 process:Runner type:Passive entitlements:0x0 caller:BackBoardServices: <redacted> + 280 attributes:{
+    HighFrequency = 1;
+    bundleID = "com.example.quicuiProductionTest";
+    pid = 79220;
+} state:0x0 events:0 mask:0x0 dropped:0 dropStatus:0 droppedMask:0x0 lastDroppedTime:NONE
+default	17:30:20.615854+0530	backboardd	Adding client connection: <BKHIDClientConnection: 0x8295785c0; IOHIDEventSystemConnectionRef: 0x82e0b3e00; vpid: 79220(v37A39); taskPort: 0x11634B; bundleID: com.example.quicuiProductionTest> for client: IOHIDEventSystemConnection uuid:B1D4C8EE-B2B2-48AA-96AD-9DFA25597C6D pid:79220 process:Runner type:Passive entitlements:0x0 caller:BackBoardServices: <redacted> + 280 attributes:{
+    HighFrequency = 1;
+    bundleID = "com.example.quicuiProductionTest";
+    pid = 79220;
+} state:0x0 events:0 mask:0x0 dropped:0 dropStatus:0 droppedMask:0x0 lastDroppedTime:NONE
+default	17:30:20.615904+0530	runningboardd	Setting client for [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] as ready
+default	17:30:20.616379+0530	SpringBoard	Fetching initialization context for: com.example.quicuiProductionTest
+default	17:30:20.616413+0530	SpringBoard	Returning cached initialization context for com.example.quicuiProductionTest
+default	17:30:20.616422+0530	SpringBoard	Returning cached initialization context for com.example.quicuiProductionTest
+default	17:30:20.616533+0530	runningboardd	Acquiring assertion targeting [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] from originator [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] with description <RBSAssertionDescriptor| "Shared Background Assertion 0 for com.example.quicuiProductionTest" ID:34-79220-211933 target:79220 attributes:[
+	<RBSLegacyAttribute| requestedReason:FinishTask reason:FinishTask flags:( PreventTaskSuspend )>,
+	<RBSAcquisitionCompletionAttribute| policy:AfterValidation>
+	]>
+default	17:30:20.616698+0530	Runner	Identity resolved as app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>
+default	17:30:20.616820+0530	runningboardd	Assertion 34-79220-211933 (target:[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]) will be created as inactive as start-time-defining assertions exist
+default	17:30:20.616954+0530	SpringBoard	[Main (EmbeddedDisplay)] dispatch event:
+<SBTransitionSwitcherModifierEvent: 0x6b5428a80; type: MainTransition; transitionID: E0501E90-0A29-4B03-80FE-55309EE3CDB3; phase: Animate; animated: YES; fromAppLayout: 0x0; toAppLayout: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main>; fromEnvironmentMode: home-screen; toEnvironmentMode: application; fromSpaceConfiguration: undefined; toSpaceConfiguration: full; pendingTermination: {(
+)}; activating: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main>; morphingPIPLayoutRole: undefined; previousDesktopItems: {(
+)}>
+default	17:30:20.617896+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Connection established.
+default	17:30:20.617907+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] created proxy of <BSXPCServiceConnectionProxy<FBSWorkspaceServiceServerInterface>: 0x6b629e3e0>
+default	17:30:20.617912+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Connection to remote process established!
+default	17:30:20.619821+0530	SpringBoard	[Main (EmbeddedDisplay)] dispatch event:
+<SBSceneReadySwitcherModifierEvent: 0x6af481e30; type: SceneReady; appLayout: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main> {
+    configuration = full;
+    environment = main;
+    centerConfiguration = undefined;
+    preferredDisplayOrdinal = 0;
+    continuousExposeIdentifier = com.example.quicuiProductionTest;
+    layoutItems = {
+        primary = <SBDisplayItem: 0x6b656ff00; type: App; bundleIdentifier: com.example.quicuiProductionTest; uniqueIdentifier: sceneID:com.example.quicuiProductionTest-default>;
+    }
+}>
+default	17:30:20.620052+0530	watchdogd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.620240+0530	SpringBoard	Returning cached initialization context for com.example.quicuiProductionTest
+default	17:30:20.620400+0530	SpringBoard	[0x6bb1fb480:(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] Initialized with connection: 0x6b09665b0.
+default	17:30:20.620405+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Registered new scene: <FBUIApplicationWorkspaceScene: 0x6bb1fb480; (FBSceneManager):sceneID:com.example.quicuiProductionTest-default> (fromRemnant = 0)
+default	17:30:20.620410+0530	SpringBoard	[(FBSceneManager):sceneID:com.example.quicuiProductionTest-default][1] Scene activated.
+default	17:30:20.620415+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Workspace interruption policy did change: reconnect
+default	17:30:20.620435+0530	SpringBoard	<BSCompoundAssertion:0x6b0945d40> (SBApplicationAppProtectionAssistant: 0x6b0944880 - com.example.quicuiProductionTest) acquire for reason:NULL scene acq:0x6bd283800 count:1
+default	17:30:20.620452+0530	SpringBoard	scene will become FG visible for <APApplication: com.example.quicuiProductionTest>
+default	17:30:20.620457+0530	SpringBoard	auth result for <APApplication: com.example.quicuiProductionTest>: true (null)
+default	17:30:20.620502+0530	SpringBoard	<StateMachine:0x6b5e0ab40> Created with presentation environment: <0x6afde1b60:<_UISceneKeyboardProxyLayerForwardingPresentationScene: 0x6afde1b60> Tracking scene: <FBScene: 0x6b4b73e00; FBSceneManager:sceneID:com.example.quicuiProductionTest-default>>
+default	17:30:20.620570+0530	runningboardd	Acquiring assertion targeting [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] from originator [osservice<com.apple.SpringBoard>:35] with description <RBSAssertionDescriptor| "com.apple.frontboard.after-life.interrupted" ID:34-35-211934 target:79220 attributes:[
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"AfterLife-Interrupted" sourceEnvironment:"(null)">
+	]>
+default	17:30:20.620579+0530	runningboardd	Assertion 34-35-211934 (target:[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]) will be created as inactive as originator process has not exited
+default	17:30:20.620637+0530	SpringBoard	[coordinator] didAddExternalForegroundApplicationSceneHandle pid:79220 scene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.example.quicuiProductionTest-default now:<recentPIDs: [79220]; recentSceneIdentityTokensByPID: {79220: [com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.example.quicuiProductionTest-default]}>
+default	17:30:20.620646+0530	SpringBoard	[com.apple.springboard] didAddExternalForegroundApplicationSceneHandle pid:79220 scene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.example.quicuiProductionTest-default now:<recentPIDs: [79220]; recentSceneIdentityTokensByPID: {79220: [com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.example.quicuiProductionTest-default]}>
+default	17:30:20.620655+0530	SpringBoard	Now tracking: <FBScene: 0x6b4b73e00; FBSceneManager:sceneID:com.example.quicuiProductionTest-default>
+default	17:30:20.620692+0530	SpringBoard	[sceneID:com.example.quicuiProductionTest-default] Setting deactivation reasons to: 'systemAnimation' for reason: scene settings update - settings are eligible for deactivation reasons.
+default	17:30:20.620732+0530	SpringBoard	[(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] scene content state changed: preparing
+default	17:30:20.620825+0530	SpringBoard	[0x6bb1fb480:(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] Scene lifecycle state did change: Foreground
+default	17:30:20.620843+0530	SpringBoard	[0x6bb1fb480:(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] Scene state did change: FV-Focal[100].
+default	17:30:20.621011+0530	runningboardd	Acquiring assertion targeting [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] from originator [osservice<com.apple.SpringBoard>:35] with description <RBSAssertionDescriptor| "FBWorkspace (FV-Focal[100])" ID:34-35-211935 target:79220 attributes:[
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableLPRunReason-Resume" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"Visibility" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableRole-UIFocal" sourceEnvironment:"(null)">,
+	<RBSDomainAttribute| domain:"com.apple.frontboard" name:"SuspendableJetsamPriority-Foreground" sourceEnvironment:"(null)">
+	]>
+default	17:30:20.621145+0530	runningboardd	Assertion 34-35-211935 (target:[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]) will be created as active
+default	17:30:20.621474+0530	runningboardd	Calculated state for app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>: running-active (role: UserInteractiveFocal) (endowments: <private>)
+default	17:30:20.621776+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Workspace state did change: XX-None[0] --> FV-Focal[100] (assertion acquired).
+default	17:30:20.621862+0530	SpringBoard	[0x6bb1fb480:(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] Sending scene action [Logical Activate][0xef35] to process 0x6b559f180 (watchdog: 19.98s)
+default	17:30:20.621869+0530	SpringBoard	[0x6bb1fb480:(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] Sending scene create.
+default	17:30:20.622086+0530	PerfPowerServices	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.622134+0530	PerfPowerServices	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.622324+0530	callservicesd	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.623125+0530	callservicesd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.623648+0530	useractivityd	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.623739+0530	useractivityd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.623804+0530	gamepolicyd	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.623893+0530	gamepolicyd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-NotVisible
+default	17:30:20.624180+0530	WirelessRadioManagerd	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.624337+0530	WirelessRadioManagerd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.626470+0530	SpringBoard	Application process state changed for com.example.quicuiProductionTest: <SBApplicationProcessState: 0x6ba11e6e0; pid: 79220; taskState: Running; visibility: Foreground>
+default	17:30:20.626832+0530	Runner	0x128240e70 setDelegate:<0x128240ed0 _UIBacklightEnvironment> hasDelegate:YES for environment:sceneID:com.example.quicuiProductionTest-default
+default	17:30:20.627108+0530	SpringBoard	Returning cached initialization context for com.example.quicuiProductionTest
+default	17:30:20.627245+0530	SpringBoard	Application process state changed for com.example.quicuiProductionTest: <SBApplicationProcessState: 0x6ba546d40; pid: 79220; taskState: Running; visibility: Foreground>
+default	17:30:20.627355+0530	SpringBoard	SceneWorkspaceDelegate[0x6b92bfc20-com.apple.SpringBoard.SceneWorkspace.PrototypeTools] client did connect with handshake: <FBSceneClientHandshake:0x6ba2c5200; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627362+0530	SpringBoard	SceneWorkspaceDelegate[0x6b93418c0-com.apple.SpringBoard.SceneWorkspace.DruidUI] client did connect with handshake: <FBSceneClientHandshake:0x6ba2c5200; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627368+0530	SpringBoard	SceneWorkspaceDelegate[0x6b9342500-com.apple.SpringBoard.SceneWorkspace.FullKeyboardAccessUI] client did connect with handshake: <FBSceneClientHandshake:0x6ba2c5200; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627408+0530	SpringBoard	SceneWorkspaceDelegate[0x6b9343f60-com.apple.SpringBoard.SceneWorkspace.AudioHUD] client did connect with handshake: <FBSceneClientHandshake:0x6ba2c5200; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627414+0530	SpringBoard	SceneWorkspaceDelegate[0x6b9343ca0-com.apple.SpringBoard.SceneWorkspace.PerfPowerHUD] client did connect with handshake: <FBSceneClientHandshake:0x6ba2c5200; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627489+0530	SpringBoard	SceneWorkspaceDelegate[0x6b93416c0-com.apple.SpringBoard.SceneWorkspace.InputUI] client did connect with handshake: <FBSceneClientHandshake:0x6ba2c5200; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627496+0530	SpringBoard	SceneWorkspaceDelegate[0x6b931ba20-com.apple.SpringBoard.SceneWorkspace.GlitchHUD] client did connect with handshake: <FBSceneClientHandshake:0x6ba2c5200; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627649+0530	SpringBoard	SceneWorkspaceDelegate[0x6b9343400-com.apple.SpringBoard.SceneWorkspace.AssistiveTouchUI] client did connect with handshake: <FBSceneClientHandshake:0x6ba7f6b80; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627675+0530	SpringBoard	SceneWorkspaceDelegate[0x6b9341760-com.apple.SpringBoard.SceneWorkspace.OverlayUI] client did connect with handshake: <FBSceneClientHandshake:0x6ba7f6b80; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627684+0530	SpringBoard	SceneWorkspaceDelegate[0x6b9342700-com.apple.SpringBoard.SceneWorkspace.VoiceControlUI] client did connect with handshake: <FBSceneClientHandshake:0x6ba7f6b80; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627690+0530	SpringBoard	SceneWorkspaceDelegate[0x6b93439e0-com.apple.SpringBoard.SceneWorkspace.EyedropperUI] client did connect with handshake: <FBSceneClientHandshake:0x6ba7f6b80; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627695+0530	SpringBoard	SceneWorkspaceDelegate[0x6b9343e00-com.apple.SpringBoard.SceneWorkspace.InternalPerfPowerHUD] client did connect with handshake: <FBSceneClientHandshake:0x6ba7f6b80; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627700+0530	SpringBoard	SceneWorkspaceDelegate[0x6b9343b40-com.apple.SpringBoard.SceneWorkspace.Moments] client did connect with handshake: <FBSceneClientHandshake:0x6ba7f6b80; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627726+0530	SpringBoard	SceneWorkspaceDelegate[0x6b93435c0-com.apple.SpringBoard.SceneWorkspace.AccessibilityUIServerUI] client did connect with handshake: <FBSceneClientHandshake:0x6ba7f6b80; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.627737+0530	SpringBoard	SceneWorkspaceDelegate[0x6b9342560-com.apple.SpringBoard.SceneWorkspace.LiveTranscriptionUI] client did connect with handshake: <FBSceneClientHandshake:0x6ba7f6b80; [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] remnants=0>
+default	17:30:20.628052+0530	SpringBoard	MRNowPlayingAudioFormatController foreground bundle id changed: com.example.quicuiProductionTest
+default	17:30:20.628685+0530	Runner	sceneOfRecord: sceneID: sceneID:com.example.quicuiProductionTest-default  persistentID: A9351253-CCB2-4DA1-AF02-47AD26A979C6
+default	17:30:20.629082+0530	symptomsd	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.629110+0530	backboardd	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.629151+0530	locationd	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.629210+0530	backboardd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.629235+0530	symptomsd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.629525+0530	locationd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.629786+0530	locationd	{"msg":"RBS #AppMonitor process monitor update handler invoked", "pid":79220, "bundleID":"com.example.quicuiProductionTest", "state":"RunningScheduled"}
+default	17:30:20.629900+0530	locationd	{"msg":"RBS #AppMonitor Post Application State Change Notification", "notification":"ForegroundRunning", "pid":79220, "bundleId":"com.example.quicuiProductionTest"}
+default	17:30:20.630148+0530	locationd	{"msg":"#Warning #ClientResolution the passed keyPath is not registered. Resolving to #nullCKP", "InputCKP":"icom.example.quicuiProductionTest:"}
+default	17:30:20.630244+0530	Runner	[QuicUI] FlutterDartProject instance #1 created via init
+default	17:30:20.630249+0530	Runner	[QuicUI] FlutterDartProject instance #2 created via initWithPrecompiledDartBundle
+default	17:30:20.630346+0530	locationd	{"msg":"#CLIUA AppMonitor notification", "notification":"ForegroundRunning", "pid":79220, "bundleId":"com.example.quicuiProductionTest", "ClientKey":"icom.example.quicuiProductionTest:"}
+default	17:30:20.630364+0530	locationd	{"msg":"#CLIUA Marking change", "clientKey":"icom.example.quicuiProductionTest:", "reason":"Process state from RunningBoard", "AssertionLevel":"kCLClientInUseLevelDirectUserEngagement", "coming":1}
+default	17:30:20.630378+0530	locationd	{"msg":"#CLIUA updating AssertionRecord", "ClientKey":"icom.example.quicuiProductionTest:", "AssertionLevel":"kCLClientInUseLevelNotInUse"}
+default	17:30:20.630392+0530	locationd	{"msg":"#CLIUA AssertionRecord updated", "ClientKey":"icom.example.quicuiProductionTest:", "AssertionLevel":"kCLClientInUseLevelDirectUserEngagement"}
+default	17:30:20.630445+0530	locationd	{"msg":"#CLIUA in-use level changed for client", "ClientKey":"icom.example.quicuiProductionTest:"}
+default	17:30:20.630460+0530	locationd	{"msg":"#Warning #ClientResolution the passed keyPath is not registered. Resolving to #nullCKP", "InputCKP":"icom.example.quicuiProductionTest:"}
+default	17:30:20.630557+0530	wifid	-[WiFiUserInteractionMonitor setApplicationRunningState:foregroundState:andNetworkingState:forBundleId:]: com.example.quicuiProductionTest entered foreground
+default	17:30:20.630671+0530	SpringBoard	[com.example.quicuiProductionTest] Foreground app will not request ephemeral notifications isAppClip: NO wantsEphemeral notifications: NO
+default	17:30:20.630816+0530	SpringBoard	RX com.example.quicuiProductionTest(79220) startArbitration
+    expectedState:(null)
+    focusContext:<private>
+    hostingPIDs:<private> usingFence:Y withSuppression:0
+default	17:30:20.630861+0530	wifid	WiFiDeviceManagerCatsSetLowLatencyApp: CATSUpdate en0: fgApp:com.example.quicuiProductionTest b=0x0 rc=0
+default	17:30:20.631201+0530	SpringBoard	set focusRequestedHandle:<com.example.quicuiProductionTest focus:(null) run:Y hosting:() level:0 active:N wantedState:Disabled #suppr:0 iavHeight:0 onScreen:N>
+default	17:30:20.631234+0530	SpringBoard	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.631273+0530	SpringBoard	[com.example.quicuiProductionTest] com.example.quicuiProductionTest application state changed to <RBSProcessState| task:running-active debug:none endowmentNamespace:[
+	com.apple.frontboard.visibility
+	]>
+default	17:30:20.631280+0530	SpringBoard	[com.example.quicuiProductionTest] Ignore becoming foreground for application without push registration
+default	17:30:20.631436+0530	wifid	WiFiDeviceManagerCatsSetForegroundApp: CATSUpdate en0: fgApp:com.example.quicuiProductionTest hs=1 t=1 rc=0
+default	17:30:20.631726+0530	UserEventAgent	Hit the server for a process handle 10e1f8b800013574 that resolved to: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.631758+0530	SpringBoard	[coordinator] using MRU target <com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.example.quicuiProductionTest-default pid:79220>
+default	17:30:20.631766+0530	SpringBoard	[coordinator] informing scene controller 'com.apple.springboard' of focusTarget: <com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.example.quicuiProductionTest-default pid:79220>
+default	17:30:20.631795+0530	UserEventAgent	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, running-active-Visible
+default	17:30:20.632280+0530	Runner	[QuicUI] Found patches_state.json at: <private>
+default	17:30:20.632391+0530	Runner	[QuicUI] Found patch file at: <private>
+default	17:30:20.632790+0530	Runner	[QuicUI] Patch size: 5611016 bytes (5.35 MB)
+default	17:30:20.632816+0530	Runner	[QuicUI] application_library_paths[0] = <private>
+default	17:30:20.633047+0530	Runner	[QuicUI] Running in AOT mode, kernel loading disabled by default
+default	17:30:20.633050+0530	Runner	[QuicUI] Kernel loading can be enabled via code push patches
+default	17:30:20.633891+0530	gamepolicyd	Identified app com.example.quicuiProductionTest GM:false DPS:false SEM:Unsupported MMA:false
+default	17:30:20.634774+0530	symptomsd	com.example.quicuiProductionTest: Foreground: true
+default	17:30:20.636784+0530	Runner	[QuicUI] Instance #2: Calling checkForCodePushPatches
+default	17:30:20.636790+0530	Runner	[QuicUI] Instance #2: checkForCodePushPatches called
+default	17:30:20.636857+0530	Runner	[QuicUI] Instance #2: QuicUI cache directory: <private>
+default	17:30:20.637012+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(32)] QuicUI: Code cache directory set to: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches
+default	17:30:20.637027+0530	Runner	[QuicUI] iOS Code Push Loader initialized
+default	17:30:20.637032+0530	Runner	[QuicUI] Cache directory: <private>
+default	17:30:20.637038+0530	Runner	[QuicUI] Architecture: arm64
+default	17:30:20.637044+0530	Runner	[QuicUI] Checking for patches via C++ loader...
+default	17:30:20.637051+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(209)] QuicUI: Getting patched AOT path for architecture: arm64
+default	17:30:20.637058+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(146)] QuicUI: [iOS] Getting patch file path...
+default	17:30:20.637064+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(49)] QuicUI: [iOS] Patches state directory: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches
+default	17:30:20.637069+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(61)] QuicUI: [iOS] Checking state file at: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches/patches_state.json
+default	17:30:20.637108+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(68)] QuicUI: [iOS] State file exists, opening...
+default	17:30:20.637145+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(76)] QuicUI: [iOS] File opened successfully, reading content...
+default	17:30:20.637168+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(82)] QuicUI: [iOS] Read 412 bytes from state file
+default	17:30:20.637181+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(89)] QuicUI: [iOS] State file content: {
+  "number" : 0,
+  "hash" : "1ba98ca01cd4d6b275814efa03f6d63af9954f25876b0c17b1d84137d2fb2ab5",
+  "release_date" : "",
+  "platform" : "ios",
+  "patch_hash" : "1ba98ca01cd4d6b275814efa03f6d63af9954f25876b0c17b1d84137d2fb2ab5",
+  "size" : 5611016,
+  "signature" : "",
+  "version" : "com.example.quicuiProductionTest_3.0.75_ios_test",
+  "architecture" : "arm64",
+  "requires_restart" : true,
+  "critical" : false
+}
+default	17:30:20.637217+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(102)] QuicUI: [iOS] JSON parsed successfully
+default	17:30:20.637223+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(131)] QuicUI: [iOS] Extracted patch ID: 0
+default	17:30:20.637228+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(49)] QuicUI: [iOS] Patches state directory: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches
+default	17:30:20.637280+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(157)] QuicUI: [iOS] Constructed patch path: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches/0/dlc.vmcode
+default	17:30:20.637310+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(166)] QuicUI: [iOS] Patch file exists, size: 5611016 bytes
+default	17:30:20.637350+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(49)] QuicUI: [iOS] Patches state directory: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches
+default	17:30:20.642978+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(237)] QuicUI: Found valid patch at: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches/0/dlc.vmcode
+default	17:30:20.642988+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(238)] QuicUI: Patch version: com.example.quicuiProductionTest_3.0.75_ios_test
+default	17:30:20.643610+0530	Runner	[QuicUI] Patch size: 5611016 bytes (5.35 MB)
+default	17:30:20.643651+0530	Runner	[QuicUI] Instance #2: Patch file extension: <private>
+default	17:30:20.643759+0530	Runner	[QuicUI] Instance #2: .vmcode will be loaded as read-only data (interpreter mode)
+default	17:30:20.643774+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(49)] QuicUI: [iOS] Patches state directory: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches
+default	17:30:20.643908+0530	Runner	[QuicUI] Patch info: <private>
+default	17:30:20.643965+0530	Runner	[QuicUI] Instance #2: Patch version: <private>
+default	17:30:20.643969+0530	Runner	[QuicUI] Instance #2: Patch architecture: <private>
+default	17:30:20.643986+0530	Runner	[QuicUI] Instance #2: After checkForCodePushPatches, paths size: 3
+default	17:30:20.644062+0530	Runner	[QuicUI] Instance #2: settings getter called
+default	17:30:20.644119+0530	Runner	[QuicUI] Instance #2: settings.application_library_paths size: 3
+default	17:30:20.644126+0530	Runner	[QuicUI] Instance #2: First library path: <private>
+default	17:30:20.644133+0530	Runner	[QuicUI] Instance #2: settings getter called
+default	17:30:20.644138+0530	Runner	[QuicUI] Instance #2: settings.application_library_paths size: 3
+default	17:30:20.644144+0530	Runner	[QuicUI] Instance #2: First library path: <private>
+default	17:30:20.644984+0530	Runner	[QuicUI] Checking for code push patches...
+default	17:30:20.645003+0530	Runner	[QuicUI] Instance #2: checkForCodePushPatches called
+default	17:30:20.645106+0530	Runner	[QuicUI] Instance #2: QuicUI cache directory: <private>
+default	17:30:20.645134+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(32)] QuicUI: Code cache directory set to: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches
+default	17:30:20.645138+0530	Runner	[QuicUI] iOS Code Push Loader initialized
+default	17:30:20.645142+0530	Runner	[QuicUI] Cache directory: <private>
+default	17:30:20.645154+0530	Runner	[QuicUI] Architecture: arm64
+default	17:30:20.645172+0530	Runner	[QuicUI] Checking for patches via C++ loader...
+default	17:30:20.645201+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(209)] QuicUI: Getting patched AOT path for architecture: arm64
+default	17:30:20.645212+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(146)] QuicUI: [iOS] Getting patch file path...
+default	17:30:20.645220+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(49)] QuicUI: [iOS] Patches state directory: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches
+default	17:30:20.645226+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(61)] QuicUI: [iOS] Checking state file at: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches/patches_state.json
+default	17:30:20.645288+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(68)] QuicUI: [iOS] State file exists, opening...
+default	17:30:20.645359+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(76)] QuicUI: [iOS] File opened successfully, reading content...
+default	17:30:20.645364+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(82)] QuicUI: [iOS] Read 412 bytes from state file
+default	17:30:20.645387+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(89)] QuicUI: [iOS] State file content: {
+  "number" : 0,
+  "hash" : "1ba98ca01cd4d6b275814efa03f6d63af9954f25876b0c17b1d84137d2fb2ab5",
+  "release_date" : "",
+  "platform" : "ios",
+  "patch_hash" : "1ba98ca01cd4d6b275814efa03f6d63af9954f25876b0c17b1d84137d2fb2ab5",
+  "size" : 5611016,
+  "signature" : "",
+  "version" : "com.example.quicuiProductionTest_3.0.75_ios_test",
+  "architecture" : "arm64",
+  "requires_restart" : true,
+  "critical" : false
+}
+default	17:30:20.645395+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(102)] QuicUI: [iOS] JSON parsed successfully
+default	17:30:20.645427+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(131)] QuicUI: [iOS] Extracted patch ID: 0
+default	17:30:20.645437+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(49)] QuicUI: [iOS] Patches state directory: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches
+default	17:30:20.645443+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(157)] QuicUI: [iOS] Constructed patch path: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches/0/dlc.vmcode
+default	17:30:20.645560+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(166)] QuicUI: [iOS] Patch file exists, size: 5611016 bytes
+default	17:30:20.645627+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(49)] QuicUI: [iOS] Patches state directory: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches
+default	17:30:20.649712+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(237)] QuicUI: Found valid patch at: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches/0/dlc.vmcode
+default	17:30:20.649719+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(238)] QuicUI: Patch version: com.example.quicuiProductionTest_3.0.75_ios_test
+default	17:30:20.650238+0530	Runner	[QuicUI] Patch size: 5611016 bytes (5.35 MB)
+default	17:30:20.650289+0530	Runner	[QuicUI] Instance #2: Patch file extension: <private>
+default	17:30:20.650305+0530	Runner	[QuicUI] Instance #2: .vmcode will be loaded as read-only data (interpreter mode)
+default	17:30:20.650408+0530	Runner	[INFO:flutter/shell/common/quicui_patch_loader.cc(49)] QuicUI: [iOS] Patches state directory: /var/mobile/Containers/Data/Application/99936BEC-14C9-488B-9D9D-4C32F9B53AB1/Library/Caches/patches
+default	17:30:20.650466+0530	Runner	[QuicUI] Patch info: <private>
+default	17:30:20.650490+0530	Runner	[QuicUI] Instance #2: Patch version: <private>
+default	17:30:20.650531+0530	Runner	[QuicUI] Instance #2: Patch architecture: <private>
+default	17:30:20.650542+0530	Runner	[QuicUI] Instance #2: settings getter called
+default	17:30:20.650547+0530	Runner	[QuicUI] Instance #2: settings.application_library_paths size: 4
+default	17:30:20.650553+0530	Runner	[QuicUI] Instance #2: First library path: <private>
+default	17:30:20.670465+0530	Runner	[QuicUICodePush] registerWithRegistrar called
+default	17:30:20.670490+0530	Runner	[QuicUICodePush] Plugin registered successfully
+error	17:30:20.677241+0530	SpringBoard	[0x6bb1fb480:(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] Scene creation failed: <NSError: 0x6afdd7ed0; domain: FBWorkspaceScene; code: 2 ("scene-creation-failed"); "Scene create failed. (null)">
+default	17:30:20.677248+0530	SpringBoard	[0x6bb1fb480:(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] Scene action [Logical Activate][0xef35] completed with success: 0
+error	17:30:20.677289+0530	SpringBoard	[(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] Update failed: <NSError: 0x6b1a87c00; domain: FBSceneErrorDomain; code: 1 ("operation-failed"); "Scene update failed."> {
+    NSUnderlyingError = <NSError: 0x6afdd7ed0; domain: FBWorkspaceScene; code: 2 ("scene-creation-failed"); "Scene create failed. (null)"> {
+        NSUnderlyingError = <NSError: 0x6afdd4c00; domain: BSServiceConnectionErrorDomain; code: 3 ("OperationFailed"); "XPC error received on message reply handler">;
+    };
+}
+default	17:30:20.677299+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Workspace connection invalidated.
+default	17:30:20.677304+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Now flagged as pending exit for reason: workspace client connection invalidated
+default	17:30:20.677314+0530	SpringBoard	Invalidating scene: (FBSceneManager):sceneID:com.example.quicuiProductionTest-default
+default	17:30:20.677330+0530	SpringBoard	[coordinator] _removeSceneFromRecents willRemoveExternalForegroundApplicationSceneHandle pid:79220 scene:com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.example.quicuiProductionTest-default now:<empty>
+default	17:30:20.677335+0530	SpringBoard	[com.apple.springboard] removing scene: com.apple.frontboard.systemappservices/FBSceneManager:sceneID%3Acom.example.quicuiProductionTest-default pid: 79220 for reason: willRemoveExternalForegroundApplicationSceneHandle
+default	17:30:20.677340+0530	SpringBoard	com.example.quicuiProductionTest(79220) lostConnection (invalidation)
+default	17:30:20.677402+0530	SpringBoard	No longer tracking: <FBScene: 0x6b4b73e00; FBSceneManager:sceneID:com.example.quicuiProductionTest-default>
+default	17:30:20.677406+0530	SpringBoard	[(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] scene content state changed: notReady
+default	17:30:20.677454+0530	SpringBoard	[(FBSceneManager):sceneID:com.example.quicuiProductionTest-default][1] Scene invalidated.
+default	17:30:20.677462+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Unregistering scene: <FBUIApplicationWorkspaceScene: 0x6bb1fb480; (FBSceneManager):sceneID:com.example.quicuiProductionTest-default>
+default	17:30:20.677467+0530	SpringBoard	[0x6bb1fb480:(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] Invalidated for connection: 0x6b09665b0.
+error	17:30:20.677472+0530	SpringBoard	Ignoring update for invalidated scene: (FBSceneManager):sceneID:com.example.quicuiProductionTest-default
+default	17:30:20.677475+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Workspace interruption policy did change: default
+default	17:30:20.677481+0530	SpringBoard	<BSCompoundAssertion:0x6b0945d40> (SBApplicationAppProtectionAssistant: 0x6b0944880 - com.example.quicuiProductionTest) invalidate acq:0x6bd283800 count:1
+default	17:30:20.677490+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Setting process visibility to: Unknown
+default	17:30:20.677495+0530	SpringBoard	All scenes dismissed for <APApplication: com.example.quicuiProductionTest>
+default	17:30:20.677521+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Workspace state did change: FV-Focal[100] --> XX-None[0] (assertion dropped).
+default	17:30:20.677536+0530	backboardd	Connection removed: IOHIDEventSystemConnection uuid:B1D4C8EE-B2B2-48AA-96AD-9DFA25597C6D pid:79220 process:Runner type:Passive entitlements:0x0 caller:BackBoardServices: <redacted> + 280 attributes:{
+    HighFrequency = 1;
+    bundleID = "com.example.quicuiProductionTest";
+    pid = 79220;
+} state:0x1 events:0 mask:0x0 dropped:0 dropStatus:0 droppedMask:0x0 lastDroppedTime:NONE
+default	17:30:20.677557+0530	backboardd	Removing client connection <BKHIDClientConnection: 0x8295785c0; IOHIDEventSystemConnectionRef: 0x82e0b3e00; vpid: 79220(v37A39); taskPort: 0x11634B; bundleID: com.example.quicuiProductionTest> for client: IOHIDEventSystemConnection uuid:B1D4C8EE-B2B2-48AA-96AD-9DFA25597C6D pid:79220 process:Runner type:Passive entitlements:0x0 caller:BackBoardServices: <redacted> + 280 attributes:{
+    HighFrequency = 1;
+    bundleID = "com.example.quicuiProductionTest";
+    pid = 79220;
+} state:0x1 events:0 mask:0x0 dropped:0 dropStatus:0 droppedMask:0x0 lastDroppedTime:NONE source:HID
+default	17:30:20.677591+0530	SpringBoard	<StateMachine:0x6b5e0ab40> Presentation environment invalidated: <_UISceneKeyboardProxyLayerForwardingPresentationScene: 0x6afde1b60> Tracking scene: <FBScene: 0x6b4b73e00; (null):sceneID:com.example.quicuiProductionTest-default>
+default	17:30:20.677599+0530	SpringBoard	RX com.example.quicuiProductionTest(79220) setWindowContextID:0 windowState:Disabled level:0.0
+    focusContext:(null)
+default	17:30:20.677767+0530	runningboardd	XPC connection invalidated: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.677793+0530	runningboardd	Invalidating assertion 34-35-211934 (target:[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]) from originator [osservice<com.apple.SpringBoard>:35]
+default	17:30:20.677800+0530	SpringBoard	[Main (EmbeddedDisplay)] dispatch event:
+<SBSceneReadySwitcherModifierEvent: 0x6b603b750; type: SceneReady; appLayout: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main> {
+    configuration = full;
+    environment = main;
+    centerConfiguration = undefined;
+    preferredDisplayOrdinal = 0;
+    continuousExposeIdentifier = com.example.quicuiProductionTest;
+    layoutItems = {
+        primary = <SBDisplayItem: 0x6b656ff00; type: App; bundleIdentifier: com.example.quicuiProductionTest; uniqueIdentifier: sceneID:com.example.quicuiProductionTest-default>;
+    }
+}>
+error	17:30:20.678013+0530	SpringBoard	[(FBSceneManager):sceneID:com.example.quicuiProductionTest-default] Update failed: <NSError: 0x6b06f4cf0; domain: FBSceneErrorDomain; code: 1 ("operation-failed"); "Scene update failed."> {
+    NSUnderlyingError = <NSError: 0x6afdd6220; domain: BSServiceConnectionErrorDomain; code: 3 ("OperationFailed"); "XPC error received on message reply handler">;
+}
+default	17:30:20.678039+0530	SpringBoard	Application process state changed for com.example.quicuiProductionTest: <SBApplicationProcessState: 0x6ba11ed80; pid: 79220; taskState: Running; visibility: Unknown>
+default	17:30:20.678220+0530	runningboardd	Invalidating assertion 34-35-211935 (target:[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]) from originator [osservice<com.apple.SpringBoard>:35]
+default	17:30:20.679343+0530	runningboardd	[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220] termination reported by launchd (3, 2, 9)
+default	17:30:20.679461+0530	runningboardd	Removing process: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.679668+0530	runningboardd	Removing launch job for: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.679867+0530	runningboardd	Removed job for [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.679907+0530	runningboardd	Removing assertions for terminated process: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.679969+0530	runningboardd	Removed last relative-start-date-defining assertion for process app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>
+default	17:30:20.682344+0530	powerd	Process runningboardd.34 Released SystemIsActive "app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>34-35-211931:FBApplicationProcess" age:00:00:00  id:51539643330 [System: SysAct]
+default	17:30:20.682549+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Launch assertion invalidated: <NSError: 0x6afdd5fb0; domain: RBSAssertionErrorDomain; code: 1; "Assertions were invalidated">
+default	17:30:20.683752+0530	runningboardd	Calculated state for app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>: none (role: None) (endowments: (null))
+default	17:30:20.683804+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Process exited: <RBSProcessExitContext| specific, status:<RBSProcessExitStatus| domain:codesigning(3) code:invalid-page(2)>>.
+default	17:30:20.683809+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Setting process task state to: Not Running
+default	17:30:20.683814+0530	SpringBoard	[app<com.example.quicuiProductionTest>:79220] Invalidating workspace.
+default	17:30:20.683819+0530	SpringBoard	Removing source registration for processHandle: [app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220]
+default	17:30:20.683897+0530	SpringBoard	Removing: <FBApplicationProcess: 0x6b559f180; app<com.example.quicuiProductionTest>:79220(v37A39)>
+default	17:30:20.683901+0530	SpringBoard	Process exited: <FBApplicationProcess: 0x6b559f180; app<com.example.quicuiProductionTest>:79220(v37A39)> -> <RBSProcessExitContext| specific, status:<RBSProcessExitStatus| domain:codesigning(3) code:invalid-page(2)>>
+default	17:30:20.683960+0530	runningboardd	Calculated state for app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>: none (role: None) (endowments: (null))
+default	17:30:20.683973+0530	CommCenter	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.683981+0530	SpringBoard	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.684007+0530	SpringBoard	Application process state changed for com.example.quicuiProductionTest: (null)
+default	17:30:20.684046+0530	audiomxd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.684108+0530	CommCenter	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.684187+0530	audiomxd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.684211+0530	SpringBoard	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.684272+0530	WirelessRadioManagerd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.684556+0530	dasd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.684727+0530	wifid	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.685420+0530	watchdogd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.686005+0530	PerfPowerServices	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.686595+0530	useractivityd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.686868+0530	callservicesd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.687295+0530	locationd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.687463+0530	locationd	{"msg":"RBS #AppMonitor process monitor update handler invoked", "pid":79220, "bundleID":"com.example.quicuiProductionTest", "state":"None"}
+default	17:30:20.687748+0530	locationd	{"msg":"RBS #dic AppMonitor received Termination", "pid":79220, "bundleId":"com.example.quicuiProductionTest", "isUserKill":0}
+default	17:30:20.687906+0530	locationd	{"msg":"RBS #AppMonitor Post Application State Change Notification", "notification":"Terminated", "pid":79220, "bundleId":"com.example.quicuiProductionTest"}
+default	17:30:20.688178+0530	locationd	{"msg":"#Warning #ClientResolution the passed keyPath is not registered. Resolving to #nullCKP", "InputCKP":"icom.example.quicuiProductionTest:"}
+default	17:30:20.688482+0530	locationd	{"msg":"#CLIUA AppMonitor notification", "notification":"Terminated", "pid":79220, "bundleId":"com.example.quicuiProductionTest", "ClientKey":"icom.example.quicuiProductionTest:"}
+default	17:30:20.688513+0530	locationd	{"msg":"#CLIUA Marking change", "clientKey":"icom.example.quicuiProductionTest:", "reason":"Process state from RunningBoard", "AssertionLevel":"kCLClientInUseLevelDirectUserEngagement", "coming":0}
+default	17:30:20.688538+0530	locationd	{"msg":"#CLIUA updating AssertionRecord", "ClientKey":"icom.example.quicuiProductionTest:", "AssertionLevel":"kCLClientInUseLevelDirectUserEngagement"}
+default	17:30:20.688554+0530	locationd	{"msg":"#CLIUA AssertionRecord updated", "ClientKey":"icom.example.quicuiProductionTest:", "AssertionLevel":"kCLClientInUseLevelNotInUse"}
+default	17:30:20.688565+0530	locationd	{"msg":"#CLIUA in-use level changed for client", "ClientKey":"icom.example.quicuiProductionTest:"}
+default	17:30:20.688576+0530	locationd	{"msg":"#Warning #ClientResolution the passed keyPath is not registered. Resolving to #nullCKP", "InputCKP":"icom.example.quicuiProductionTest:"}
+default	17:30:20.688718+0530	UserEventAgent	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.688786+0530	WirelessRadioManagerd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.688894+0530	dasd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.689049+0530	watchdogd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.689210+0530	wifid	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.689451+0530	PerfPowerServices	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.690049+0530	useractivityd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.690387+0530	callservicesd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.690747+0530	backboardd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.690891+0530	gamepolicyd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.691526+0530	locationd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.691895+0530	symptomsd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.692761+0530	wifid	-[WiFiUserInteractionMonitor setApplicationRunningState:foregroundState:andNetworkingState:forBundleId:]: com.example.quicuiProductionTest exited
+default	17:30:20.694185+0530	UserEventAgent	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.694819+0530	backboardd	Received state update for 79220 (app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>, none-NotVisible
+default	17:30:20.695422+0530	SpringBoard	[com.example.quicuiProductionTest] com.example.quicuiProductionTest application state changed to <RBSProcessState| task:none debug:none>
+default	17:30:20.695432+0530	SpringBoard	[com.example.quicuiProductionTest] Ignore becoming background for application without push registration
+error	17:30:20.695499+0530	symptomsd	Process state is unknown AppStateTracker, pid 79220, uuid 273B336D-7A20-31CF-B7AF-88DFCA2186FC display identifier com.example.quicuiProductionTest foreground 1
+default	17:30:20.696154+0530	symptomsd	com.example.quicuiProductionTest: Foreground: false
+error	17:30:20.696310+0530	symptomsd	COSMCtrl _foregroundAppActivity incoming bundle com.example.quicuiProductionTest has nil supplied UUID, finds existing 273B336D-7A20-31CF-B7AF-88DFCA2186FC
+error	17:30:20.787338+0530	runningboardd	RBSStateCapture remove item called for untracked item 34-35-211934 (target:[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220])
+error	17:30:20.787345+0530	runningboardd	RBSStateCapture remove item called for untracked item 34-35-211935 (target:[app<com.example.quicuiProductionTest(3CB0BD78-A5DB-4555-B92D-42AAD9ABF105)>:79220])
+default	17:30:20.990103+0530	ReportCrash	loadStoreInfo [platform 2] com.example.quicuiProductionTest from file:///private/var/containers/Bundle/Application/298C2FD7-9E67-4B85-ABC2-53EC9644702B/Runner.app/
+default	17:30:20.995426+0530	ReportCrash	com.example.quicuiProductionTest is not a MetricKit client
+default	17:30:21.060609+0530	SpringBoard	[Main (EmbeddedDisplay)] dispatch event:
+<SBTransitionSwitcherModifierEvent: 0x6b5649c00; type: MainTransition; transitionID: E0501E90-0A29-4B03-80FE-55309EE3CDB3; phase: Complete; animated: YES; fromAppLayout: 0x0; toAppLayout: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main>; fromEnvironmentMode: home-screen; toEnvironmentMode: application; fromSpaceConfiguration: undefined; toSpaceConfiguration: full; pendingTermination: {(
+)}; activating: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main>; morphingPIPLayoutRole: undefined; previousDesktopItems: {(
+)}>
+default	17:30:21.061032+0530	SpringBoard	[Main (EmbeddedDisplay)] handle response:
+<SBSwitcherModifierEventResponse: 0x6b7bf7930> {
+    <SBPreemptAnimationSwitcherEventResponse: 0x6b1a86370>;
+    <SBSwitcherModifierEventResponse: 0x6b78f9c80> {
+	    <SBInvalidateAdjustedAppLayoutsSwitcherEventResponse: 0x6b1a87150>;
+	    <SBSwitcherModifierEventResponse: 0x6b1a84570> {
+		    <SBRequestFolderSnapshotsSwitcherEventResponse: 0x6b83b8e40; snapshotRequested: NO>;
+		    <SBIconOverlayVisibilitySwitcherEventResponse: 0x6b56bf4c0; visible: NO; appLayout: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main>>;
+		    <SBIconViewVisibilitySwitcherEventResponse: 0x6bdc30370; visible: YES; animationSettings: 0x0; appLayout: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main>>;
+		    <SBMatchMoveToIconViewSwitcherEventResponse: 0x6b9f64960; active: NO; appLayout: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main>>;
+		};
+	};
+}
+default	17:30:21.085197+0530	SpringBoard	Front display did change: <SBApplication: 0x6b0792100; com.example.quicuiProductionTest>
+default	17:30:21.105823+0530	SpringBoard	Resolved Stack (update(Switcher)) [
+    Highest: ⬇ ,
+    BannerItems: ⬇ ,
+    HUD: ⬇ ,
+    PictureInPicture: ⬇ ,
+    TransientOverlayPresentation: ⬇ ,
+    CoverSheet: ⬇ ,
+    Switcher: ownsHomeGesture; FGActive; homeAffordanceDrawingSuppressed: N->Y; suppressedBundles: com.example.quicuiProductionTest->(none); suppressedScenes: 1->0,
+    HomeScreen: BG->FGActive
+]
+default	17:30:21.108738+0530	cameracaptured	<<<< FigCaptureDisplayLayoutMonitor >>>> -[FigCaptureDisplayLayoutMonitor _parseFBSDisplayLayout:]: <FigCaptureDisplayLayoutMonitor: 0xd64ccce40 Main Display> <FBSDisplayLayout: 0xd67220200; displayIdentity: Main> {    bounds = {{0, 0}, {390, 844}};    interfaceOrientation = "portrait (1)";    backlightLevel = 100;    backlightState = 2;    elements = {        <SBSDisplayLayoutElement: 0xd624fb800; com.apple.springboard.home-screen; frame: {{0, 0}, {390, 844}}; level: 0; role: primary>;        <SBSDisplayLayoutElement: 0xd624fafb0; sceneID:com.example.quicuiProductionTest-default; bundleID: com.example.quicuiProductionTest; frame: {{0, 0}, {390, 844}}; level: 1; role: primary>;    }    timestamp = 30 November 2025 at 5:30:21 PM IST;}
+default	17:30:21.108792+0530	cameracaptured	<<<< FigCaptureDisplayLayoutMonitor >>>> -[FigCaptureDisplayLayoutMonitor _updateObserversWithLayout:]: <FigCaptureDisplayLayoutMonitor: 0xd64ccce40 Main Display> <FigCaptureDisplayLayout: 0xd67222b00 11-30-2025 17:30:21, Main Display, foreground:[com.example.quicuiProductionTest]>
+default	17:30:21.111881+0530	bluetoothd	SystemUI unknown identifier: 'sceneID:com.example.quicuiProductionTest-default' / 'com.example.quicuiProductionTest'
+default	17:30:21.135198+0530	SpringBoard	<SBFullScreenSwitcherLiveContentOverlayCoordinator: 0x6b71ede00> Removing SwitcherScene overlay for: <SBAppLayout: 0x6aea72180; primary: com.example.quicuiProductionTest:default; environment: main>, animated: NO

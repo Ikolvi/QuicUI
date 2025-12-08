@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "architecture": "arm64-v8a",
+  "isBaseline": true,
+  "apkPath": ".quicui/baseline/app-v1.0.0.apk",
+  "libappPath": ".quicui/baseline/libapp.so",
+  "timestamp": "2025-11-17T19:31:13.373371",
+  "appId": "com.quicui.test_app_fresh"
+}

@@ -1,0 +1,42 @@
+// cspell:words swiftobjective ckotlinjava havent
+import 'package:mason_logger/mason_logger.dart';
+
+/// Link to the Quicui documentation page.
+const docsUrl = 'https://docs.quicui.dev';
+
+/// Link to the Flutter version page on the Quicui documentation.
+const flutterVersionUrl = '$docsUrl/getting-started/flutter-version';
+
+/// Link to the supported Flutter versions section on the Quicui
+/// documentation.
+const supportedFlutterVersionsUrl =
+    '$flutterVersionUrl#supported-flutter-versions';
+
+/// Link to the troubleshooting page on the Quicui documentation.
+const troubleshootingUrl = '$docsUrl/code-push/troubleshooting';
+
+/// Link to the troubleshooting section which covers the
+/// Unsupported class file major version
+const unsupportedClassFileVersionUrl =
+    '$troubleshootingUrl#unsupported-class-file-major-version-65';
+
+/// Link to the troubleshooting section which covers the
+/// not being able to run the app in VS Code after installing Quicui.
+const cannotRunInVSCodeUrl =
+    '''$troubleshootingUrl#cant-run-my-app-in-vs-code''';
+
+/// Link to the troubleshooting section which provides more information about
+/// what causes the asset changes warning and what to do about it.
+const assetChangesTroubleshootingUrl =
+    '''$troubleshootingUrl#your-app-contains-asset-changes-warning-when-creating-a-patch''';
+
+/// Link to the troubleshooting section which provides more information about
+/// what causes the native code changes warning and what to do about it.
+const nativeChangesTroubleshootingUrl =
+    '''$troubleshootingUrl#your-app-contains-native-changes-warning-when-creating-a-patch-even-though-you-havent-changed-swiftobjective-ckotlinjava-code''';
+
+/// Extension to convert a string to a CLI link.
+extension ToLink on String {
+  /// Wraps the string in a link.
+  String toLink() => link(uri: Uri.parse(this));
+}

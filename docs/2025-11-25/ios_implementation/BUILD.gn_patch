@@ -1,0 +1,96 @@
+# Patch for BUILD.gn files to include QuicUI modifications
+
+# ==================== File: flutter/shell/platform/darwin/ios/framework/BUILD.gn ====================
+
+# LOCATE: ios_objc_library("flutter_framework_source") or similar
+
+ios_objc_library("flutter_framework_source") {
+  sources = [
+    # ... existing sources ...
+    
+    # QuicUI Code Push: Add new Objective-C++ source
+    "Source/QuicUICodePushLoader.mm",  # NEW
+    
+    # ... rest of existing sources ...
+  ]
+  
+  deps = [
+    # ... existing dependencies ...
+    
+    # QuicUI Code Push: Add C++ patch loader dependency
+    "//flutter/shell/common:quicui_patch_loader",  # NEW
+    
+    # ... rest of existing dependencies ...
+  ]
+  
+  # ... rest of configuration ...
+}
+
+# ==================== File: flutter/shell/common/BUILD.gn ====================
+
+# VERIFY: This should already exist from Android implementation
+
+source_set("quicui_patch_loader") {
+  sources = [
+    "quicui_patch_loader.cc",
+    "quicui_patch_loader.h",
+  ]
+  
+  deps = [
+    "//flutter/fml",
+  ]
+  
+  # Make this available to all platforms
+  public = [
+    "quicui_patch_loader.h",
+  ]
+}
+
+# ==================== Build Commands ====================
+
+# To build iOS engine after modifications:
+
+# 1. Build for iOS device (arm64)
+#    ninja -C out/ios_release
+
+# 2. Build for iOS simulator (x86_64 or arm64)
+#    ninja -C out/ios_debug_sim_unopt
+
+# 3. Verify the build
+#    ls -lh out/ios_release/Flutter.xcframework/
+
+# Output will be:
+# Flutter.xcframework/
+# ├── ios-arm64/
+# │   └── Flutter.framework/
+# │       ├── Flutter          # Binary with QuicUI code
+# │       ├── Headers/
+# │       └── Info.plist
+# └── ios-arm64_x86_64-simulator/
+#     └── Flutter.framework/
+
+# ==================== Integration with Flutter App ====================
+
+# In your iOS Flutter app's Podfile:
+
+# Option 1: Use local custom engine
+# flutter_application_path = '../'
+# engine_path = '/Volumes/DoWonder2/quicui_engine_build/flutter_3.38.1/engine/src/out/ios_release'
+# 
+# target 'Runner' do
+#   flutter_install_all_ios_pods(engine_path: engine_path)
+# end
+
+# Option 2: Replace Flutter.xcframework manually
+# 1. Build your Flutter app normally: flutter build ios
+# 2. Replace ios/Flutter/Flutter.xcframework with your custom one
+# 3. Archive and distribute
+
+# ==================== Code Signing Note ====================
+
+# After building, the Flutter.framework will be unsigned.
+# It will be signed automatically when you build your Flutter app.
+# However, patched AOT snapshots will need separate signing:
+
+# codesign -f -s "iPhone Developer" \
+#   ~/Library/Caches/quicui_patches/App_patched_arm64

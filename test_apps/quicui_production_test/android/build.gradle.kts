@@ -1,5 +1,13 @@
 allprojects {
     repositories {
+        // QuicUI engine artifacts (isolated from system Maven)
+        val quicuiMaven = file(System.getProperty("user.home") + "/.quicui/maven")
+        if (quicuiMaven.exists()) {
+            maven {
+                url = quicuiMaven.toURI()
+                name = "quicuiLocal"
+            }
+        }
         google()
         mavenCentral()
     }

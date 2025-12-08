@@ -1,0 +1,14 @@
+{
+  "patchId": "1765107001815",
+  "fromVersion": "1.0.0",
+  "toVersion": "1.0.1",
+  "appId": "com.example.quicui_production_test",
+  "platform": "android",
+  "architecture": "arm64-v8a",
+  "hash": "b3ad53b81cb337989b035d28ff3696b94fe830f437d3f11adb30d131fb55c6b5",
+  "compressedSize": 1120408,
+  "uncompressedSize": 3743391,
+  "compression": "xz",
+  "patchPath": "/Users/admin/Documents/quicui2/test_apps/quicui_production_test/output/patches/patch_1765107000544.quicui.xz",
+  "createdAt": "2025-12-07T17:00:01.815873"
+}

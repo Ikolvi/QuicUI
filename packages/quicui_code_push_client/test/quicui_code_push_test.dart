@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:quicui_code_push_client/quicui_code_push_client.dart';
-import 'package:quicui_code_push_client/src/models/config.dart';
+import 'package:quicui/quicui.dart';
+import 'package:quicui/src/models/config.dart';
 
 void main() {
   group('QuicUI Code Push Client', () {

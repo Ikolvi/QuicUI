@@ -1,0 +1,63 @@
+23:06:04  Acquired tunnel connection to device.
+23:06:04  Enabling developer disk image services.
+23:06:05  Acquired usage assertion.
+Launched application with com.example.quicuiProductionTest bundle identifier.
+Waiting for the application to terminate…
+2025-11-29 23:06:05.456 Runner[69348:3858862] [QuicUI] FlutterDartProject instance #1 created via init
+2025-11-29 23:06:05.456 Runner[69348:3858862] [QuicUI] FlutterDartProject instance #2 created via initWithPrecompiledDartBundle
+2025-11-29 23:06:05.459 Runner[69348:3858862] [QuicUI] No patches_state.json found - running base AOT
+2025-11-29 23:06:05.459 Runner[69348:3858862] [QuicUI] Running in AOT mode, kernel loading disabled by default
+2025-11-29 23:06:05.459 Runner[69348:3858862] [QuicUI] Kernel loading can be enabled via code push patches
+2025-11-29 23:06:05.462 Runner[69348:3858862] [QuicUI] Instance #2: Calling checkForCodePushPatches
+2025-11-29 23:06:05.462 Runner[69348:3858862] [QuicUI] Instance #2: checkForCodePushPatches called
+2025-11-29 23:06:05.462 Runner[69348:3858862] [QuicUI] Instance #2: QuicUI cache directory: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] iOS Code Push Loader initialized
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Cache directory: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Architecture: arm64
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Checking for patches via C++ loader...
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] No patch found (C++ returned empty string)
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Instance #2: No patch found, using original AOT from app bundle
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Instance #2: After checkForCodePushPatches, paths size: 1
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Instance #2: settings getter called
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Instance #2: settings.application_library_paths size: 1
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Instance #2: First library path: /var/containers/Bundle/Application/65B26D16-7A20-41C2-8AEC-EC9A1D9D878E/Runner.app/Frameworks/App.framework/App
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Instance #2: settings getter called
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Instance #2: settings.application_library_paths size: 1
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Instance #2: First library path: /var/containers/Bundle/Application/65B26D16-7A20-41C2-8AEC-EC9A1D9D878E/Runner.app/Frameworks/App.framework/App
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Checking for code push patches...
+2025-11-29 23:06:05.463 Runner[69348:3858862] [QuicUI] Instance #2: checkForCodePushPatches called
+2025-11-29 23:06:05.464 Runner[69348:3858862] [QuicUI] Instance #2: QuicUI cache directory: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches
+2025-11-29 23:06:05.464 Runner[69348:3858862] [QuicUI] iOS Code Push Loader initialized
+2025-11-29 23:06:05.464 Runner[69348:3858862] [QuicUI] Cache directory: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches
+2025-11-29 23:06:05.464 Runner[69348:3858862] [QuicUI] Architecture: arm64
+2025-11-29 23:06:05.464 Runner[69348:3858862] [QuicUI] Checking for patches via C++ loader...
+2025-11-29 23:06:05.464 Runner[69348:3858862] [QuicUI] No patch found (C++ returned empty string)
+2025-11-29 23:06:05.464 Runner[69348:3858862] [QuicUI] Instance #2: No patch found, using original AOT from app bundle
+2025-11-29 23:06:05.464 Runner[69348:3858862] [QuicUI] Instance #2: settings getter called
+2025-11-29 23:06:05.464 Runner[69348:3858862] [QuicUI] Instance #2: settings.application_library_paths size: 1
+2025-11-29 23:06:05.464 Runner[69348:3858862] [QuicUI] Instance #2: First library path: /var/containers/Bundle/Application/65B26D16-7A20-41C2-8AEC-EC9A1D9D878E/Runner.app/Frameworks/App.framework/App
+2025-11-29 23:06:05.636 Runner[69348:3858862] Warning: Unable to create restoration in progress marker file
+2025-11-29 23:06:05.637 Runner[69348:3858862] [QuicUICodePush] registerWithRegistrar called
+2025-11-29 23:06:05.637 Runner[69348:3858862] [QuicUICodePush] Plugin registered successfully
+2025-11-29 23:06:05.699 Runner[69348:3858862] [QuicUICodePush] 🔧 handleMethodCall: hasPatch
+2025-11-29 23:06:05.699 Runner[69348:3858862] [QuicUICodePush] Method not implemented: hasPatch
+2025-11-29 23:06:08.555 Runner[69348:3858862] [QuicUICodePush] 🔧 handleMethodCall: getArchitecture
+2025-11-29 23:06:08.555 Runner[69348:3858862] [QuicUICodePush] Method not implemented: getArchitecture
+2025-11-29 23:06:09.890 Runner[69348:3858862] [QuicUICodePush] 🔧 handleMethodCall: installPatch
+2025-11-29 23:06:09.890 Runner[69348:3858862] [QuicUICodePush] START handleInstallPatch
+2025-11-29 23:06:09.890 Runner[69348:3858862] [QuicUICodePush] Patch ID received: 1764437741021
+2025-11-29 23:06:09.890 Runner[69348:3858862] [QuicUICodePush] Installing patch
+2025-11-29 23:06:09.890 Runner[69348:3858862] [QuicUICodePush] Source path length: 115
+2025-11-29 23:06:09.890 Runner[69348:3858920] [QuicUICodePush] Patch ID: 1764437741021, Patch number: 1764437741021
+2025-11-29 23:06:09.890 Runner[69348:3858920] [QuicUICodePush] Creating patches directory: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021
+2025-11-29 23:06:09.890 Runner[69348:3858920] [QuicUICodePush] Patches directory created
+2025-11-29 23:06:09.890 Runner[69348:3858920] [QuicUICodePush] Copying patch to dlc.vmcode
+2025-11-29 23:06:09.891 Runner[69348:3858920] [QuicUICodePush] File copied successfully to: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+2025-11-29 23:06:09.891 Runner[69348:3858920] [QuicUICodePush] dlc.vmcode size: 4015024 bytes
+2025-11-29 23:06:09.891 Runner[69348:3858920] [QuicUICodePush] File attributes set successfully
+2025-11-29 23:06:09.891 Runner[69348:3858920] [QuicUICodePush] Creating metadata.json in patch directory
+2025-11-29 23:06:09.892 Runner[69348:3858920] [QuicUICodePush] metadata.json created successfully at: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/metadata.json
+2025-11-29 23:06:09.892 Runner[69348:3858920] [QuicUICodePush] Creating patches_state.json with patch number: 1764437741021
+2025-11-29 23:06:09.893 Runner[69348:3858920] [QuicUICodePush] patches_state.json created successfully with metadata fields
+2025-11-29 23:06:09.893 Runner[69348:3858920] [QuicUICodePush] Installation complete
+The app terminated with the exit code 0.

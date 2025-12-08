@@ -1,0 +1,105 @@
+plugins {
+    id 'maven-publish'
+}
+
+group = 'io.github.ikolvi'
+version = '1.0.0'
+
+def enginePath = '/Volumes/DoWonder2/quicui_engine_build/flutter_3.38.1/engine/src/out/android_release_arm64'
+
+publishing {
+    publications {
+        arm64Release(MavenPublication) {
+            groupId = 'io.github.ikolvi'
+            artifactId = 'quicui-flutter-engine-arm64'
+            version = '1.0.0'
+            
+            artifact("${enginePath}/arm64_v8a_release.jar") {
+                extension 'jar'
+            }
+            
+            pom {
+                name = 'QuicUI Flutter Engine ARM64'
+                description = 'Custom Flutter engine with QuicUI code push support for arm64-v8a'
+                url = 'https://github.com/Ikolvi/QuicUIEngine'
+                
+                licenses {
+                    license {
+                        name = 'BSD 3-Clause License'
+                        url = 'https://opensource.org/licenses/BSD-3-Clause'
+                    }
+                }
+                
+                developers {
+                    developer {
+                        id = 'ikolvi'
+                        name = 'QuicUI Team'
+                    }
+                }
+                
+                scm {
+                    connection = 'scm:git:git://github.com/Ikolvi/QuicUIEngine.git'
+                    developerConnection = 'scm:git:ssh://github.com/Ikolvi/QuicUIEngine.git'
+                    url = 'https://github.com/Ikolvi/QuicUIEngine'
+                }
+            }
+        }
+        
+        flutterEmbedding(MavenPublication) {
+            groupId = 'io.github.ikolvi'
+            artifactId = 'quicui-flutter-embedding'
+            version = '1.0.0'
+            
+            artifact("${enginePath}/flutter_embedding_release.jar") {
+                extension 'jar'
+            }
+            
+            pom {
+                name = 'QuicUI Flutter Embedding'
+                description = 'Flutter embedding layer for QuicUI engine'
+                url = 'https://github.com/Ikolvi/QuicUIEngine'
+                
+                licenses {
+                    license {
+                        name = 'BSD 3-Clause License'
+                        url = 'https://opensource.org/licenses/BSD-3-Clause'
+                    }
+                }
+            }
+        }
+        
+        flutterJar(MavenPublication) {
+            groupId = 'io.github.ikolvi'
+            artifactId = 'quicui-flutter'
+            version = '1.0.0'
+            
+            artifact("${enginePath}/flutter.jar") {
+                extension 'jar'
+            }
+            
+            pom {
+                name = 'QuicUI Flutter JAR'
+                description = 'Complete Flutter JAR for QuicUI engine'
+                url = 'https://github.com/Ikolvi/QuicUIEngine'
+                
+                licenses {
+                    license {
+                        name = 'BSD 3-Clause License'
+                        url = 'https://opensource.org/licenses/BSD-3-Clause'
+                    }
+                }
+            }
+        }
+    }
+    
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/Ikolvi/QuicUIEngine")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("GPR_USER") ?: "Ikolvi"
+                password = project.findProperty("gpr.token") ?: System.getenv("GPR_TOKEN")
+            }
+        }
+    }
+}

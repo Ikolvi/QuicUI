@@ -1,0 +1,9 @@
+{
+  "version": "1.0.1",
+  "architecture": "arm64-v8a",
+  "isBaseline": false,
+  "apkPath": "/Users/admin/Documents/quicui2/test_apps/quicui_production_test/output/app-v1.0.1.apk",
+  "libappPath": "/Users/admin/Documents/quicui2/test_apps/quicui_production_test/output/libapp.so",
+  "timestamp": "2025-12-07T16:59:45.692367",
+  "appId": "com.example.quicuiProductionTest"
+}

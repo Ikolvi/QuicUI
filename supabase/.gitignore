@@ -1,0 +1,26 @@
+# Supabase local development
+.branches
+.temp
+
+# Environment files (NEVER commit!)
+.env
+.env.local
+.env.*.local
+.env.keys
+
+# dotenvx
+.env.keys
+
+# Nested supabase folder (if created by init)
+supabase/
+
+# IDE
+.idea/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

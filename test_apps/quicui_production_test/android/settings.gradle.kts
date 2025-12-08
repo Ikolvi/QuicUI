@@ -11,7 +11,15 @@ pluginManagement {
     includeBuild("$flutterSdkPath/packages/flutter_tools/gradle")
 
     repositories {
-        mavenLocal() // Force use of local Maven repository FIRST
+        // QuicUI engine artifacts
+        val quicuiMaven = file(System.getProperty("user.home") + "/.quicui/maven")
+        if (quicuiMaven.exists()) {
+            maven {
+                url = quicuiMaven.toURI()
+                name = "quicuiLocal"
+            }
+        }
+        mavenLocal()
         google()
         mavenCentral()
         gradlePluginPortal()

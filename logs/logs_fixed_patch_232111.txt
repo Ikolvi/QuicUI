@@ -1,0 +1,6 @@
+23:21:12  Acquired tunnel connection to device.
+23:21:12  Enabling developer disk image services.
+23:21:12  Acquired usage assertion.
+Launched application with com.example.quicuiProductionTest bundle identifier.
+Waiting for the application to terminate…
+App terminated due to signal 9.

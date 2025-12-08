@@ -1,0 +1,9 @@
+{
+  "version": "2.0.0",
+  "buildNumber": "2",
+  "architecture": "arm64-v8a",
+  "apkPath": "v2/app-v2.0.0.apk",
+  "libappPath": ".quicui/v2.0.0/libapp.so",
+  "appId": "com.example.quicui_production_test",
+  "timestamp": "2025-01-09T00:10:00.000Z"
+}

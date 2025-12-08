@@ -1,4 +1,4 @@
-name: quicui_code_push_client
+name: quicui
 description: Over-the-air (OTA) updates for Flutter apps. Download and install code updates instantly with QuicUI Code Push system.
 version: 2.0.5
 homepage: https://github.com/Ikolvi/QuicUICodepush

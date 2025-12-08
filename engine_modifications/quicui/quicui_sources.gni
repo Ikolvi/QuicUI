@@ -1,0 +1,17 @@
+# Copyright (c) 2025 QuicUI Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# QuicUI Linker Module sources
+quicui_sources = [
+  "quicui/link_info.cc",
+  "quicui/link_info.h",
+  "quicui/linker.cc",
+  "quicui/linker.h",
+  "quicui/quicui.cc",
+  "quicui/quicui.h",
+  "quicui/wrapper.cc",
+  "quicui/wrapper.h",
+  "quicui/wrapper_allocator.cc",
+  "quicui/wrapper_allocator.h",
+]

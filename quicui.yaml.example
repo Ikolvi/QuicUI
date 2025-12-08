@@ -1,0 +1,75 @@
+# QuicUI Compiler Configuration
+# Copy this file to quicui.yaml and fill in your settings
+
+# Backend server configuration
+server:
+  # Local development (old backend)
+  # url: "http://192.168.20.100:8080"
+  
+  # Supabase production (recommended)
+  url: "https://YOUR_PROJECT_REF.supabase.co/functions/v1"
+  api_key: "YOUR_SUPABASE_ANON_KEY"  # Get from Supabase dashboard
+
+# Application configuration
+app:
+  id: "com.example.myapp"  # Your Flutter app package name
+  name: "MyApp"  # Human-readable app name
+
+# Version management
+version:
+  current: "1.0.0"  # Current production version
+  auto_increment: true  # Auto-increment patch version
+  format: "semantic"  # semantic (1.0.1) or timestamp (1.0.0-20240117)
+
+# Build configuration
+build:
+  flutter_project: "."  # Path to Flutter project (default: current directory)
+  output_dir: ".quicui"  # Where to store patches and artifacts
+  apk_path: "build/app/outputs/flutter-apk/app-release.apk"  # Relative to flutter_project
+  
+  # Target architectures for patch generation
+  architectures:
+    - arm64-v8a  # 64-bit ARM (modern Android devices)
+    - armeabi-v7a  # 32-bit ARM (older Android devices)
+    # - x86_64  # Uncomment for x86_64 emulator support
+
+# Patch configuration
+patch:
+  compression: xz  # Compression algorithm: xz, gz, bz2, or none
+  # xz: Best compression (~70-80% reduction), slower
+  # gz: Good compression (~60-70% reduction), fast
+  # bz2: Moderate compression (~65-75% reduction), moderate speed
+  # none: No compression, fastest
+  
+  # Skip patch generation if files are identical
+  skip_if_identical: true
+  
+  # Keep old patches for rollback (0 = delete after upload)
+  keep_old_patches: 3
+
+# Upload configuration
+upload:
+  auto_upload: true  # Automatically upload patches after generation
+  retry_count: 3  # Number of upload retries on failure
+  timeout: 60  # Upload timeout in seconds
+
+# Advanced options
+advanced:
+  # Cache base snapshots to avoid rebuilding
+  cache_base_snapshots: true
+  
+  # Parallel patch generation (one per architecture)
+  parallel_generation: true
+  
+  # Verbose logging
+  verbose: false
+  
+  # Dry run mode (generate patches but don't upload)
+  dry_run: false
+
+# Notification configuration (optional)
+notifications:
+  enabled: false
+  webhook_url: null  # Slack/Discord webhook URL
+  notify_on_success: true
+  notify_on_failure: true

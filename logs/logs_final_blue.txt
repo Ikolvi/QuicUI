@@ -1,0 +1,77 @@
+23:06:46  Acquired tunnel connection to device.
+23:06:46  Enabling developer disk image services.
+23:06:46  Acquired usage assertion.
+2025-11-29 23:06:47.323 Runner[69364:3859323] [QuicUI] FlutterDartProject instance #1 created via init
+2025-11-29 23:06:47.323 Runner[69364:3859323] [QuicUI] FlutterDartProject instance #2 created via initWithPrecompiledDartBundle
+2025-11-29 23:06:47.325 Runner[69364:3859323] [QuicUI] Found patches_state.json at: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/patches_state.json
+2025-11-29 23:06:47.325 Runner[69364:3859323] [QuicUI] Found patch file at: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+2025-11-29 23:06:47.325 Runner[69364:3859323] [QuicUI] Patch size: 4015024 bytes (3.83 MB)
+2025-11-29 23:06:47.325 Runner[69364:3859323] [QuicUI] ✅ Patch loaded successfully - ID: 1764437741021
+2025-11-29 23:06:47.325 Runner[69364:3859323] [QuicUI] application_library_paths[0] = /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+2025-11-29 23:06:47.325 Runner[69364:3859323] [QuicUI] Running in AOT mode, kernel loading disabled by default
+2025-11-29 23:06:47.325 Runner[69364:3859323] [QuicUI] Kernel loading can be enabled via code push patches
+2025-11-29 23:06:47.329 Runner[69364:3859323] [QuicUI] Instance #2: Calling checkForCodePushPatches
+2025-11-29 23:06:47.329 Runner[69364:3859323] [QuicUI] Instance #2: checkForCodePushPatches called
+2025-11-29 23:06:47.329 Runner[69364:3859323] [QuicUI] Instance #2: QuicUI cache directory: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches
+2025-11-29 23:06:47.329 Runner[69364:3859323] [QuicUI] iOS Code Push Loader initialized
+2025-11-29 23:06:47.329 Runner[69364:3859323] [QuicUI] Cache directory: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches
+2025-11-29 23:06:47.329 Runner[69364:3859323] [QuicUI] Architecture: arm64
+2025-11-29 23:06:47.329 Runner[69364:3859323] [QuicUI] Checking for patches via C++ loader...
+2025-11-29 23:06:47.331 Runner[69364:3859323] [QuicUI] ✅ Found valid patch at: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Patch size: 4015024 bytes (3.83 MB)
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: ✅ Found patch at: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: Patch file extension: vmcode
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: ✅ Loading .vmcode patch via interpreter mode
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: .vmcode will be loaded as read-only data (interpreter mode)
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: ✅ Set application_library_path[0]: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Patch info: {
+    architecture = arm64;
+    critical = 0;
+    "patch_hash" = e5a2b114cb451349dc528db40f5e3344785ddea1a4a09b4a20e840ae3cdc1b62;
+    platform = ios;
+    "release_date" = "";
+    "requires_restart" = 1;
+    signature = "";
+    version = 1764437741021;
+}
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: Patch version: 1764437741021
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: Patch architecture: arm64
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: After checkForCodePushPatches, paths size: 3
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: settings getter called
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: settings.application_library_paths size: 3
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: First library path: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: settings getter called
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: settings.application_library_paths size: 3
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: First library path: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Checking for code push patches...
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: checkForCodePushPatches called
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Instance #2: QuicUI cache directory: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] iOS Code Push Loader initialized
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Cache directory: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Architecture: arm64
+2025-11-29 23:06:47.332 Runner[69364:3859323] [QuicUI] Checking for patches via C++ loader...
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] ✅ Found valid patch at: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Patch size: 4015024 bytes (3.83 MB)
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Instance #2: ✅ Found patch at: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Instance #2: Patch file extension: vmcode
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Instance #2: ✅ Loading .vmcode patch via interpreter mode
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Instance #2: .vmcode will be loaded as read-only data (interpreter mode)
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Instance #2: ✅ Set application_library_path[0]: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Patch info: {
+    architecture = arm64;
+    critical = 0;
+    "patch_hash" = e5a2b114cb451349dc528db40f5e3344785ddea1a4a09b4a20e840ae3cdc1b62;
+    platform = ios;
+    "release_date" = "";
+    "requires_restart" = 1;
+    signature = "";
+    version = 1764437741021;
+}
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Instance #2: Patch version: 1764437741021
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Instance #2: Patch architecture: arm64
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Instance #2: settings getter called
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Instance #2: settings.application_library_paths size: 4
+2025-11-29 23:06:47.336 Runner[69364:3859323] [QuicUI] Instance #2: First library path: /var/mobile/Containers/Data/Application/8840772F-732A-443C-A8E4-0C92CF36A73E/Library/Caches/patches/1764437741021/dlc.vmcode
+Launched application with com.example.quicuiProductionTest bundle identifier.
+Waiting for the application to terminate…
+The app terminated with the exit code 0.

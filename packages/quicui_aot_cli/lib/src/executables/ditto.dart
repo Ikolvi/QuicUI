@@ -1,0 +1,49 @@
+import 'dart:async';
+
+import 'package:scoped_deps/scoped_deps.dart';
+import 'package:quicui_aot_cli/src/quicui_process.dart';
+
+/// A reference to a [Ditto] instance.
+final dittoRef = create(Ditto.new);
+
+/// The [Ditto] instance available in the current zone.
+Ditto get ditto => read(dittoRef);
+
+/// A wrapper around the `ditto` command.
+/// https://ss64.com/mac/ditto.html
+class Ditto {
+  Future<QuicuiProcessResult> _exec(List<String> args) =>
+      process.run('ditto', args);
+
+  /// Extracts the contents of a compressed archive at [source] to
+  /// [destination].
+  Future<void> extract({
+    required String source,
+    required String destination,
+  }) async {
+    final result = await _exec(['-x', '-k', source, destination]);
+    if (result.exitCode != 0) {
+      throw Exception('Failed to extract: ${result.stderr}');
+    }
+  }
+
+  /// Archives the contents of [source] to a compressed archive at
+  /// [destination].
+  Future<void> archive({
+    required String source,
+    required String destination,
+    bool keepParent = false,
+  }) async {
+    final args = [
+      '-c',
+      '-k',
+      if (keepParent) '--keepParent',
+      source,
+      destination,
+    ];
+    final result = await _exec(args);
+    if (result.exitCode != 0) {
+      throw Exception('Failed to archive: ${result.stderr}');
+    }
+  }
+}

@@ -1,0 +1,43 @@
+# Copyright (c) 2025 QuicUI Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# QuicUI Linker Module
+# Separate module for iOS code push functionality
+
+import("//build/config/compiler/compiler.gni")
+
+# QuicUI linker source set
+source_set("quicui_linker") {
+  sources = [
+    "link_info.cc",
+    "link_info.h",
+    "linker.cc",
+    "linker.h",
+    "quicui.cc",
+    "quicui.h",
+    "wrapper.cc",
+    "wrapper.h",
+    "wrapper_allocator.cc",
+    "wrapper_allocator.h",
+  ]
+
+  include_dirs = [ "../.." ]
+
+  # Platform library dependency
+  deps = [ "../../platform:libdart_platform" ]
+
+  # Define QUICUI_USE_INTERPRETER based on target platform
+  if (is_ios) {
+    defines = [ "QUICUI_USE_INTERPRETER=1" ]
+  } else {
+    defines = [ "QUICUI_USE_INTERPRETER=0" ]
+  }
+}
+
+# QuicUI linker static library (for linking into gen_snapshot)
+static_library("quicui_linker_lib") {
+  complete_static_lib = true
+  
+  deps = [ ":quicui_linker" ]
+}

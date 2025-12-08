@@ -1,0 +1,9 @@
+{
+  "version": "3.0.61",
+  "platform": "ios",
+  "architecture": "arm64",
+  "isBaseline": false,
+  "appBinaryPath": "App-v3.0.61",
+  "appDillPath": "app.dill",
+  "timestamp": "2025-11-30T02:16:51.988483"
+}

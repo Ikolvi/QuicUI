@@ -1,0 +1,14 @@
+{
+  "patchId": "1764498255916",
+  "fromVersion": "3.0.72",
+  "toVersion": "3.0.73",
+  "appId": "com.example.quicuiProductionTest",
+  "platform": "ios",
+  "architecture": "arm64",
+  "hash": "1df3adf661107a8b6c54bb1188b3e7ffaf58014175459fbb42da70db8adbbcd2",
+  "compressedSize": 1473412,
+  "uncompressedSize": 5611016,
+  "compression": "xz",
+  "patchPath": "/Users/admin/Documents/quicui2/test_apps/quicui_production_test/patches/patch_3.0.73_1764498250786.vmcode.xz",
+  "createdAt": "2025-11-30T15:54:15.916647"
+}

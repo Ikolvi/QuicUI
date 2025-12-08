@@ -1,0 +1,10 @@
+{
+  "version": "3.0.21",
+  "platform": "ios",
+  "architecture": "arm64",
+  "isBaseline": false,
+  "appPath": "./build/ios/iphoneos/Runner.app",
+  "appBinaryPath": "./v3.0.21/App-v3.0.21",
+  "timestamp": "2025-11-26T03:49:02.173784",
+  "appId": "com.example.quicuiProductionTest"
+}

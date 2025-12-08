@@ -1,0 +1,14 @@
+{
+  "patchId": "1764271672472",
+  "fromVersion": "3.0.42",
+  "toVersion": "3.0.44",
+  "appId": "com.example.quicuiProductionTest",
+  "platform": "ios",
+  "architecture": "arm64",
+  "hash": "0bba873b3ed44c10891576694b78216e0c57402ef3b0486470053ca0a513e618",
+  "compressedSize": 1172088,
+  "uncompressedSize": 4096944,
+  "compression": "xz",
+  "patchPath": "builds/patches/patch_3.0.44_1764271664300.vmcode.xz",
+  "createdAt": "2025-11-28T00:57:52.472453"
+}

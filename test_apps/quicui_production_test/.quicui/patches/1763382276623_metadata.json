@@ -1,0 +1,13 @@
+{
+  "patchId": "1763382276623",
+  "fromVersion": "1.0.0",
+  "toVersion": "2.0.0",
+  "appId": "com.quicui.test_app_fresh",
+  "architecture": "arm64-v8a",
+  "hash": "19848ad572acbbd525a2fdb9e6aae975f0ee21dfe936a9531cfeb625b1ed002d",
+  "compressedSize": 1075664,
+  "uncompressedSize": 3615182,
+  "compression": "xz",
+  "patchPath": ".quicui/patches/patch_1763382275462.quicui.xz",
+  "createdAt": "2025-11-17T17:54:36.623920"
+}

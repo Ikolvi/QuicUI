@@ -1,7 +1,7 @@
 # QuicUI CLI
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Ikolvi/QuicUI/develop/packages/quicui_cli/logo.png" alt="QuicUI Logo" width="200">
+  <img src="logo.png" alt="QuicUI Logo" width="200">
 </p>
 
 Command-line interface for QuicUI Code Push - deliver instant updates to your Flutter apps without app store approval.

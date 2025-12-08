@@ -1,7 +1,7 @@
 # QuicUI
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Ikolvi/QuicUICodepush/main/logo.png" alt="QuicUI Logo" width="200">
+  <img src="logo.png" alt="QuicUI Logo" width="200">
 </p>
 
 [![pub package](https://img.shields.io/pub/v/quicui.svg)](https://pub.dev/packages/quicui)

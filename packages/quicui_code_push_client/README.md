@@ -1,5 +1,9 @@
 # QuicUI
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Ikolvi/QuicUICodepush/main/logo.png" alt="QuicUI Logo" width="200">
+</p>
+
 [![pub package](https://img.shields.io/pub/v/quicui.svg)](https://pub.dev/packages/quicui)
 [![License](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](LICENSE)
 

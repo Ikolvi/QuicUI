@@ -1,7 +1,14 @@
 name: quicui_linker
-description: Differential AOT linker for QuicUI code push patches
-version: 0.1.0
-publish_to: none
+description: Differential AOT linker for QuicUI code push patches. Links compiled patches with runtime environment.
+version: 1.0.0
+homepage: https://github.com/Ikolvi/QuicUI
+repository: https://github.com/Ikolvi/QuicUI
+issue_tracker: https://github.com/Ikolvi/QuicUI/issues
+topics:
+  - code-push
+  - linker
+  - flutter
+  - aot
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

@@ -49,7 +49,8 @@ class ElfFile {
     final strTabSectionOffset = is64Bit 
         ? _read64(data, strTabOffset + 24, isLittleEndian)
         : _read32(data, strTabOffset + 16, isLittleEndian);
-    final strTabSize = is64Bit
+    // strTabSize is read but not used currently - reserved for future validation
+    final _ = is64Bit
         ? _read64(data, strTabOffset + 32, isLittleEndian)
         : _read32(data, strTabOffset + 20, isLittleEndian);
     

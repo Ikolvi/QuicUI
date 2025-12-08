@@ -512,7 +512,7 @@ quicui engine download
 | Project | Description | Repository |
 |---------|-------------|------------|
 | **QuicUI CLI** | This CLI tool | [pub.dev/packages/quicui_cli](https://pub.dev/packages/quicui_cli) |
-| **QuicUI Client** | Flutter client SDK | [pub.dev/packages/quicui](https://pub.dev/packages/quicui) |
+| **QuicUI Client** | Flutter client SDK | [github.com/Ikolvi/QuicUICodepush](https://github.com/Ikolvi/QuicUICodepush) |
 | **QuicUI Engine** | Modified Flutter engine | [github.com/Ikolvi/QuicUIEngine](https://github.com/Ikolvi/QuicUIEngine) |
 | **QuicUI Backend** | Supabase backend | [github.com/Ikolvi/QuicUI](https://github.com/Ikolvi/QuicUI) |
 
